@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 64 64" fill="none">
+  <title>SF Bay Area Transit MCP</title>
+  <desc>A Golden Gate Bridge outline behind a San Francisco streetcar.</desc>
+  <rect width="64" height="64" rx="14" fill="#FAF7F1" />
+  <g stroke="#C34F35" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 37V11h6v26M44 37V11h6v26" />
+    <path d="M14 17h6m-6 7h6m24-7h6m-6 7h6" />
+    <path d="M5 33c5-4 9-10 12-19 4 10 9 15 15 15s11-5 15-15c3 9 7 15 12 19" />
+    <path d="M8 37h48M9 29v8m16-11v11m14-11v11m16-8v8" stroke-width="1.8" />
+  </g>
+  <g stroke="#234B40" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m26 53-4 6m16-6 4 6M25 27h14" />
+    <rect x="21" y="29" width="22" height="24" rx="5" fill="#FAF7F1" />
+    <path d="M24 43h16" />
+    <rect x="25" y="33" width="14" height="10" rx="2" fill="#234B40" stroke="none" />
+    <path d="M32 33v10" stroke="#FAF7F1" stroke-width="1.8" />
+    <path d="M27 48h.01M37 48h.01" stroke-width="3.2" />
+  </g>
+</svg>

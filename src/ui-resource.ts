@@ -5,6 +5,7 @@ import {
   RESOURCE_MIME_TYPE,
 } from "@modelcontextprotocol/ext-apps/server";
 import { WIDGET_HTML, WIDGET_RESOURCE_URI } from "./generated/widget.js";
+import { BRAND_ICONS } from "./generated/branding.js";
 
 export { WIDGET_RESOURCE_URI };
 
@@ -49,6 +50,7 @@ export function registerItineraryResource(
     "Bay Area itinerary",
     WIDGET_RESOURCE_URI,
     {
+      icons: BRAND_ICONS,
       description:
         "Interactive journey alternatives, walking and transfer timelines, and service timing information.",
       mimeType: RESOURCE_MIME_TYPE,

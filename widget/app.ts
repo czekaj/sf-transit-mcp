@@ -4,6 +4,8 @@ import {
   applyHostStyleVariables,
   type McpUiHostContext,
 } from "@modelcontextprotocol/ext-apps";
+import { BRAND_ICON_SRC } from "../src/generated/branding.js";
+import { PROJECT } from "../src/project.js";
 import type {
   Coordinate,
   TripItinerary,
@@ -313,6 +315,16 @@ function routeBadge(leg: TripLeg): HTMLElement {
   );
   return badge;
 }
+function brandLabel(): HTMLElement {
+  const label = element("div", "brand-label");
+  const mark = element("img", "brand-icon");
+  mark.src = BRAND_ICON_SRC;
+  mark.alt = "";
+  mark.width = 32;
+  mark.height = 32;
+  label.append(mark, element("p", "eyebrow", PROJECT.title));
+  return label;
+}
 function timingBasis(trip: TripItinerary): string {
   const legs = trip.legs.filter((leg) => !isStreet(leg.mode));
   if (!legs.length) return "Travel estimate";
@@ -362,7 +374,7 @@ export function createTripWidget(root: HTMLElement, bridge: WidgetBridge) {
     if (!view) {
       const state = element("section", "initial-state");
       state.append(
-        element("p", "eyebrow", "BAY AREA JOURNEYS"),
+        brandLabel(),
         element(
           "h1",
           "loading-title",
@@ -408,7 +420,7 @@ export function createTripWidget(root: HTMLElement, bridge: WidgetBridge) {
           ? "Leaving now ·"
           : "Leave after";
     header.append(
-      element("p", "eyebrow", "BAY AREA JOURNEYS"),
+      brandLabel(),
       title,
       element("p", "request-time", `${timeLabel} ${dated(view.requestedTime)}`),
     );
@@ -872,7 +884,11 @@ const root =
     : null;
 if (root) {
   const app = new App(
-    { name: "sf-transit-journeys", version: "0.1.0" },
+    {
+      name: "sf-transit-journeys",
+      title: PROJECT.title,
+      version: PROJECT.version,
+    },
     { availableDisplayModes: ["inline", "fullscreen"] },
   );
   const widget = createTripWidget(root, {

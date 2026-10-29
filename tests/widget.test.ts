@@ -216,7 +216,7 @@ describe("journey widget", () => {
     const incoming = result();
     incoming.structuredContent.origin.label = '<img src=x onerror="alert(1)">';
     widget.receiveToolResult(incoming);
-    expect(root.querySelector("img")).toBeNull();
+    expect(root.querySelector(".journey-title img")).toBeNull();
     expect(root.textContent).toContain("<img src=x");
     root.querySelector<HTMLAnchorElement>(".source-links a")!.click();
     expect(host.openLink).toHaveBeenCalledWith({

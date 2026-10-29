@@ -4,6 +4,14 @@ import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
+const generated = new URL("../src/generated/", import.meta.url);
+await mkdir(generated, { recursive: true });
+const icon = await readFile(new URL("../assets/icon-256.png", import.meta.url));
+const iconSource = `data:image/png;base64,${icon.toString("base64")}`;
+await writeFile(
+  new URL("branding.ts", generated),
+  `// Generated from assets/icon-256.png by scripts/build-widget.mjs.\nexport const BRAND_ICON_SRC = ${JSON.stringify(iconSource)};\nexport const BRAND_ICONS = [{ src: BRAND_ICON_SRC, mimeType: "image/png", sizes: ["256x256"] }];\n`,
+);
 const result = await build({
   absWorkingDir: root,
   entryPoints: ["widget/app.ts"],
@@ -64,8 +72,6 @@ if (Buffer.byteLength(html) > 2 * 1024 * 1024)
   throw new Error("Widget exceeds its 2 MiB resource budget");
 const hash = createHash("sha256").update(html).digest("hex").slice(0, 16);
 const uri = `ui://sf-transit/itinerary-${hash}.html`;
-const generated = new URL("../src/generated/", import.meta.url);
-await mkdir(generated, { recursive: true });
 await mkdir(new URL("../dist/", import.meta.url), { recursive: true });
 await writeFile(
   new URL("widget.ts", generated),

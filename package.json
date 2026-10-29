@@ -21,6 +21,7 @@
     "dist/ui-resource.js",
     "dist/generated/*.js",
     "dist/routing/*.js",
+    "assets",
     "docs",
     "README.md",
     "LICENSE"
@@ -34,6 +35,7 @@
     "dev": "npm run build:widget && tsx src/stdio.ts",
     "dev:worker": "npm run build:widget && WRANGLER_SEND_METRICS=false wrangler dev --local",
     "build:widget": "node scripts/build-widget.mjs",
+    "build:branding": "node scripts/build-branding.mjs",
     "typecheck": "npm run build:widget && tsc --noEmit && tsc --project tsconfig.widget.json",
     "test": "npm run build:widget && vitest run",
     "build": "npm run build:widget && tsc --project tsconfig.build.json",
@@ -50,6 +52,7 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
+    "@resvg/resvg-js": "2.6.2",
     "@types/node": "22.20.5",
     "esbuild": "0.28.2",
     "happy-dom": "21.0.4",

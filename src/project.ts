@@ -1,5 +1,6 @@
 export const PROJECT = {
   name: "sf-transit-mcp",
+  title: "SF Bay Area Transit MCP",
   version: "0.1.0",
   url: "https://github.com/riv-lc/sf-transit-mcp",
   providerUrl: "https://api.transitous.org",

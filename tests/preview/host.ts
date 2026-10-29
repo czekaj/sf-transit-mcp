@@ -30,7 +30,7 @@ function canonical(value: unknown): unknown {
 }
 const bridge = new AppBridge(
   null,
-  { name: "SF Transit local preview", version: "1" },
+  { name: "SF Bay Area Transit MCP local preview", version: "1" },
   { openLinks: {}, serverTools: {} },
   {
     hostContext: {

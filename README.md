@@ -1,4 +1,6 @@
-# SF Transit MCP
+<p><img src="assets/logo.svg" alt="SF Bay Area Transit MCP" width="440" /></p>
+
+# SF Bay Area Transit MCP
 
 Ask Claude how to get around San Francisco and the Bay Area. Get complete journeys: walking to the stop, which buses or trains to take, transfers, departure and arrival times, and how long the trip takes.
 
@@ -145,6 +147,12 @@ npm run preview:widget
 Open `http://127.0.0.1:8798`. The preview uses the real MCP Apps bridge in a sandboxed iframe, with controls for theme, narrow layout, empty results, and failed refreshes. It makes **no transit API requests**. Rebuild and reload after editing the widget. `npm run build:widget` creates the self-contained HTML and a content-versioned MCP resource; generated files are not committed.
 
 The protocol layer, routing client, and presentation code are separate. The public service contract follows the [MOTIS API version linked by Transitous](https://transitous.org/api/). See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution and testing guidance.
+
+### Project artwork
+
+The Golden Gate Bridge and streetcar mark is included as editable SVG and PNG files in [`assets/`](assets/). MCP server, tool, and resource metadata embed a PNG icon directly, following the [MCP icons specification](https://modelcontextprotocol.io/specification/2025-11-25/basic#icons); clients choose whether to display it. No image hosting is required.
+
+After editing `assets/icon.svg`, run `npm run build:branding` to regenerate the icons, wordmark, and `assets/social-preview.png`. The latter is a 1280 × 640 image ready for GitHub's **Settings → Social preview**; committing it does not automatically change that setting. Artwork shares the project's MIT license.
 
 ## License and credits
 
