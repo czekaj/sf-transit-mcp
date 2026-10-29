@@ -27,7 +27,7 @@ Add this to your Claude Desktop MCP configuration. It installs the source packag
       "command": "npx",
       "args": [
         "--yes",
-        "--package=git+https://github.com/riv-lc/sf-transit-mcp.git",
+        "--package=git+https://github.com/czekaj/sf-transit-mcp.git",
         "sf-transit-mcp"
       ]
     }
@@ -38,13 +38,13 @@ Add this to your Claude Desktop MCP configuration. It installs the source packag
 Restart Claude Desktop and ask for a trip. For Claude Code:
 
 ```sh
-claude mcp add sf-transit -- npx --yes --package=git+https://github.com/riv-lc/sf-transit-mcp.git sf-transit-mcp
+claude mcp add sf-transit -- npx --yes --package=git+https://github.com/czekaj/sf-transit-mcp.git sf-transit-mcp
 ```
 
 ### Run from a local checkout
 
 ```sh
-git clone https://github.com/riv-lc/sf-transit-mcp.git
+git clone https://github.com/czekaj/sf-transit-mcp.git
 ```
 
 From the project directory:

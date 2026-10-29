@@ -2,9 +2,9 @@ export const PROJECT = {
   name: "sf-transit-mcp",
   title: "SF Bay Area Transit MCP",
   version: "0.1.0",
-  url: "https://github.com/riv-lc/sf-transit-mcp",
+  url: "https://github.com/czekaj/sf-transit-mcp",
   providerUrl: "https://api.transitous.org",
-  userAgent: "sf-transit-mcp/0.1.0 (+https://github.com/riv-lc/sf-transit-mcp)",
+  userAgent: "sf-transit-mcp/0.1.0 (+https://github.com/czekaj/sf-transit-mcp)",
 } as const;
 
 export const ATTRIBUTION = [
