@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "sf-transit-mcp",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-29",
+  "compatibility_flags": ["nodejs_compat"],
+  // No paid resources, storage bindings, cron jobs, or container compute.
+  // Run on a Workers Free account to keep hosting within the free allowance.
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 0.01,
+    "logs": { "invocation_logs": false },
+  },
+}

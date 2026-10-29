@@ -1,0 +1,54 @@
+{
+  "name": "sf-transit-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Free, keyless San Francisco and Bay Area journey planning for MCP clients",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/riv-lc/sf-transit-mcp"
+  },
+  "type": "module",
+  "bin": {
+    "sf-transit-mcp": "dist/stdio.js"
+  },
+  "files": [
+    "dist/stdio.js",
+    "dist/tools.js",
+    "dist/project.js",
+    "dist/budget.js",
+    "dist/format.js",
+    "dist/routing/*.js",
+    "docs",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "dev": "tsx src/stdio.ts",
+    "dev:worker": "WRANGLER_SEND_METRICS=false wrangler dev --local",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "build": "tsc --project tsconfig.build.json",
+    "prepare": "npm run build",
+    "build:worker": "WRANGLER_SEND_METRICS=false wrangler deploy --dry-run",
+    "check": "npm run format:check && npm run typecheck && npm test && npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.4.0",
+    "agents": "0.32.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "prettier": "3.9.10",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vitest": "5.0.5",
+    "wrangler": "4.156.0"
+  }
+}
