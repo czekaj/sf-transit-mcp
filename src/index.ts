@@ -3,7 +3,7 @@ import { ATTRIBUTION, PROJECT } from "./project.js";
 import { createTransitServer } from "./tools.js";
 
 export default {
-  async fetch(request: Request): Promise<Response> {
+  async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     if (url.pathname === "/" && request.method === "GET") {
       return Response.json(
@@ -27,7 +27,10 @@ export default {
       );
     }
     return handleMcpRequest(request, {
-      createServer: () => createTransitServer(),
+      createServer: () =>
+        createTransitServer(
+          env.PUBLIC_MCP_URL ? { serverUrl: env.PUBLIC_MCP_URL } : {},
+        ),
     });
   },
 } satisfies ExportedHandler<Env>;

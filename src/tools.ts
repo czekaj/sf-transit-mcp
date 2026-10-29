@@ -1,4 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/server";
+import { registerAppTool } from "@modelcontextprotocol/ext-apps/server";
 import { z } from "zod";
 import { createBudgetedFetch } from "./budget.js";
 import { formatTripPlan } from "./format.js";
@@ -8,12 +9,20 @@ import {
   planTripInputSchema,
   searchPlacesInputSchema,
 } from "./routing/schemas.js";
+import {
+  registerItineraryResource,
+  WIDGET_RESOURCE_URI,
+} from "./ui-resource.js";
 
 // Shared numeric budget survives fresh HTTP server factories within an isolate.
 const publicFetch = createBudgetedFetch((input, init) => fetch(input, init));
 
 export function createTransitServer(
-  options: { fetcher?: typeof fetch; now?: () => Date } = {},
+  options: {
+    fetcher?: typeof fetch;
+    now?: () => Date;
+    serverUrl?: string;
+  } = {},
 ): McpServer {
   const client = createRoutingClient({
     baseUrl: PROJECT.providerUrl,
@@ -34,6 +43,7 @@ export function createTransitServer(
     idempotentHint: true,
     openWorldHint: true,
   };
+  registerItineraryResource(server, options.serverUrl);
 
   server.registerTool(
     "search_places",
@@ -67,7 +77,8 @@ export function createTransitServer(
     },
   );
 
-  server.registerTool(
+  registerAppTool(
+    server,
     "plan_trip",
     {
       title: "Plan a Bay Area journey",
@@ -75,6 +86,9 @@ export function createTransitServer(
         "Find complete A-to-B journeys with walking, transit, transfers, scheduled/predicted times, and total duration. Supply resolved coordinates. Omit times for now; otherwise supply departureTime OR arrivalTime with a timezone offset. Transit includes walking to/from stops. Modes walk and bicycle request extra direct comparisons. Coordinates are sent to Transitous. No API key.",
       inputSchema: planTripInputSchema,
       annotations,
+      _meta: {
+        ui: { resourceUri: WIDGET_RESOURCE_URI, visibility: ["model", "app"] },
+      },
     },
     async (input) => {
       try {
@@ -86,7 +100,12 @@ export function createTransitServer(
               text: `${formatTripPlan(result, input.wheelchair)}\n\n${ATTRIBUTION_TEXT}`,
             },
           ],
-          structuredContent: { ...result, attribution: ATTRIBUTION },
+          structuredContent: {
+            ...result,
+            request: input,
+            wheelchairRequested: input.wheelchair,
+            attribution: ATTRIBUTION,
+          },
         };
       } catch (error) {
         return toolError(error);

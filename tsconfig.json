@@ -12,6 +12,7 @@
     "skipLibCheck": true,
     "verbatimModuleSyntax": true
   },
+  "exclude": ["tests/widget.test.ts", "tests/preview"],
   "include": [
     "src/**/*.ts",
     "tests/**/*.ts",

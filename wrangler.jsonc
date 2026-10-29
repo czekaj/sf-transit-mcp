@@ -4,6 +4,8 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-10-29",
   "compatibility_flags": ["nodejs_compat"],
+  // Set only when a host needs an explicit stable widget origin. No secret.
+  "vars": { "PUBLIC_MCP_URL": "" },
   // No paid resources, storage bindings, cron jobs, or container compute.
   // Run on a Workers Free account to keep hosting within the free allowance.
   "observability": {

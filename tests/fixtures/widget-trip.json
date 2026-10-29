@@ -1,0 +1,284 @@
+{
+  "_fixture": {
+    "synthetic": true,
+    "notice": "Invented services, stops, times and distances for UI tests. Not a recording of real transit data. Public City Hall substitutes for a home address.",
+    "timeContext": "October 29, 2026 is in Pacific Daylight Time (UTC-07:00). No time was supplied in the original request: refresh must request leaving now again.",
+    "expected": {
+      "firstOptionTravelMinutes": 45,
+      "firstOptionWalkingMinutes": 12,
+      "firstOptionWaitingMinutes": 9,
+      "firstOptionWaitBeforeLeavingMinutes": 3,
+      "firstOptionTotalFromRequestedTimeMinutes": 48,
+      "secondOptionTravelMinutes": 52,
+      "secondOptionWalkingMinutes": 18,
+      "secondOptionWaitingMinutes": 9,
+      "secondOptionWaitBeforeLeavingMinutes": 1,
+      "secondOptionTotalFromRequestedTimeMinutes": 53,
+      "accessibility": "unknown on every transit leg; absent wheelchairAccessible must never be rendered as accessible",
+      "freshness": "realTime is mixed and provider update age is unavailable"
+    }
+  },
+  "content": [
+    {
+      "type": "text",
+      "text": "SYNTHETIC UI FIXTURE: City Hall to Baker Beach. These invented routes and times must not be presented as travel advice."
+    }
+  ],
+  "structuredContent": {
+    "origin": {
+      "latitude": 37.7793,
+      "longitude": -122.4193,
+      "label": "San Francisco City Hall"
+    },
+    "destination": {
+      "latitude": 37.7924,
+      "longitude": -122.482,
+      "label": "Baker Beach entrance"
+    },
+    "requestedTime": "2026-10-29T14:00:00-07:00",
+    "timeType": "departAfter",
+    "generatedAt": "2026-10-29T21:00:00Z",
+    "timeZone": "America/Los_Angeles",
+    "itineraries": [
+      {
+        "kind": "transit",
+        "departureTime": "2026-10-29T14:03:00-07:00",
+        "arrivalTime": "2026-10-29T14:48:00-07:00",
+        "durationSeconds": 2700,
+        "transfers": 1,
+        "walkingSeconds": 720,
+        "waitingSeconds": 540,
+        "realTime": true,
+        "legs": [
+          {
+            "mode": "WALK",
+            "departureTime": "2026-10-29T14:03:00-07:00",
+            "arrivalTime": "2026-10-29T14:08:00-07:00",
+            "scheduledDepartureTime": "2026-10-29T14:03:00-07:00",
+            "scheduledArrivalTime": "2026-10-29T14:08:00-07:00",
+            "durationSeconds": 300,
+            "realTime": false,
+            "from": {
+              "latitude": 37.7793,
+              "longitude": -122.4193,
+              "label": "San Francisco City Hall"
+            },
+            "to": {
+              "latitude": 37.78,
+              "longitude": -122.42,
+              "label": "City Hall example stop"
+            },
+            "stayOnVehicle": false,
+            "distanceMeters": 350
+          },
+          {
+            "mode": "BUS",
+            "departureTime": "2026-10-29T14:12:00-07:00",
+            "arrivalTime": "2026-10-29T14:27:00-07:00",
+            "scheduledDepartureTime": "2026-10-29T14:10:00-07:00",
+            "scheduledArrivalTime": "2026-10-29T14:25:00-07:00",
+            "durationSeconds": 900,
+            "realTime": true,
+            "from": {
+              "latitude": 37.78,
+              "longitude": -122.42,
+              "label": "City Hall example stop"
+            },
+            "to": {
+              "latitude": 37.786,
+              "longitude": -122.455,
+              "label": "Presidio example transfer stop"
+            },
+            "stayOnVehicle": false,
+            "route": "FIXTURE-A",
+            "agency": "Fixture Transit",
+            "headsign": "Presidio example transfer stop"
+          },
+          {
+            "mode": "WALK",
+            "departureTime": "2026-10-29T14:27:00-07:00",
+            "arrivalTime": "2026-10-29T14:30:00-07:00",
+            "scheduledDepartureTime": "2026-10-29T14:27:00-07:00",
+            "scheduledArrivalTime": "2026-10-29T14:30:00-07:00",
+            "durationSeconds": 180,
+            "realTime": false,
+            "from": {
+              "latitude": 37.786,
+              "longitude": -122.455,
+              "label": "Presidio example transfer stop"
+            },
+            "to": {
+              "latitude": 37.787,
+              "longitude": -122.456,
+              "label": "Presidio example boarding stop"
+            },
+            "stayOnVehicle": false,
+            "distanceMeters": 160
+          },
+          {
+            "mode": "BUS",
+            "departureTime": "2026-10-29T14:35:00-07:00",
+            "arrivalTime": "2026-10-29T14:44:00-07:00",
+            "scheduledDepartureTime": "2026-10-29T14:35:00-07:00",
+            "scheduledArrivalTime": "2026-10-29T14:44:00-07:00",
+            "durationSeconds": 540,
+            "realTime": false,
+            "from": {
+              "latitude": 37.787,
+              "longitude": -122.456,
+              "label": "Presidio example boarding stop"
+            },
+            "to": {
+              "latitude": 37.791,
+              "longitude": -122.48,
+              "label": "Baker Beach example stop"
+            },
+            "stayOnVehicle": false,
+            "route": "FIXTURE-B",
+            "agency": "Fixture Transit",
+            "headsign": "Baker Beach example stop"
+          },
+          {
+            "mode": "WALK",
+            "departureTime": "2026-10-29T14:44:00-07:00",
+            "arrivalTime": "2026-10-29T14:48:00-07:00",
+            "scheduledDepartureTime": "2026-10-29T14:44:00-07:00",
+            "scheduledArrivalTime": "2026-10-29T14:48:00-07:00",
+            "durationSeconds": 240,
+            "realTime": false,
+            "from": {
+              "latitude": 37.791,
+              "longitude": -122.48,
+              "label": "Baker Beach example stop"
+            },
+            "to": {
+              "latitude": 37.7924,
+              "longitude": -122.482,
+              "label": "Baker Beach entrance"
+            },
+            "stayOnVehicle": false,
+            "distanceMeters": 240
+          }
+        ]
+      },
+      {
+        "kind": "transit",
+        "departureTime": "2026-10-29T14:01:00-07:00",
+        "arrivalTime": "2026-10-29T14:53:00-07:00",
+        "durationSeconds": 3120,
+        "transfers": 0,
+        "walkingSeconds": 1080,
+        "waitingSeconds": 540,
+        "realTime": false,
+        "legs": [
+          {
+            "mode": "WALK",
+            "departureTime": "2026-10-29T14:01:00-07:00",
+            "arrivalTime": "2026-10-29T14:11:00-07:00",
+            "scheduledDepartureTime": "2026-10-29T14:01:00-07:00",
+            "scheduledArrivalTime": "2026-10-29T14:11:00-07:00",
+            "durationSeconds": 600,
+            "realTime": false,
+            "from": {
+              "latitude": 37.7793,
+              "longitude": -122.4193,
+              "label": "San Francisco City Hall"
+            },
+            "to": {
+              "latitude": 37.784,
+              "longitude": -122.425,
+              "label": "Geary example stop"
+            },
+            "stayOnVehicle": false,
+            "distanceMeters": 650
+          },
+          {
+            "mode": "BUS",
+            "departureTime": "2026-10-29T14:20:00-07:00",
+            "arrivalTime": "2026-10-29T14:45:00-07:00",
+            "scheduledDepartureTime": "2026-10-29T14:20:00-07:00",
+            "scheduledArrivalTime": "2026-10-29T14:45:00-07:00",
+            "durationSeconds": 1500,
+            "realTime": false,
+            "from": {
+              "latitude": 37.784,
+              "longitude": -122.425,
+              "label": "Geary example stop"
+            },
+            "to": {
+              "latitude": 37.791,
+              "longitude": -122.48,
+              "label": "Baker Beach example stop"
+            },
+            "stayOnVehicle": false,
+            "route": "FIXTURE-C",
+            "agency": "Fixture Transit",
+            "headsign": "Baker Beach example stop"
+          },
+          {
+            "mode": "WALK",
+            "departureTime": "2026-10-29T14:45:00-07:00",
+            "arrivalTime": "2026-10-29T14:53:00-07:00",
+            "scheduledDepartureTime": "2026-10-29T14:45:00-07:00",
+            "scheduledArrivalTime": "2026-10-29T14:53:00-07:00",
+            "durationSeconds": 480,
+            "realTime": false,
+            "from": {
+              "latitude": 37.791,
+              "longitude": -122.48,
+              "label": "Baker Beach example stop"
+            },
+            "to": {
+              "latitude": 37.7924,
+              "longitude": -122.482,
+              "label": "Baker Beach entrance"
+            },
+            "stayOnVehicle": false,
+            "distanceMeters": 500
+          }
+        ]
+      }
+    ],
+    "warnings": [
+      "Synthetic fixture: these services and times are invented for interface testing.",
+      "Some transit times use the published schedule; live predictions are unavailable for those legs.",
+      "The provider marks some times as real-time estimates, but their update age is unavailable.",
+      "The wheelchair profile applies to walking and transfers. Vehicle accessibility may be unknown; check the accessibility information on each transit leg."
+    ],
+    "request": {
+      "origin": {
+        "latitude": 37.7793,
+        "longitude": -122.4193,
+        "label": "San Francisco City Hall"
+      },
+      "destination": {
+        "latitude": 37.7924,
+        "longitude": -122.482,
+        "label": "Baker Beach entrance"
+      },
+      "modes": ["transit"],
+      "maxTransfers": 1,
+      "limit": 2,
+      "wheelchair": true
+    },
+    "attribution": [
+      {
+        "label": "Routing by Transitous",
+        "url": "https://transitous.org"
+      },
+      {
+        "label": "Transitous data sources",
+        "url": "https://transitous.org/sources/"
+      },
+      {
+        "label": "© OpenStreetMap contributors",
+        "url": "https://www.openstreetmap.org/copyright"
+      },
+      {
+        "label": "Bay Area data provided by 511.org",
+        "url": "https://511.org"
+      }
+    ],
+    "wheelchairRequested": true
+  }
+}

@@ -209,6 +209,14 @@ describe("transit tools through real MCP HTTP", () => {
     expect(text).toContain("7 min, scheduled");
     const structured = reply.result?.structuredContent;
     expect(structured).toMatchObject({
+      request: {
+        origin,
+        destination,
+        modes: ["transit"],
+        limit: 3,
+        wheelchair: false,
+      },
+      wheelchairRequested: false,
       requestedTime: "2026-10-29T21:00:00.000Z",
       timeZone: "America/Los_Angeles",
       attribution: ATTRIBUTION,
@@ -230,6 +238,8 @@ describe("transit tools through real MCP HTTP", () => {
         },
       ],
     });
+    expect(structured?.request).not.toHaveProperty("departureTime");
+    expect(structured?.request).not.toHaveProperty("arrivalTime");
     for (const source of ATTRIBUTION) expect(text).toContain(source.url);
     expect(fetcher).toHaveBeenCalledTimes(1);
   });
@@ -243,6 +253,37 @@ describe("transit tools through real MCP HTTP", () => {
     });
     expect(reply.result?.content?.[0]?.text).toContain(
       "Wait before leaving: 2 min. Total from requested departure: 42 min.",
+    );
+    expect(reply.result?.structuredContent?.request).toMatchObject({
+      origin,
+      destination,
+      departureTime: at(3),
+    });
+    expect(reply.result?.structuredContent?.request).not.toHaveProperty(
+      "arrivalTime",
+    );
+  });
+
+  it("preserves arrive-by intention and supplied settings for an explicit UI refresh", async () => {
+    const { call } = harness();
+    const request = {
+      origin,
+      destination,
+      arrivalTime: at(50),
+      modes: ["transit"],
+      maxTransfers: 2,
+      limit: 1,
+      wheelchair: true,
+    };
+    const reply = await call("plan_trip", request);
+    expect(reply.result?.isError).not.toBe(true);
+    expect(reply.result?.structuredContent).toMatchObject({
+      request,
+      wheelchairRequested: true,
+      timeType: "arriveBy",
+    });
+    expect(reply.result?.structuredContent?.request).not.toHaveProperty(
+      "departureTime",
     );
   });
 

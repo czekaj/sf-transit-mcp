@@ -1,6 +1,7 @@
 node_modules/
 .wrangler/
 dist/
+src/generated/
 coverage/
 .dev.vars
 .dev.vars.*
