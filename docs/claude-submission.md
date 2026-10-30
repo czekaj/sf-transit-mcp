@@ -110,11 +110,15 @@ Claude explicitly supports connectors without authentication. [Authentication gu
 
 ### 7. Data handling
 
-**Underlying API:** Third party operated by Transitous; not controlled by Reindex Ventures LLC. Choose the portal's corresponding third-party option, not a partnership claim.
+**API ownership:** Select **Calls a third-party API we don't control**. Transitous operates the underlying routing and place-search API. Reindex Ventures LLC operates the MCP server, but has no separate partnership agreement with Transitous. Its public policy permits qualifying light, open-source, noncommercial use. Explain that permission basis in Additional notes. The portal warns that third-party API use typically blocks listing; acceptance is not confirmed by the provider's permission to use its API.
+
+**Personal health data:** Select **Other / depends on configuration** and explain the wheelchair-routing option. When requested by the user, the server processes and forwards that preference to Transitous; it can indicate a disability. The server does not access medical records or healthcare accounts, and does not save trip history.
+
+**Sponsored or promoted content:** Select **No**.
 
 **API-use explanation:** “The connector uses Transitous's public MOTIS API for trip planning and place search under its published policy for light, open-source, noncommercial use. Requests identify the application, and results credit the data sources. We have no separate partnership or special capacity agreement. We must coordinate with Transitous if expected usage meets its published criteria for significant resource use.”
 
-**Information sent:** Place-search text, selected coordinates, time, and travel preferences needed for the requested journey. Starting addresses can be personal data; a wheelchair preference can reveal sensitive information. No health-data feature, sponsored content, conversation-history access, or stored home profile is offered.
+**Information sent:** Place-search text, selected coordinates, time, and travel preferences needed for the requested journey. Starting addresses can be personal data; a wheelchair preference can reveal sensitive information. The connector does not access conversation history or save a home profile.
 
 **Privacy policy:** Use the hosted [privacy policy](https://mcp.riv.lc/sf-transit/privacy) after deployment. Its content is generated from [PRIVACY.md](../PRIVACY.md). It explains who operates the service, what Cloudflare processes, what Transitous receives and retains, and how to contact the operator. Do not answer “no data transmitted.”
 
