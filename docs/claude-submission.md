@@ -57,14 +57,19 @@ Operated by Reindex Ventures LLC and created by Lucas Czekaj. This connector ser
 | Field                                     | Value                                                                                                                                           |
 | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | Categories                                | Suggested concepts: Travel / Transportation; Maps / Local information. Exact portal choices are unverified; choose the closest offered options. |
-| Documentation                             | `https://github.com/czekaj/sf-transit-mcp#readme`                                                                                               |
+| Documentation, after deployment           | `https://mcp.riv.lc/sf-transit/docs`                                                                                                            |
 | Privacy URL, after publication            | `https://github.com/czekaj/sf-transit-mcp/blob/main/PRIVACY.md`                                                                                 |
 | Public support / privacy / security email | `contact@reindexventures.com`                                                                                                                   |
 | Support page, after publication           | `https://github.com/czekaj/sf-transit-mcp/blob/main/SUPPORT.md`                                                                                 |
 | Icon                                      | [assets/icon-512.png](../assets/icon-512.png)                                                                                                   |
+| Hosted icon URL, after deployment         | `https://mcp.riv.lc/sf-transit/icon.png`                                                                                                        |
 | Proposed slug                             | `sf-bay-area-transit` — owner decision; availability unverified, not reserved                                                                   |
 
 The slug becomes permanent after publication. [Listing URL guidance](https://claude.com/docs/connectors/building/after-publishing#directory-listing-urls-are-permanent)
+
+For a portal field requesting an image URL, use the hosted icon URL after deploying and checking it. It returns the same 512 × 512 PNG as the local asset. The connector preview's generic globe is separate from the directory listing icon; the server also supplies an embedded PNG in MCP metadata.
+
+The Documentation URL is the HTML user guide and IT-admin review page, covering connection setup, tools and permissions, provider data sharing, operator identity, support, and limitations. The GitHub README remains the source for installation, development, and self-hosting instructions.
 
 ### 4. Use cases
 

@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { once } from "node:events";
+import { readFileSync } from "node:fs";
 import { PassThrough } from "node:stream";
 import { fileURLToPath } from "node:url";
 import { unstable_readConfig as readWranglerConfig } from "wrangler";
@@ -277,6 +278,73 @@ describe("MCP HTTP boundary", () => {
 });
 
 describe("Worker pages and discovery", () => {
+  it.each(["GET", "HEAD"])(
+    "serves public user and admin documentation for %s requests",
+    async (method) => {
+      for (const path of ["/sf-transit/docs", "/sf-transit/docs/"]) {
+        const response = await worker.fetch(
+          new Request(`https://mcp.riv.lc${path}`, { method }),
+          productionEnv,
+        );
+        expect(response.status).toBe(200);
+        expect(response.headers.get("Content-Type")).toBe(
+          "text/html; charset=utf-8",
+        );
+        expect(response.headers.has("Location")).toBe(false);
+        expect(response.headers.get("Content-Security-Policy")).toContain(
+          "default-src 'none'",
+        );
+        const body = await response.text();
+        if (method === "HEAD") {
+          expect(body).toBe("");
+        } else {
+          expect(body).toContain("SF Bay Area Transit MCP");
+          expect(body).toContain(productionEnv.PUBLIC_MCP_URL);
+          expect(body).toContain("Reindex Ventures LLC");
+          expect(body).toContain("contact@reindexventures.com");
+          expect(body).toContain("PRIVACY.md");
+          expect(body).not.toMatch(/<script\b/i);
+        }
+      }
+      expect(fetch).not.toHaveBeenCalled();
+    },
+  );
+
+  it("shows the official hosted endpoint in the local documentation preview", async () => {
+    const response = await worker.fetch(
+      new Request("http://localhost/sf-transit/docs"),
+      localEnv,
+    );
+    const body = await response.text();
+    expect(body).toContain("https://mcp.riv.lc/sf-transit/mcp");
+    expect(body).not.toContain("http://localhost");
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it.each(["GET", "HEAD"])(
+    "serves the original 512px PNG for directory %s requests",
+    async (method) => {
+      const icon = readFileSync(
+        new URL("../assets/icon-512.png", import.meta.url),
+      );
+      const response = await worker.fetch(
+        new Request("https://mcp.riv.lc/sf-transit/icon.png", {
+          method,
+          headers: { Origin: "https://claude.ai" },
+        }),
+        productionEnv,
+      );
+      expect(response.status).toBe(200);
+      expect(response.headers.get("Content-Type")).toBe("image/png");
+      expect(response.headers.get("Content-Length")).toBe(String(icon.length));
+      expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
+      expect(response.headers.has("Location")).toBe(false);
+      const body = Buffer.from(await response.arrayBuffer());
+      expect(body).toEqual(method === "HEAD" ? Buffer.alloc(0) : icon);
+      expect(fetch).not.toHaveBeenCalled();
+    },
+  );
+
   it("keeps the connected production deploy on the company domain", () => {
     const configPath = fileURLToPath(
       new URL("../wrangler.jsonc", import.meta.url),
@@ -323,12 +391,21 @@ describe("Worker pages and discovery", () => {
     "redirects page %s requests to the configured homepage or repository",
     async (method) => {
       for (const [path, location] of [
-        ["/", "https://reindexventures.com"],
-        ["/sf-transit", "https://github.com/czekaj/sf-transit-mcp"],
-        ["/sf-transit/", "https://github.com/czekaj/sf-transit-mcp"],
+        ["/", "https://reindexventures.com/?utm_source=sf-transit-mcp"],
+        [
+          "/sf-transit",
+          "https://github.com/czekaj/sf-transit-mcp?utm_source=sf-transit-mcp",
+        ],
+        [
+          "/sf-transit/",
+          "https://github.com/czekaj/sf-transit-mcp?utm_source=sf-transit-mcp",
+        ],
       ]) {
         const response = await worker.fetch(
-          new Request(`http://localhost${path}?source=fixture`, { method }),
+          new Request(
+            `http://localhost${path}?utm_source=untrusted&fixture=discarded`,
+            { method },
+          ),
           productionEnv,
         );
         expect(response.status).toBe(308);
@@ -342,8 +419,29 @@ describe("Worker pages and discovery", () => {
     },
   );
 
+  it("preserves configured homepage parameters and sets the project referral source", async () => {
+    const response = await worker.fetch(
+      new Request("http://localhost/?fixture=discarded"),
+      {
+        ...localEnv,
+        HOMEPAGE_URL:
+          "https://example.com/start?campaign=launch&utm_source=old",
+      },
+    );
+    expect(response.headers.get("Location")).toBe(
+      "https://example.com/start?campaign=launch&utm_source=sf-transit-mcp",
+    );
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
   it("does not redirect POST requests on page paths or unrelated paths", async () => {
-    for (const path of ["/", "/sf-transit", "/sf-transit-extra"]) {
+    for (const path of [
+      "/",
+      "/sf-transit",
+      "/sf-transit-extra",
+      "/sf-transit/docs",
+      "/sf-transit/icon.png",
+    ]) {
       const response = await worker.fetch(
         new Request(`http://localhost${path}`, { method: "POST", body: "{}" }),
         productionEnv,
@@ -381,7 +479,9 @@ describe("Worker pages and discovery", () => {
       productionEnv,
     );
     expect(root.status).toBe(308);
-    expect(root.headers.get("Location")).toBe("https://reindexventures.com");
+    expect(root.headers.get("Location")).toBe(
+      "https://reindexventures.com/?utm_source=sf-transit-mcp",
+    );
     expect(fetch).not.toHaveBeenCalled();
   });
 

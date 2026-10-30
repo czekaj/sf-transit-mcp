@@ -4,11 +4,11 @@
 
 **Created by Lucas Czekaj. Operated and published by [Reindex Ventures LLC](https://reindexventures.com).**
 
-Ask Claude how to get around San Francisco and the Bay Area. Get complete journeys: walking to the stop, which buses or trains to take, transfers, departure and arrival times, and how long the trip takes.
+Ask your AI agent how to get around San Francisco and the Bay Area. Get complete journeys: walking to the stop, which buses or trains to take, transfers, departure and arrival times, and how long the trip takes.
 
-**Free to use. No API keys or authentication.** Runs locally with Claude Desktop or Claude Code, or as a remote MCP on Cloudflare Workers Free. [Transitous](https://transitous.org/) supplies the routing and place search; you do not need to host a routing engine or download feeds.
+**Free to use. No API keys or authentication.** Connect an AI agent or client that supports remote MCP, or run a local MCP server. Interactive journeys depend on the client's MCP Apps support. The hosted service runs on Cloudflare Workers Free. [Transitous](https://transitous.org/) supplies routing and place search.
 
-> “How do I get from home to Baker Beach, leaving now?”
+> “How do I get from the Ferry Building to Baker Beach, leaving now?”
 >
 > “I need to reach the Ferry Building by 9 tomorrow morning.”
 >
@@ -17,6 +17,21 @@ Ask Claude how to get around San Francisco and the Bay Area. Get complete journe
 The default provider is for **light, noncommercial, open-source use**. Its service is community-run and has no uptime guarantee. See [provider details](docs/providers.md).
 
 ## Get started
+
+### Connect to the hosted service
+
+1. In your AI agent's MCP or connector settings, add a remote server with the **official hosted URL**:
+
+   ```text
+   https://mcp.riv.lc/sf-transit/mcp
+   ```
+
+2. Set authentication to **None** if asked.
+3. Ask: “How do I get from the Ferry Building to Baker Beach, leaving now?”
+
+The [user guide and IT-admin review](https://mcp.riv.lc/sf-transit/docs) cover setup, tool permissions, data handling, support, and service limitations. Place searches and trip coordinates are sent to Transitous; see the [privacy policy](PRIVACY.md).
+
+### Install a local server from GitHub
 
 Requires Node.js 22.12 or newer and Git.
 
@@ -75,7 +90,7 @@ Restart Claude Desktop. For Claude Code, register the same local server:
 claude mcp add sf-transit -- node /absolute/path/to/sf-transit-mcp/dist/stdio.js
 ```
 
-The server starts without credentials or environment variables. Tell Claude your starting address, or use an address already in your conversation. The MCP does not save a home profile. Claude resolves places, asks you to choose when needed, then requests the journey.
+The server starts without credentials or environment variables. Tell your agent your starting address, or use an address already in your conversation. The MCP does not save a home profile. Your agent resolves places, asks you to choose when needed, then requests the journey.
 
 **Privacy:** place searches and journey coordinates go to Transitous. Its [privacy policy](https://transitous.org/privacy/) says request URLs are logged for up to two days. The MCP does not log or persist addresses or trip results. The [project privacy policy](PRIVACY.md) explains operator, client, and infrastructure processing.
 
@@ -95,7 +110,7 @@ Transit journeys include walking to and from stops. Options include maximum tran
 
 Times display in **America/Los_Angeles**, including daylight-saving changes. Journey duration and waiting before departure are shown separately. Transit legs say whether their times come from a timetable or a live prediction. The provider does not expose prediction age in this response, so a live flag is not a freshness guarantee.
 
-### Interactive journeys in Claude
+### Interactive journeys
 
 In clients that support [MCP Apps](https://modelcontextprotocol.io/extensions/apps/overview), including Claude, `plan_trip` also displays an interactive itinerary:
 
@@ -127,7 +142,7 @@ npm run dev:worker
 
 `build:worker` is a dry run and does not deploy. The local endpoint is `http://localhost:8787/sf-transit/mcp`.
 
-To publish to your own Cloudflare account, review `wrangler.jsonc`, use a Workers Free account, and run Wrangler's deploy command yourself. Connect Claude's remote custom connector to the resulting `https://<worker>.<subdomain>.workers.dev/sf-transit/mcp` URL, with no authentication. A remote Claude connector cannot reach localhost.
+To publish to your own Cloudflare account, review `wrangler.jsonc`, use a Workers Free account, and run Wrangler's deploy command yourself. Connect your remote MCP client to the resulting `https://<worker>.<subdomain>.workers.dev/sf-transit/mcp` URL, with no authentication. A cloud-hosted agent cannot reach your machine's localhost.
 
 For a stable Claude remote connector, set `vars.PUBLIC_MCP_URL` in `wrangler.jsonc` to the **exact connector URL**, including `/sf-transit/mcp`, with no trailing slash. The server derives Claude's widget sandbox domain from it. This value is public and requires no domain registration. Leave it empty for local use or the host's default sandbox. If the connector URL changes, update this value too.
 
@@ -170,7 +185,9 @@ The [Claude submission materials](docs/claude-submission.md) contain listing cop
 
 ### Project artwork
 
-The route-line SF monogram combines the Golden Gate Bridge, transit route terminals, and a streetcar. Its original image-generated PNG is [`assets/route-monogram.png`](assets/route-monogram.png), with the [generation prompt](assets/route-monogram.prompt.txt) alongside it. MCP server, tool, and resource metadata embed a PNG icon directly, following the [MCP icons specification](https://modelcontextprotocol.io/specification/2025-11-25/basic#icons); clients choose whether to display it. No image hosting is required.
+The route-line SF monogram combines the Golden Gate Bridge, transit route terminals, and a streetcar. Its original image-generated PNG is [`assets/route-monogram.png`](assets/route-monogram.png), with the [generation prompt](assets/route-monogram.prompt.txt) alongside it. MCP server, tool, and resource metadata embed a PNG icon directly, following the [MCP icons specification](https://modelcontextprotocol.io/specification/2025-11-25/basic#icons); clients choose whether to display it.
+
+The Worker also serves the 512 × 512 PNG at `/sf-transit/icon.png` for directory forms that require a hosted icon URL. After deployment, the company URL is `https://mcp.riv.lc/sf-transit/icon.png`. It serves the image directly without authentication or a redirect, using the existing Worker rather than a separate image-hosting service.
 
 Run `npm run build:branding` to export the logo, icon sizes, and `assets/social-preview.png` from the original artwork. The script frames and scales the selected image; it does not call an image service. If the source image changes, adjust its viewports in `scripts/build-branding.mjs`. The social preview is a 1280 × 640 image ready for GitHub's **Settings → Social preview**; committing it does not automatically change that setting. Artwork shares the project's MIT license.
 

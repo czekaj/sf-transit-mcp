@@ -3,6 +3,7 @@ export const PROJECT = {
   title: "SF Bay Area Transit MCP",
   version: "0.1.0",
   url: "https://github.com/czekaj/sf-transit-mcp",
+  hostedMcpUrl: "https://mcp.riv.lc/sf-transit/mcp",
   providerUrl: "https://api.transitous.org",
   userAgent: "sf-transit-mcp/0.1.0 (+https://github.com/czekaj/sf-transit-mcp)",
 } as const;

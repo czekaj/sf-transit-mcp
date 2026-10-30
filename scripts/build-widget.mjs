@@ -7,10 +7,13 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 const generated = new URL("../src/generated/", import.meta.url);
 await mkdir(generated, { recursive: true });
 const icon = await readFile(new URL("../assets/icon-256.png", import.meta.url));
+const listingIcon = await readFile(
+  new URL("../assets/icon-512.png", import.meta.url),
+);
 const iconSource = `data:image/png;base64,${icon.toString("base64")}`;
 await writeFile(
   new URL("branding.ts", generated),
-  `// Generated from assets/icon-256.png by scripts/build-widget.mjs.\nexport const BRAND_ICON_SRC = ${JSON.stringify(iconSource)};\nexport const BRAND_ICONS = [{ src: BRAND_ICON_SRC, mimeType: "image/png", sizes: ["256x256"] }];\n`,
+  `// Generated from assets/icon-256.png and assets/icon-512.png by scripts/build-widget.mjs.\nexport const BRAND_ICON_SRC = ${JSON.stringify(iconSource)};\nexport const BRAND_ICONS = [{ src: BRAND_ICON_SRC, mimeType: "image/png", sizes: ["256x256"] }];\nexport const LISTING_ICON_BASE64 = ${JSON.stringify(listingIcon.toString("base64"))};\n`,
 );
 const result = await build({
   absWorkingDir: root,

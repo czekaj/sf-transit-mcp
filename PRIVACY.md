@@ -29,6 +29,8 @@ The application has no database, saved user profiles, or saved home addresses. R
 
 The application does not add advertising trackers, analytics SDKs, or tracking cookies, and its code does not log trip inputs or results. This does not describe retention by your MCP client or infrastructure providers. The repository's Cloudflare configuration disables invocation logs and enables sampled observability. We have not verified a retention period for Cloudflare edge, security, or diagnostic records; this service does not promise zero infrastructure logging.
 
+Page redirects to the operator's website and the project repository add the fixed referral label `utm_source=sf-transit-mcp`. This value identifies the project, not an individual visitor. Incoming request query strings are not copied into those redirects.
+
 ## Contact and requests
 
 For privacy questions or requests concerning data handled by the operator, contact **[contact@reindexventures.com](mailto:contact@reindexventures.com)**. We can address data under our control; your MCP client and Transitous handle their own records under their respective policies.
