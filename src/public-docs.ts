@@ -39,14 +39,15 @@ export function renderPublicDocs(mcpUrl: string): string {
     .brand img { width: 3.25rem; height: 3.25rem; border-radius: .7rem; }
     .brand small { display: block; color: var(--muted); font-weight: 450; font-size: .82rem; }
     nav { display: flex; flex-wrap: wrap; gap: .5rem 1.4rem; font-size: .92rem; }
-    .hero { display: grid; grid-template-columns: minmax(0, 1fr) 14rem; column-gap: 2.5rem; padding-block: 2.75rem 2rem; }
-    .hero > :not(.hero-logo) { grid-column: 1; }
-    .hero-logo { grid-column: 2; grid-row: 2 / span 4; align-self: start; width: 100%; height: auto; border-radius: 2rem; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); align-items: center; gap: clamp(2.5rem, 5vw, 4rem); padding-block: 4rem; }
+    .hero-copy { min-width: 0; }
+    .hero-logo { display: block; width: 100%; max-width: 27rem; height: auto; justify-self: center; border-radius: 20%; }
     .eyebrow { margin: 0 0 .8rem; color: var(--green); font-size: .82rem; font-weight: 750; letter-spacing: .11em; text-transform: uppercase; }
-    h1 { margin: 0; max-width: 24ch; font-size: clamp(2.25rem, 4.4vw, 3.4rem); line-height: 1.07; letter-spacing: -.045em; font-weight: 750; }
-    .lead { margin: 1.3rem 0 1.1rem; max-width: 48rem; font-size: 1.17rem; color: var(--muted); }
+    h1 { margin: 0; font-size: clamp(3rem, 5.7vw, 4.75rem); line-height: 1.02; letter-spacing: -.045em; font-weight: 750; }
+    h1 span { display: block; }
+    .lead { margin: 1.4rem 0 1.2rem; max-width: 44ch; font-size: 1.2rem; line-height: 1.6; color: var(--muted); }
     .badge { display: inline-block; width: fit-content; padding: .25rem .75rem; border: 1px solid var(--line); border-radius: 2rem; background: var(--card); color: var(--green); font-size: .9rem; font-weight: 650; }
-    .hero .endpoint { margin-top: 1.4rem; }
+    .hero .endpoint { margin-top: 1.5rem; }
     section { padding-block: 2.3rem; border-top: 1px solid var(--line); }
     h2 { margin: 0 0 1rem; font-size: clamp(1.5rem, 3vw, 1.9rem); line-height: 1.25; letter-spacing: -.025em; }
     h3 { margin: 0 0 .55rem; font-size: 1.06rem; line-height: 1.4; }
@@ -56,7 +57,7 @@ export function renderPublicDocs(mcpUrl: string): string {
     .endpoint { width: max-content; max-width: 100%; background: var(--green); color: #fffef9; border-radius: 1rem; padding: 1.1rem 1.3rem; }
     .endpoint-label { font-size: .85rem; font-weight: 650; margin-bottom: .65rem; }
     .endpoint code { display: block; font-size: .97rem; line-height: 1.7; overflow-wrap: anywhere; user-select: all; }
-    .endpoint p { max-width: 40ch; font-size: .86rem; margin-top: .65rem; color: #e0eadd; }
+    .endpoint p { font-size: .86rem; margin-top: .65rem; color: #e0eadd; }
     ol { margin: 0; padding-left: 1.4rem; }
     li + li { margin-top: .65rem; }
     .note { padding: .9rem 1.1rem; border-left: 3px solid var(--accent); margin-top: 1.4rem; font-size: .94rem; }
@@ -94,10 +95,13 @@ export function renderPublicDocs(mcpUrl: string): string {
     @media (max-width: 46rem) {
       .shell { width: min(100% - 2rem, 70rem); }
       .masthead { align-items: flex-start; flex-direction: column; gap: 1rem; }
-      .hero { padding-block: 2.8rem 2.2rem; }
-      .hero { grid-template-columns: minmax(0, 1fr) 6.5rem; column-gap: 1rem; }
-      .hero > .eyebrow, .hero > .lead, .hero > .badge, .hero > .endpoint { grid-column: 1 / -1; }
+      .hero { grid-template-columns: minmax(0, 1fr) 6.5rem; align-items: start; column-gap: 1rem; row-gap: 0; padding-block: 2.5rem; }
+      .hero-copy { display: contents; }
+      .hero-copy > * { grid-column: 1 / -1; }
+      .hero-copy > h1 { grid-column: 1; font-size: clamp(2.1rem, 6vw, 3rem); line-height: 1.05; }
+      .hero-copy > .eyebrow { font-size: .75rem; }
       .hero-logo { grid-column: 2; grid-row: 2; border-radius: 1rem; }
+      .hero .lead { font-size: 1.06rem; }
       .details, .contact, .feature, .data-grid { grid-template-columns: 1fr; gap: 1.4rem; }
       .grid { grid-template-columns: 1fr; }
       .card { padding: 1.15rem; }
@@ -123,12 +127,14 @@ export function renderPublicDocs(mcpUrl: string): string {
     </header>
     <main id="main">
       <div class="hero">
+        <div class="hero-copy">
         <p class="eyebrow">San Francisco &amp; the Bay Area</p>
-        <h1>Plan Bay Area transit trips.</h1>
-        <p class="lead">Use your AI agent to find bus, train, and ferry routes. Compare departure times, where to walk, where to change vehicles, and total travel time.</p>
+        <h1><span>Plan Bay Area</span> <span>transit trips.</span></h1>
+        <p class="lead">Find bus, train, and ferry routes with your AI agent. Compare departure times, transfers, and how long each trip takes.</p>
         <span class="badge">Free to use · No API keys or authentication</span>
-        <div class="endpoint"><div class="endpoint-label">Official hosted MCP URL</div><code>${endpoint}</code><p>Copy this complete URL into your AI app's MCP settings.</p></div>
-        <img class="hero-logo" src="/sf-transit/icon.png" width="224" height="224" alt="Golden Gate Bridge and streetcar logo">
+        <div class="endpoint"><div class="endpoint-label">Official hosted MCP URL</div><code>${endpoint}</code><p>Paste into your app's MCP settings.</p></div>
+        </div>
+        <img class="hero-logo" src="/sf-transit/icon.png" width="432" height="432" alt="Golden Gate Bridge and streetcar logo">
       </div>
 
       <section id="connect" aria-labelledby="connect-title">
