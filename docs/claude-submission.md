@@ -40,19 +40,27 @@ Place search returns matching places to choose from. Trip planning returns compl
 
 **Name:** SF Bay Area Transit MCP
 
-**One-liner — 152 characters; maximum 200:**
+**Slug:** `sf-bay-area-transit`
 
-> Plan San Francisco and Bay Area trips in Claude. Compare buses, trains, ferries, walking, and cycling, with scheduled and estimated times for each step.
+**Author name:** Reindex Ventures LLC
 
-**Description — 1035 characters including paragraph breaks; maximum 2,000:**
+**Author URL:** `https://reindexventures.com`
 
-Plan trips around San Francisco and the Bay Area in Claude. Search an address, landmark, or transit stop. Compare routes showing where to walk, which buses, trains, or ferries to take, where to switch vehicles, and when to leave and arrive.
+**One-liner — 155 characters; maximum 200:**
 
-Choose when to leave or when you need to arrive. Compare transit with a direct walk or a personal bicycle trip. In clients that support MCP Apps, select a route card to see each step. Refresh when you want updated results. Other clients receive written instructions.
+> Plan San Francisco and Bay Area trips with your AI agent. Compare buses, trains, ferries, walking, and cycling, with departure times and total travel time.
 
-Place search and trip planning use Transitous, a community-run open-source service. Times may come from schedules or live estimates. The provider does not report how old its estimates are. Coverage and wheelchair information depend on source data. Fares, service alerts, bike-share availability, and turn-by-turn directions are not included.
+**Description — 1130 characters including paragraph breaks; maximum 2,000:**
 
-Operated by Reindex Ventures LLC and created by Lucas Czekaj. This connector serves light, noncommercial trip planning. Place-search text and trip coordinates are sent to Transitous.
+Plan trips across San Francisco and the Bay Area with your AI agent. Search for an address, landmark, or transit stop, then compare routes showing which services to take, where to walk, where to change vehicles, and when to leave and arrive.
+
+Coverage includes BART, Muni, Caltrain, AC Transit, VTA, SamTrans, Golden Gate Transit and Ferry, and SF Bay Ferry, depending on available routing data. Set a departure time or arrival deadline, limit transfers, or compare transit with walking or riding your own bicycle.
+
+In AI apps that support MCP Apps, compare routes in an interactive display and open each route's instructions. Other apps receive the trip information as text. Times come from schedules or live estimates where available. Fares, tickets, service alerts, bike-share availability, and turn-by-turn walking directions are not included.
+
+Free and open source, with no API keys or authentication. Routing and place search use Transitous for light, noncommercial use. Search text, trip coordinates, and travel preferences are sent to that service.
+
+Created by Lucas Czekaj. Operated and published by Reindex Ventures LLC.
 
 | Field                                     | Value                                                                                                                                           |
 | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
