@@ -2,7 +2,7 @@
 
 This project runs as a Cloudflare Worker without saving trip data between requests. It needs no API keys, OAuth, database, Containers, or background jobs. Use an account on **Workers Free** to keep hosting within its free allowance. The Wrangler configuration does not select or enforce your account's billing plan.
 
-The MCP endpoint is `/sf-transit/mcp`, with no trailing slash. `/mcp` remains available for existing connections. Requests on a different origin or path from `PUBLIC_MCP_URL` use the host's default widget sandbox so they are not assigned a different connector URL's hash. When `HOMEPAGE_URL` is empty, the root URL returns service information and advertises the canonical endpoint. Set it to redirect visitors to your website instead. `/sf-transit` and `/sf-transit/` redirect to the GitHub repository. These page redirects do not affect the MCP endpoint.
+The MCP endpoint is `/sf-transit/mcp`, with no trailing slash. `/mcp` remains available for existing connections. Requests on a different origin or path from `PUBLIC_MCP_URL` use the host's default widget sandbox so they are not assigned a different connector URL's hash. When `HOMEPAGE_URL` is empty, the root URL returns service information and advertises the canonical endpoint. Set it to redirect visitors to your website instead. `/sf-transit` and `/sf-transit/` serve the public HTML guide. These page routes do not affect the MCP endpoint.
 
 The project is created by **Lucas Czekaj** and operated and published by **[Reindex Ventures LLC](https://reindexventures.com)**. Its repository stays at `czekaj/sf-transit-mcp`.
 
@@ -89,21 +89,20 @@ WRANGLER_SEND_METRICS=false npx wrangler deploy --env production
 
 This publishes `sf-transit-mcp` and attaches the **whole hostname** `mcp.riv.lc`. Cloudflare manages its DNS record and HTTPS certificate. Production routing is:
 
-| Path                                      | Behavior                                               |
-| ----------------------------------------- | ------------------------------------------------------ |
-| `/`                                       | Redirect to `https://reindexventures.com`              |
-| `/sf-transit` or `/sf-transit/`           | Redirect to `https://github.com/czekaj/sf-transit-mcp` |
-| `/sf-transit/mcp`                         | Serve MCP                                              |
-| `/mcp`                                    | Serve the compatibility MCP endpoint                   |
-| `/sf-transit/icon.png`                    | Serve the public 512 × 512 PNG directory icon          |
-| `/sf-transit/docs` or `/sf-transit/docs/` | Serve the public HTML user guide and IT-admin review   |
-| Other unclaimed paths                     | Return 404                                             |
+| Path                            | Behavior                                       |
+| ------------------------------- | ---------------------------------------------- |
+| `/`                             | Redirect to `https://reindexventures.com`      |
+| `/sf-transit` or `/sf-transit/` | Serve the public HTML user guide and IT review |
+| `/sf-transit/mcp`               | Serve MCP                                      |
+| `/mcp`                          | Serve the compatibility MCP endpoint           |
+| `/sf-transit/icon.png`          | Serve the public 512 × 512 PNG directory icon  |
+| Other unclaimed paths           | Return 404                                     |
 
-Page redirects use HTTP 308 for GET and HEAD, with a one-hour cache lifetime. Both the homepage and repository redirects add `utm_source=sf-transit-mcp`. Their destinations are fixed, configured destination parameters are preserved, and incoming request query strings are not forwarded. POST requests to page paths return 404. The redirects run in the Worker, so no separate Cloudflare redirect rules are needed.
+The homepage redirect uses HTTP 308 for GET and HEAD, with a one-hour cache lifetime. It adds `utm_source=sf-transit-mcp` to the configured destination and preserves its other parameters. Incoming request query strings are not forwarded. POST requests to page paths return 404. The redirect runs in the Worker, so no separate Cloudflare redirect rule is needed.
 
 The icon URL returns `image/png` directly for GET and HEAD, without authentication or redirects. It has a one-hour public cache lifetime and allows other websites to display the image. Directory forms can use `https://mcp.riv.lc/sf-transit/icon.png` after deployment. The documentation screenshots at `/sf-transit/screenshots/route-options.png` and `/sf-transit/screenshots/journey-details.png` use the same response settings. These images are bundled with the Worker and need no separate image-hosting service.
 
-The documentation URL returns static HTML for GET and HEAD, without authentication, scripts, external fonts, or a separate hosting service. Use `https://mcp.riv.lc/sf-transit/docs` as the directory's public Documentation URL after deployment. The page explains user setup, permissions, data handling, service limitations, and support; the README retains developer and self-hosting instructions.
+The documentation URL returns static HTML for GET and HEAD, without authentication, scripts, external fonts, or a separate hosting service. Use `https://mcp.riv.lc/sf-transit` as the directory's public Documentation URL after deployment. The page explains user setup, permissions, data handling, service limitations, and support; the README retains developer and self-hosting instructions.
 
 After deployment, verify the page redirects, MCP initialization, tool discovery, and the widget resource through the exact connector URL. These checks do not need a transit API request and are not part of the automated test suite. Update Claude to the exact company connector URL so its widget sandbox matches. Local tests and dry runs do not establish that a deployment is live.
 

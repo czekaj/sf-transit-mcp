@@ -57,7 +57,7 @@ Operated by Reindex Ventures LLC and created by Lucas Czekaj. This connector ser
 | Field                                     | Value                                                                                                                                           |
 | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | Categories                                | Suggested concepts: Travel / Transportation; Maps / Local information. Exact portal choices are unverified; choose the closest offered options. |
-| Documentation, after deployment           | `https://mcp.riv.lc/sf-transit/docs`                                                                                                            |
+| Documentation, after deployment           | `https://mcp.riv.lc/sf-transit`                                                                                                                 |
 | Privacy URL, after publication            | `https://github.com/czekaj/sf-transit-mcp/blob/main/PRIVACY.md`                                                                                 |
 | Public support / privacy / security email | `contact@reindexventures.com`                                                                                                                   |
 | Support page, after publication           | `https://github.com/czekaj/sf-transit-mcp/blob/main/SUPPORT.md`                                                                                 |

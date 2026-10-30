@@ -31,7 +31,7 @@ To enforce usage limits, the software temporarily keeps the times of recent requ
 
 The software does not add advertising trackers, analytics software, or tracking cookies. It does not write trip requests or results to application logs. Your AI app and hosting providers may keep their own records. The Cloudflare configuration disables logs for individual requests and enables sampled monitoring. We have not verified how long Cloudflare keeps network, security, or diagnostic records.
 
-Page redirects to the operator's website and the project repository add the fixed referral label `utm_source=sf-transit-mcp`. This value identifies the project, not an individual visitor. Incoming request query strings are not copied into those redirects.
+The homepage redirect to the operator's website adds the fixed referral label `utm_source=sf-transit-mcp`. This value identifies the project, not an individual visitor. Incoming request query strings are not copied into that redirect.
 
 ## Contact and requests
 

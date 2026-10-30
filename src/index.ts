@@ -18,7 +18,7 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     if (
-      ["/sf-transit/docs", "/sf-transit/docs/"].includes(url.pathname) &&
+      ["/sf-transit", "/sf-transit/"].includes(url.pathname) &&
       ["GET", "HEAD"].includes(request.method)
     ) {
       const mcpUrl = env.PUBLIC_MCP_URL || PROJECT.hostedMcpUrl;
@@ -49,12 +49,7 @@ export default {
         },
       });
     }
-    const redirectTarget =
-      url.pathname === "/"
-        ? env.HOMEPAGE_URL
-        : url.pathname === "/sf-transit" || url.pathname === "/sf-transit/"
-          ? PROJECT.url
-          : undefined;
+    const redirectTarget = url.pathname === "/" ? env.HOMEPAGE_URL : undefined;
     if (redirectTarget && ["GET", "HEAD"].includes(request.method)) {
       const destination = new URL(redirectTarget);
       destination.searchParams.set("utm_source", PROJECT.name);

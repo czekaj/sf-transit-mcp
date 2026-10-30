@@ -29,7 +29,7 @@ The default provider is for **light, noncommercial, open-source use**. It is a c
 2. Set authentication to **None** if asked.
 3. Ask: “How do I get from the Ferry Building to Baker Beach, leaving now?”
 
-The [user guide and IT review](https://mcp.riv.lc/sf-transit/docs) explain setup, tool permissions, data handling, support, and service limits. Place searches and trip coordinates are sent to Transitous; see the [privacy policy](PRIVACY.md).
+The [user guide and IT review](https://mcp.riv.lc/sf-transit) explain setup, tool permissions, data handling, support, and service limits. Place searches and trip coordinates are sent to Transitous; see the [privacy policy](PRIVACY.md).
 
 ### Install a local server from GitHub
 

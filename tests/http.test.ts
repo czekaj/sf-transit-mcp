@@ -281,7 +281,7 @@ describe("Worker pages and discovery", () => {
   it.each(["GET", "HEAD"])(
     "serves public user and admin documentation for %s requests",
     async (method) => {
-      for (const path of ["/sf-transit/docs", "/sf-transit/docs/"]) {
+      for (const path of ["/sf-transit", "/sf-transit/"]) {
         const response = await worker.fetch(
           new Request(`https://mcp.riv.lc${path}`, { method }),
           productionEnv,
@@ -312,7 +312,7 @@ describe("Worker pages and discovery", () => {
 
   it("shows the official hosted endpoint in the local documentation preview", async () => {
     const response = await worker.fetch(
-      new Request("http://localhost/sf-transit/docs"),
+      new Request("http://localhost/sf-transit"),
       localEnv,
     );
     const body = await response.text();
@@ -404,18 +404,10 @@ describe("Worker pages and discovery", () => {
   });
 
   it.each(["GET", "HEAD"])(
-    "redirects page %s requests to the configured homepage or repository",
+    "redirects root %s requests to the configured homepage",
     async (method) => {
       for (const [path, location] of [
         ["/", "https://reindexventures.com/?utm_source=sf-transit-mcp"],
-        [
-          "/sf-transit",
-          "https://github.com/czekaj/sf-transit-mcp?utm_source=sf-transit-mcp",
-        ],
-        [
-          "/sf-transit/",
-          "https://github.com/czekaj/sf-transit-mcp?utm_source=sf-transit-mcp",
-        ],
       ]) {
         const response = await worker.fetch(
           new Request(
@@ -434,6 +426,18 @@ describe("Worker pages and discovery", () => {
       expect(fetch).not.toHaveBeenCalled();
     },
   );
+
+  it("returns 404 for the removed docs paths", async () => {
+    for (const path of ["/sf-transit/docs", "/sf-transit/docs/"]) {
+      const response = await worker.fetch(
+        new Request(`https://mcp.riv.lc${path}`),
+        productionEnv,
+      );
+      expect(response.status).toBe(404);
+      expect(response.headers.has("Location")).toBe(false);
+    }
+    expect(fetch).not.toHaveBeenCalled();
+  });
 
   it("preserves configured homepage parameters and sets the project referral source", async () => {
     const response = await worker.fetch(
