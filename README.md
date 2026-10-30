@@ -87,6 +87,8 @@ The server starts without credentials or environment variables. Tell Claude your
 
 Transit journeys include walking to and from stops. Options include maximum transfers, a wheelchair profile, and direct walking or personal-bicycle comparisons. Each result provides both readable instructions and structured data.
 
+**MCP compatibility:** supports the published `2026-07-28` protocol over Streamable HTTP and stdio, with older-client compatibility retained. Offline checks exercise both modern discovery and the older initialization flow. See the [tested versions and client limitations](docs/compatibility.md).
+
 Times display in **America/Los_Angeles**, including daylight-saving changes. Journey duration and waiting before departure are shown separately. Transit legs say whether their times come from a timetable or a live prediction. The provider does not expose prediction age in this response, so a live flag is not a freshness guarantee.
 
 ### Interactive journeys in Claude

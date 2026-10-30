@@ -80,6 +80,7 @@ interface RpcResult {
 
 function harness(
   fetcher = vi.fn<typeof fetch>().mockResolvedValue(Response.json(fixture)),
+  protocolVersion = "2025-11-25",
 ) {
   const createServer = () =>
     createTransitServer({
@@ -87,7 +88,10 @@ function harness(
       now: () => new Date("2026-10-29T21:00:00Z"),
     });
   let id = 0;
-  async function rpc(method: string, params?: unknown): Promise<RpcResult> {
+  async function rpc(
+    method: string,
+    params: Record<string, unknown> = {},
+  ): Promise<RpcResult> {
     const response = await handleMcpRequest(
       new Request("http://localhost/mcp", {
         method: "POST",
@@ -95,13 +99,31 @@ function harness(
           Host: "localhost",
           Accept: "application/json, text/event-stream",
           "Content-Type": "application/json",
-          "MCP-Protocol-Version": "2025-11-25",
+          "MCP-Protocol-Version": protocolVersion,
+          "Mcp-Method": method,
+          ...(typeof params.name === "string"
+            ? { "Mcp-Name": params.name }
+            : {}),
         },
         body: JSON.stringify({
           jsonrpc: "2.0",
           id: ++id,
           method,
-          ...(params ? { params } : {}),
+          params: {
+            ...params,
+            ...(protocolVersion === "2026-07-28"
+              ? {
+                  _meta: {
+                    "io.modelcontextprotocol/protocolVersion": protocolVersion,
+                    "io.modelcontextprotocol/clientInfo": {
+                      name: "offline-fixture",
+                      version: "1",
+                    },
+                    "io.modelcontextprotocol/clientCapabilities": {},
+                  },
+                }
+              : {}),
+          },
         }),
       }),
       { createServer },
@@ -133,6 +155,28 @@ beforeEach(() => {
 });
 
 describe("transit tools through real MCP HTTP", () => {
+  it("serves a complete trip and widget refresh inputs over the July 2026 protocol", async () => {
+    const { call, fetcher } = harness(undefined, "2026-07-28");
+    const result = await call("plan_trip", { origin, destination });
+    expect(result).toMatchObject({
+      result: {
+        resultType: "complete",
+        _meta: {
+          "io.modelcontextprotocol/serverInfo": { name: "sf-transit-mcp" },
+        },
+        structuredContent: {
+          request: { origin, destination, modes: ["transit"] },
+          itineraries: [{ durationSeconds: 2400, transfers: 1 }],
+          attribution: ATTRIBUTION,
+        },
+      },
+    });
+    expect(result.result?.isError).not.toBe(true);
+    expect(result.result?.content?.[0]?.text).toContain("2:45 PM PDT");
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
   it("initializes and exposes three read-only tools without contacting an upstream", async () => {
     const { rpc, fetcher } = harness();
     expect(
