@@ -57,6 +57,8 @@ export function renderPublicDocs(mcpUrl: string): string {
     p { margin: 0 0 1rem; }
     p:last-child { margin-bottom: 0; }
     .section-intro { max-width: 49rem; color: var(--muted); }
+    .agencies { display: flex; flex-wrap: wrap; gap: .65rem; list-style: none; margin: 1.2rem 0; padding: 0; }
+    .agencies li { margin: 0; padding: .4rem .9rem; border: 1px solid var(--line); border-radius: .6rem; background: var(--card); font-weight: 650; }
     .endpoint { width: max-content; max-width: 100%; background: var(--green); color: #fffef9; border-radius: 1rem; padding: 1.1rem 1.3rem; }
     .endpoint-label { font-size: .85rem; font-weight: 650; margin-bottom: .65rem; }
     .endpoint code { display: block; font-size: .97rem; line-height: 1.7; overflow-wrap: anywhere; user-select: all; }
@@ -139,6 +141,15 @@ export function renderPublicDocs(mcpUrl: string): string {
         </div>
         <img class="hero-logo" src="/sf-transit/icon.png" width="432" height="432" alt="Golden Gate Bridge and streetcar logo">
       </div>
+
+      <section aria-labelledby="agencies-title">
+        <h2 id="agencies-title">Transit services</h2>
+        <p class="section-intro">Transitous provides routing data for these Bay Area services and others:</p>
+        <ul class="agencies">
+          <li>BART</li><li>Muni</li><li>Caltrain</li><li>AC Transit</li><li>VTA</li><li>SamTrans</li><li>Golden Gate Transit</li><li>Golden Gate Ferry</li><li>SF Bay Ferry</li>
+        </ul>
+        <p class="section-intro">Routes and live estimates depend on the data currently available. <a href="https://transitous.org/sources/">View data sources</a>.</p>
+      </section>
 
       <section id="connect" aria-labelledby="connect-title">
         <h2 id="connect-title">Connect your AI agent</h2>
