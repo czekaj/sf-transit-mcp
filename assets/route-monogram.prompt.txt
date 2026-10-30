@@ -1,0 +1,11 @@
+Source: original option 3, route-line monogram
+Generated with the built-in image_gen tool.
+
+Use case: logo-brand.
+Asset type: original horizontal logo for SF Bay Area Transit MCP.
+Primary request: Invent a sophisticated route-line symbol combining the two suspension towers and hanging curve of the Golden Gate Bridge with the outline and rails of a streetcar. Think of one continuous, beautifully flowing transit route: rounded station-like terminals and controlled bends subtly form an abstract SF monogram while the bridge and front-facing tram remain recognizable. The result must feel like an intentional professional identity rather than a miniature map or literal scene.
+Style: minimal modernist transportation wayfinding, precise rounded lines, geometric rhythm, sparse and clever negative space, striking recognizable silhouette. Flat artwork.
+Composition: a compact standalone emblem on the left and a sleek, generously spaced sans-serif wordmark on the right, two lines "SF Bay Area" and "Transit MCP". One complete logo, landscape canvas, transparent background.
+Palette: bridge orange (#C34F35) and very dark evergreen (#234B40) only.
+Text verbatim: "SF Bay Area Transit MCP", exactly once across those two lines. No other text.
+Avoid: generic location pins, arrows, pinwheel symbols, illegible lettering, fussy map details, gradients, 3D, background panels, scene illustration, texture, shadows, mockups, watermarks, borrowed agency logos. Deliver only the finished logo.

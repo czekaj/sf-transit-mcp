@@ -1,8 +1,7 @@
 node_modules/
 dist/
 src/generated/
-assets/logo.svg
-assets/social-preview.svg
+design/logo-options/
 .wrangler/
 coverage/
 worker-configuration.d.ts

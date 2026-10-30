@@ -14,3 +14,5 @@ coverage/
 *.pem
 *.key
 __pycache__/
+# Local logo explorations; the selected artwork is in assets/.
+design/logo-options/

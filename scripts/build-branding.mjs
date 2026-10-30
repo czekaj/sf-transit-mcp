@@ -2,8 +2,19 @@ import { Resvg } from "@resvg/resvg-js";
 import { readFile, writeFile } from "node:fs/promises";
 
 const assets = new URL("../assets/", import.meta.url);
-const icon = await readFile(new URL("icon.svg", assets), "utf8");
-const body = icon.replace(/^<svg[^>]*>/, "").replace(/<\/svg>\s*$/, "");
+// Keep the selected image-generated artwork intact; exports only frame and scale it.
+const artwork = await readFile(new URL("route-monogram.png", assets));
+if (
+  artwork.subarray(0, 8).toString("hex") !== "89504e470d0a1a0a" ||
+  artwork.readUInt32BE(16) !== 2056 ||
+  artwork.readUInt32BE(20) !== 765
+) {
+  throw new Error(
+    "Expected the original 2056 × 765 PNG. Update export viewports when replacing it.",
+  );
+}
+const source = `data:image/png;base64,${artwork.toString("base64")}`;
+const image = `<image width="2056" height="765" href="${source}"/>`;
 function render(svg, width) {
   return new Resvg(svg, {
     fitTo: { mode: "width", value: width },
@@ -12,31 +23,32 @@ function render(svg, width) {
     .render()
     .asPng();
 }
+
+// This viewport contains the original SF route/bridge/tram symbol, excluding its wordmark.
+const icon = `<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <title>SF Bay Area Transit MCP</title>
+  <rect width="512" height="512" rx="108" fill="#FAF7F1"/>
+  <svg x="24" y="56" width="464" height="400" viewBox="24 55 906 620" overflow="hidden">${image}</svg>
+</svg>`;
 for (const size of [32, 256, 512]) {
   await writeFile(new URL(`icon-${size}.png`, assets), render(icon, size));
 }
-const logo = `<svg xmlns="http://www.w3.org/2000/svg" width="500" height="160" viewBox="0 0 500 160">
+
+const logo = `<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="608" viewBox="0 0 1600 608">
   <title>SF Bay Area Transit MCP</title>
-  <rect width="500" height="160" rx="24" fill="#FAF7F1"/>
-  <svg x="14" y="14" width="132" height="132" viewBox="0 0 64 64" fill="none">${body}</svg>
-  <g fill="#234B40" font-family="Arial, Helvetica, sans-serif">
-    <text x="178" y="74" font-size="44" font-weight="700" letter-spacing="-1.5">SF Bay Area</text>
-    <text x="178" y="123" font-size="44" font-weight="700" letter-spacing="-1.5">Transit MCP</text>
-  </g>
+  <rect width="1600" height="608" rx="44" fill="#FAF7F1"/>
+  <image x="48" y="24" width="1504" height="560" href="${source}"/>
 </svg>`;
-await writeFile(new URL("logo.svg", assets), logo);
-await writeFile(new URL("logo.png", assets), render(logo, 1000));
+await writeFile(new URL("logo.png", assets), render(logo, 1600));
+
 const social = `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640">
   <rect width="1280" height="640" fill="#FAF7F1"/>
-  <path d="M0 624h1280" stroke="#C34F35" stroke-width="32"/>
-  <svg x="82" y="150" width="320" height="320" viewBox="0 0 64 64" fill="none">${body}</svg>
-  <g font-family="Arial, Helvetica, sans-serif">
-    <text x="472" y="196" fill="#C34F35" font-size="18" font-weight="700" letter-spacing="4">OPEN-SOURCE TRIP PLANNING</text>
-    <text x="468" y="282" fill="#234B40" font-size="76" font-weight="700" letter-spacing="-3">SF Bay Area</text>
-    <text x="468" y="364" fill="#234B40" font-size="76" font-weight="700" letter-spacing="-3">Transit MCP</text>
-    <text x="474" y="429" fill="#4D6258" font-size="29">From here to there, with Claude.</text>
-  </g>
+  <text x="640" y="92" fill="#C34F35" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" text-anchor="middle" letter-spacing="4">OPEN-SOURCE TRIP PLANNING</text>
+  <image x="64" y="110" width="1152" height="429" href="${source}"/>
+  <text x="640" y="558" fill="#4D6258" font-family="Arial, Helvetica, sans-serif" font-size="27" text-anchor="middle">From here to there, with Claude.</text>
+  <path d="M0 632h1280" stroke="#C34F35" stroke-width="16"/>
 </svg>`;
-await writeFile(new URL("social-preview.svg", assets), social);
 await writeFile(new URL("social-preview.png", assets), render(social, 1280));
-console.log("Built SVG/PNG branding and 1280 × 640 repository social preview.");
+console.log(
+  "Exported original route-line logo, MCP icon sizes, and 1280 × 640 social preview.",
+);

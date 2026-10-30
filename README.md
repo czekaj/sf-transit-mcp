@@ -1,4 +1,4 @@
-<p><img src="assets/logo.svg" alt="SF Bay Area Transit MCP" width="440" /></p>
+<p><img src="assets/logo.png" alt="SF Bay Area Transit MCP" width="520" /></p>
 
 # SF Bay Area Transit MCP
 
@@ -150,9 +150,9 @@ The protocol layer, routing client, and presentation code are separate. The publ
 
 ### Project artwork
 
-The Golden Gate Bridge and streetcar mark is included as editable SVG and PNG files in [`assets/`](assets/). MCP server, tool, and resource metadata embed a PNG icon directly, following the [MCP icons specification](https://modelcontextprotocol.io/specification/2025-11-25/basic#icons); clients choose whether to display it. No image hosting is required.
+The route-line SF monogram combines the Golden Gate Bridge, transit route terminals, and a streetcar. Its original image-generated PNG is [`assets/route-monogram.png`](assets/route-monogram.png), with the [generation prompt](assets/route-monogram.prompt.txt) alongside it. MCP server, tool, and resource metadata embed a PNG icon directly, following the [MCP icons specification](https://modelcontextprotocol.io/specification/2025-11-25/basic#icons); clients choose whether to display it. No image hosting is required.
 
-After editing `assets/icon.svg`, run `npm run build:branding` to regenerate the icons, wordmark, and `assets/social-preview.png`. The latter is a 1280 × 640 image ready for GitHub's **Settings → Social preview**; committing it does not automatically change that setting. Artwork shares the project's MIT license.
+Run `npm run build:branding` to export the logo, icon sizes, and `assets/social-preview.png` from the original artwork. The script frames and scales the selected image; it does not call an image service. If the source image changes, adjust its viewports in `scripts/build-branding.mjs`. The social preview is a 1280 × 640 image ready for GitHub's **Settings → Social preview**; committing it does not automatically change that setting. Artwork shares the project's MIT license.
 
 ## License and credits
 
