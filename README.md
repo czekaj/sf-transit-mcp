@@ -131,15 +131,14 @@ To publish to your own Cloudflare account, review `wrangler.jsonc`, use a Worker
 
 For a stable Claude remote connector, set `vars.PUBLIC_MCP_URL` in `wrangler.jsonc` to the **exact connector URL**, including `/sf-transit/mcp`, with no trailing slash. The server derives Claude's widget sandbox domain from it. This value is public and requires no domain registration. Leave it empty for local use or the host's default sandbox. If the connector URL changes, update this value too.
 
-Reindex Ventures LLC is preparing `https://mcp.riv.lc/sf-transit/mcp` as the company-hosted connector. The separate `wrangler.riv.jsonc` configuration targets the existing `sf-transit-mcp` Worker and redirects its root to the company website. The hostname move is pending deployment and verification. The repository remains `czekaj/sf-transit-mcp`.
+Reindex Ventures LLC's production configuration targets **`https://mcp.riv.lc/sf-transit/mcp`**. The named `production` environment in `wrangler.jsonc` configures the `sf-transit-mcp` Worker, its company hostname, and a root redirect to `https://reindexventures.com`. The repository remains `czekaj/sf-transit-mcp`.
 
-The current named `production` environment in `wrangler.jsonc` still describes the existing `lucas.czekaj.us` deployment. Keeping the company configuration separate prevents a documentation release from silently moving the hostname. The default configuration has no custom domain, so forks can deploy independently. See the [Cloudflare deployment and migration guide](docs/cloudflare.md).
+For Cloudflare's connected Git build, use `npm run build:widget` as the build command and `npx wrangler deploy --env production` as the deploy command. Production URL variables come from this configuration; no manual URL variables or alternate configuration file are needed. The default configuration has no custom domain, so forks can deploy independently. See the [Cloudflare deployment guide](docs/cloudflare.md).
 
 Check the maintainer configuration locally without deploying:
 
 ```sh
 npm run build:worker:production
-npm run build:worker:riv
 ```
 
 A public deployment must remain within [Transitous's usage policy](https://transitous.org/api/). Coordinate with its maintainers before serving many users or substantial automated traffic. The implementation limits each running process/Worker instance to 20 upstream calls per rolling minute and 600 per rolling day. These courtesy limits reset when an instance restarts and **do not enforce a global hosting quota**. There is no polling, automatic retry, or background traffic. A normal transit search uses one upstream request; an explicit mode comparison uses one per mode.

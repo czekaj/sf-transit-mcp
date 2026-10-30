@@ -22,10 +22,16 @@
       "preview_urls": false,
       // Owns the hostname by default. Other MCP Workers can take specific paths
       // using Cloudflare Routes, which run before this Custom Domain Worker.
-      "routes": [{ "pattern": "lucas.czekaj.us", "custom_domain": true }],
+      "routes": [
+        {
+          "pattern": "mcp.riv.lc",
+          "zone_name": "riv.lc",
+          "custom_domain": true,
+        },
+      ],
       "vars": {
-        "PUBLIC_MCP_URL": "https://lucas.czekaj.us/sf-transit/mcp",
-        "HOMEPAGE_URL": "https://www.czekaj.us",
+        "PUBLIC_MCP_URL": "https://mcp.riv.lc/sf-transit/mcp",
+        "HOMEPAGE_URL": "https://reindexventures.com",
       },
     },
   },

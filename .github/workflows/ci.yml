@@ -15,4 +15,3 @@ jobs:
       - run: npm run check
       - run: npm run build:worker
       - run: npm run build:worker:production
-      - run: npm run build:worker:riv

@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { once } from "node:events";
 import { PassThrough } from "node:stream";
+import { fileURLToPath } from "node:url";
+import { unstable_readConfig as readWranglerConfig } from "wrangler";
 import { McpServer } from "@modelcontextprotocol/server";
 import {
   serveStdio,
@@ -12,10 +14,6 @@ import worker from "../src/index.js";
 
 const localEnv: Env = { PUBLIC_MCP_URL: "", HOMEPAGE_URL: "" };
 const productionEnv: Env = {
-  PUBLIC_MCP_URL: "https://lucas.czekaj.us/sf-transit/mcp",
-  HOMEPAGE_URL: "https://www.czekaj.us",
-};
-const companyEnv: Env = {
   PUBLIC_MCP_URL: "https://mcp.riv.lc/sf-transit/mcp",
   HOMEPAGE_URL: "https://reindexventures.com",
 };
@@ -279,6 +277,35 @@ describe("MCP HTTP boundary", () => {
 });
 
 describe("Worker pages and discovery", () => {
+  it("keeps the connected production deploy on the company domain", () => {
+    const configPath = fileURLToPath(
+      new URL("../wrangler.jsonc", import.meta.url),
+    );
+    const config = readWranglerConfig(
+      { config: configPath, env: "production" },
+      { hideWarnings: true },
+    );
+    expect(config).toMatchObject({
+      name: "sf-transit-mcp",
+      workers_dev: false,
+      preview_urls: false,
+      routes: [
+        {
+          pattern: "mcp.riv.lc",
+          zone_name: "riv.lc",
+          custom_domain: true,
+        },
+      ],
+      vars: productionEnv,
+    });
+    const defaultConfig = readWranglerConfig(
+      { config: configPath, env: "" },
+      { hideWarnings: true },
+    );
+    expect(defaultConfig.vars).toEqual(localEnv);
+    expect(defaultConfig.routes ?? []).toEqual([]);
+  });
+
   it("advertises the canonical MCP path without an upstream request", async () => {
     const response = await worker.fetch(
       new Request("http://localhost/"),
@@ -296,7 +323,7 @@ describe("Worker pages and discovery", () => {
     "redirects page %s requests to the configured homepage or repository",
     async (method) => {
       for (const [path, location] of [
-        ["/", "https://www.czekaj.us"],
+        ["/", "https://reindexventures.com"],
         ["/sf-transit", "https://github.com/czekaj/sf-transit-mcp"],
         ["/sf-transit/", "https://github.com/czekaj/sf-transit-mcp"],
       ]) {
@@ -333,35 +360,7 @@ describe("Worker pages and discovery", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it("applies the configured public URL to widget metadata at the canonical path", async () => {
-    const response = await worker.fetch(
-      request(
-        { jsonrpc: "2.0", id: 1, method: "resources/list" },
-        {
-          origin: "https://lucas.czekaj.us",
-          headers: { "MCP-Protocol-Version": "2025-11-25" },
-        },
-      ),
-      productionEnv,
-    );
-    expect(response.status).toBe(200);
-    expect(await message(response)).toMatchObject({
-      result: {
-        resources: [
-          {
-            _meta: {
-              ui: {
-                domain: "523af263dc6cd39e276831f8080eb955.claudemcpcontent.com",
-              },
-            },
-          },
-        ],
-      },
-    });
-    expect(fetch).not.toHaveBeenCalled();
-  });
-
-  it("uses the company hostname's own widget domain after the prepared migration", async () => {
+  it("uses the company hostname's own widget domain at the canonical path", async () => {
     const response = await worker.fetch(
       request(
         { jsonrpc: "2.0", id: 1, method: "resources/list" },
@@ -370,7 +369,7 @@ describe("Worker pages and discovery", () => {
           headers: { "MCP-Protocol-Version": "2025-11-25" },
         },
       ),
-      companyEnv,
+      productionEnv,
     );
     expect(response.status).toBe(200);
     expect(await message(response)).toHaveProperty(
@@ -379,7 +378,7 @@ describe("Worker pages and discovery", () => {
     );
     const root = await worker.fetch(
       new Request("https://mcp.riv.lc/"),
-      companyEnv,
+      productionEnv,
     );
     expect(root.status).toBe(308);
     expect(root.headers.get("Location")).toBe("https://reindexventures.com");
@@ -391,11 +390,11 @@ describe("Worker pages and discovery", () => {
       request(
         { jsonrpc: "2.0", id: 1, method: "resources/list" },
         {
-          origin: "https://lucas.czekaj.us",
+          origin: "https://old.example.com",
           headers: { "MCP-Protocol-Version": "2025-11-25" },
         },
       ),
-      companyEnv,
+      productionEnv,
     );
     expect(response.status).toBe(200);
     const reply = await message(response);
