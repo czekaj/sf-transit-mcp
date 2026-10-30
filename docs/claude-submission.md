@@ -26,7 +26,7 @@ Use the approved target only after migration and verification; do not submit an 
 
 ### 2. Tools
 
-This inventory reflects local source, not new live verification. The portal imports the server's current metadata.
+This inventory reflects local source, not new live verification. The portal imports the server's current metadata. Each tool exposes the same human-readable name in both `title` and `annotations.title` for MCP clients and the directory validator.
 
 | Tool               | Title                       | readOnlyHint | destructiveHint | idempotentHint | openWorldHint |
 | ------------------ | --------------------------- | ------------ | --------------- | -------------- | ------------- |

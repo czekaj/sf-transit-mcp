@@ -80,6 +80,14 @@ async function exercise(client: Client, modern: boolean): Promise<void> {
     "plan_trip",
     "get_service_info",
   ]);
+  for (const tool of listing.tools) {
+    expect(tool.title).toBeTruthy();
+    expect(tool.annotations).toMatchObject({
+      title: tool.title,
+      readOnlyHint: true,
+      destructiveHint: false,
+    });
+  }
   const info = await client.callTool({
     name: "get_service_info",
     arguments: {},

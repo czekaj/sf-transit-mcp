@@ -61,7 +61,7 @@ export function createTransitServer(
       description:
         "Resolve a Bay Area address, landmark, or transit stop to candidate coordinates. Include the city for ambiguous names. Return candidates to the user when more than one could fit. No API key. The search text is sent to Transitous.",
       inputSchema: searchPlacesInputSchema,
-      annotations,
+      annotations: { ...annotations, title: "Find Bay Area places" },
     },
     async (input) => {
       try {
@@ -95,7 +95,7 @@ export function createTransitServer(
       description:
         "Find complete A-to-B journeys with walking, transit, transfers, scheduled/predicted times, and total duration. Supply resolved coordinates. Omit times for now; otherwise supply departureTime OR arrivalTime with a timezone offset. Transit includes walking to/from stops. Modes walk and bicycle request extra direct comparisons. Coordinates are sent to Transitous. No API key.",
       inputSchema: planTripInputSchema,
-      annotations,
+      annotations: { ...annotations, title: "Plan a Bay Area journey" },
       _meta: {
         ui: { resourceUri: WIDGET_RESOURCE_URI, visibility: ["model", "app"] },
       },
@@ -131,7 +131,11 @@ export function createTransitServer(
       description:
         "Read the current time, supported tools, coverage source, and data limitations without calling a routing service.",
       inputSchema: z.object({}).strict(),
-      annotations: { ...annotations, openWorldHint: false },
+      annotations: {
+        ...annotations,
+        title: "Transit service information",
+        openWorldHint: false,
+      },
     },
     async () => ({
       content: [
