@@ -29,7 +29,7 @@ The default provider is for **light, noncommercial, open-source use**. It is a c
 2. Set authentication to **None** if asked.
 3. Ask: “How do I get from the Ferry Building to Baker Beach, leaving now?”
 
-The [user guide and IT review](https://mcp.riv.lc/sf-transit) explain setup, tool permissions, data handling, support, and service limits. Place searches and trip coordinates are sent to Transitous; see the [privacy policy](PRIVACY.md).
+The [user guide and IT review](https://mcp.riv.lc/sf-transit) explain setup, tool permissions, data handling, support, and service limits. Place searches and trip coordinates are sent to Transitous; see the [privacy policy](https://mcp.riv.lc/sf-transit/privacy).
 
 ### Install a local server from GitHub
 
@@ -92,7 +92,7 @@ claude mcp add sf-transit -- node /absolute/path/to/sf-transit-mcp/dist/stdio.js
 
 The server starts without credentials or environment variables. Include your starting address in the trip request, or use an address already in your conversation. This service does not save a home address. When several places match, choose the intended place before planning the trip.
 
-**Privacy:** place searches and trip coordinates go to Transitous. Its [privacy policy](https://transitous.org/privacy/) says request URLs are logged for up to two days. This application's code does not log or save addresses or trip results. Your AI app and hosting providers have their own retention practices. The [project privacy policy](PRIVACY.md) explains who receives the data and how it is handled.
+**Privacy:** place searches and trip coordinates go to Transitous. Its [privacy policy](https://transitous.org/privacy/) says request URLs are logged for up to two days. This application's code does not log or save addresses or trip results. Your AI app and hosting providers have their own retention practices. The [project privacy policy](https://mcp.riv.lc/sf-transit/privacy) explains who receives the data and how it is handled.
 
 For help, see [Support](SUPPORT.md) or open a [GitHub issue](https://github.com/czekaj/sf-transit-mcp/issues). Send security or privacy reports to [contact@reindexventures.com](mailto:contact@reindexventures.com); see [Security](SECURITY.md).
 

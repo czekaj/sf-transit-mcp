@@ -3,6 +3,7 @@ import { ATTRIBUTION, PROJECT } from "./project.js";
 import { createTransitServer } from "./tools.js";
 import { PUBLIC_ASSETS_BASE64 } from "./generated/public-assets.js";
 import { renderPublicDocs } from "./public-docs.js";
+import { renderPublicPrivacy } from "./public-privacy.js";
 
 const publicAssets: ReadonlyMap<string, Uint8Array> = new Map(
   Object.entries(PUBLIC_ASSETS_BASE64).map(
@@ -18,12 +19,21 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     if (
-      ["/sf-transit", "/sf-transit/"].includes(url.pathname) &&
+      [
+        "/sf-transit",
+        "/sf-transit/",
+        "/sf-transit/privacy",
+        "/sf-transit/privacy/",
+      ].includes(url.pathname) &&
       ["GET", "HEAD"].includes(request.method)
     ) {
       const mcpUrl = env.PUBLIC_MCP_URL || PROJECT.hostedMcpUrl;
       return new Response(
-        request.method === "HEAD" ? null : renderPublicDocs(mcpUrl),
+        request.method === "HEAD"
+          ? null
+          : url.pathname.startsWith("/sf-transit/privacy")
+            ? renderPublicPrivacy()
+            : renderPublicDocs(mcpUrl),
         {
           headers: {
             "Content-Type": "text/html; charset=utf-8",

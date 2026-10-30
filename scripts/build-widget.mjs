@@ -1,4 +1,5 @@
 import { build } from "esbuild";
+import { marked } from "marked";
 import { createHash } from "node:crypto";
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
@@ -27,6 +28,15 @@ for (const [path, file] of Object.entries(publicAssetFiles)) {
 await writeFile(
   new URL("public-assets.ts", generated),
   `// Generated from public PNG assets by scripts/build-widget.mjs.\nexport const PUBLIC_ASSETS_BASE64 = ${JSON.stringify(publicAssets)} as const;\n`,
+);
+const privacyMarkdown = await readFile(
+  new URL("../PRIVACY.md", import.meta.url),
+  "utf8",
+);
+const privacyHtml = marked.parse(privacyMarkdown, { async: false });
+await writeFile(
+  new URL("privacy.ts", generated),
+  `// Generated from PRIVACY.md by scripts/build-widget.mjs.\nexport const PRIVACY_HTML = ${JSON.stringify(privacyHtml)};\n`,
 );
 const result = await build({
   absWorkingDir: root,

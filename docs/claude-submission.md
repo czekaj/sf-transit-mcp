@@ -58,7 +58,7 @@ Operated by Reindex Ventures LLC and created by Lucas Czekaj. This connector ser
 | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | Categories                                | Suggested concepts: Travel / Transportation; Maps / Local information. Exact portal choices are unverified; choose the closest offered options. |
 | Documentation, after deployment           | `https://mcp.riv.lc/sf-transit`                                                                                                                 |
-| Privacy URL, after publication            | `https://github.com/czekaj/sf-transit-mcp/blob/main/PRIVACY.md`                                                                                 |
+| Privacy URL, after deployment             | `https://mcp.riv.lc/sf-transit/privacy`                                                                                                         |
 | Public support / privacy / security email | `contact@reindexventures.com`                                                                                                                   |
 | Support page, after publication           | `https://github.com/czekaj/sf-transit-mcp/blob/main/SUPPORT.md`                                                                                 |
 | Icon                                      | [assets/icon-512.png](../assets/icon-512.png)                                                                                                   |
@@ -108,7 +108,7 @@ Claude explicitly supports connectors without authentication. [Authentication gu
 
 **Information sent:** Place-search text, selected coordinates, time, and travel preferences needed for the requested journey. Starting addresses can be personal data; a wheelchair preference can reveal sensitive information. No health-data feature, sponsored content, conversation-history access, or stored home profile is offered.
 
-**Privacy policy:** Use the final published [PRIVACY.md](../PRIVACY.md). It explains who operates the service, what Cloudflare processes, what Transitous receives and retains, and how to contact the operator. Do not answer “no data transmitted.”
+**Privacy policy:** Use the hosted [privacy policy](https://mcp.riv.lc/sf-transit/privacy) after deployment. Its content is generated from [PRIVACY.md](../PRIVACY.md). It explains who operates the service, what Cloudflare processes, what Transitous receives and retains, and how to contact the operator. Do not answer “no data transmitted.”
 
 **Allowed link URIs:** Leave the optional portal allowlist empty. Current app links belong to Transitous, OpenStreetMap, and 511. Only owned origins may be declared there; third-party links can still open with host confirmation. [Submission requirements](https://claude.com/docs/connectors/building/submission)
 

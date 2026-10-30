@@ -10,6 +10,7 @@ import {
   StdioServerTransport,
 } from "@modelcontextprotocol/server/stdio";
 import { z } from "zod";
+import { marked } from "marked";
 import { handleMcpRequest } from "../src/http.js";
 import worker from "../src/index.js";
 
@@ -302,7 +303,50 @@ describe("Worker pages and discovery", () => {
           expect(body).toContain(productionEnv.PUBLIC_MCP_URL);
           expect(body).toContain("Reindex Ventures LLC");
           expect(body).toContain("contact@reindexventures.com");
-          expect(body).toContain("PRIVACY.md");
+          expect(body).toContain('href="/sf-transit/privacy"');
+          expect(body).not.toMatch(/<script\b/i);
+        }
+      }
+      expect(fetch).not.toHaveBeenCalled();
+    },
+  );
+
+  it.each(["GET", "HEAD"])(
+    "serves the complete Markdown privacy policy as HTML for %s requests",
+    async (method) => {
+      const policy = readFileSync(
+        new URL("../PRIVACY.md", import.meta.url),
+        "utf8",
+      );
+      const policyHtml = marked.parse(policy, { async: false });
+      for (const path of ["/sf-transit/privacy", "/sf-transit/privacy/"]) {
+        const response = await worker.fetch(
+          new Request(`https://mcp.riv.lc${path}`, { method }),
+          productionEnv,
+        );
+        expect(response.status).toBe(200);
+        expect(response.headers.get("Content-Type")).toBe(
+          "text/html; charset=utf-8",
+        );
+        expect(response.headers.get("Cache-Control")).toBe(
+          "public, max-age=3600",
+        );
+        expect(response.headers.get("Content-Security-Policy")).toContain(
+          "default-src 'none'",
+        );
+        expect(response.headers.get("X-Content-Type-Options")).toBe("nosniff");
+        expect(response.headers.get("Referrer-Policy")).toBe("no-referrer");
+        expect(response.headers.has("Location")).toBe(false);
+        const body = await response.text();
+        if (method === "HEAD") {
+          expect(body).toBe("");
+        } else {
+          expect(body).toContain(
+            "<title>Privacy policy | SF Bay Area Transit MCP</title>",
+          );
+          expect(body).toContain(policyHtml);
+          expect(body).toContain('href="/sf-transit"');
+          expect(body).toContain('href="/sf-transit#connect"');
           expect(body).not.toMatch(/<script\b/i);
         }
       }
@@ -458,6 +502,8 @@ describe("Worker pages and discovery", () => {
     for (const path of [
       "/",
       "/sf-transit",
+      "/sf-transit/privacy",
+      "/sf-transit/privacy/",
       "/sf-transit-extra",
       "/sf-transit/docs",
       "/sf-transit/icon.png",
