@@ -13,4 +13,19 @@
     "head_sampling_rate": 0.01,
     "logs": { "invocation_logs": false },
   },
+  // Maintainer deployment. Forks can use the default config or replace this domain.
+  // Selected explicitly with --env production; no account IDs or credentials.
+  "env": {
+    "production": {
+      "name": "sf-transit-mcp-production",
+      "workers_dev": false,
+      "preview_urls": false,
+      // Owns the hostname by default. Other MCP Workers can take specific paths
+      // using Cloudflare Routes, which run before this Custom Domain Worker.
+      "routes": [{ "pattern": "lucas.czekaj.us", "custom_domain": true }],
+      "vars": {
+        "PUBLIC_MCP_URL": "https://lucas.czekaj.us/sf-transit/mcp",
+      },
+    },
+  },
 }

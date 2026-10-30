@@ -1,4 +1,4 @@
-import { handleMcpRequest } from "./http.js";
+import { handleMcpRequest, MCP_ENDPOINT } from "./http.js";
 import { ATTRIBUTION, PROJECT } from "./project.js";
 import { createTransitServer } from "./tools.js";
 
@@ -11,7 +11,7 @@ export default {
           name: PROJECT.name,
           version: PROJECT.version,
           source: PROJECT.url,
-          mcpEndpoint: "/mcp",
+          mcpEndpoint: MCP_ENDPOINT,
           authenticationRequired: false,
           description:
             "San Francisco and Bay Area trip planning via Transitous.",
@@ -27,10 +27,16 @@ export default {
       );
     }
     return handleMcpRequest(request, {
-      createServer: () =>
-        createTransitServer(
-          env.PUBLIC_MCP_URL ? { serverUrl: env.PUBLIC_MCP_URL } : {},
-        ),
+      createServer: () => {
+        const serverUrl = env.PUBLIC_MCP_URL;
+        // Compatibility paths use the host's default widget sandbox. Never pin
+        // them to the hash of a different connector URL.
+        return createTransitServer(
+          serverUrl && new URL(serverUrl).pathname === url.pathname
+            ? { serverUrl }
+            : {},
+        );
+      },
     });
   },
 } satisfies ExportedHandler<Env>;

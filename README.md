@@ -110,7 +110,7 @@ The published Transitous feed list includes Muni, BART, Caltrain, AC Transit, VT
 
 ## Cloudflare hosting
 
-The same code exposes Streamable HTTP MCP at `/mcp`. It uses no Containers, databases, storage bindings, API keys, OAuth, or background jobs. Running locally avoids hosting entirely. Hosting within **Workers Free** uses Cloudflare's free allowance; a free Cloudflare account is needed by whoever deploys it, and MCP users need no account or authentication to that endpoint.
+The same code exposes Streamable HTTP MCP at `/sf-transit/mcp`. Existing `/mcp` connections continue to work. It uses no Containers, databases, storage bindings, API keys, OAuth, or background jobs. Running locally avoids hosting entirely. Hosting within **Workers Free** uses Cloudflare's free allowance; a free Cloudflare account is needed by whoever deploys it, and MCP users need no account or authentication to that endpoint.
 
 Build and preview locally:
 
@@ -119,11 +119,19 @@ npm run build:worker
 npm run dev:worker
 ```
 
-`build:worker` is a dry run and does not deploy. The local endpoint is `http://localhost:8787/mcp`.
+`build:worker` is a dry run and does not deploy. The local endpoint is `http://localhost:8787/sf-transit/mcp`.
 
-To publish to your own Cloudflare account, review `wrangler.jsonc`, use a Workers Free account, and run Wrangler's deploy command yourself. Connect Claude's remote custom connector to the resulting `https://<worker>.<subdomain>.workers.dev/mcp` URL, with no authentication. A remote Claude connector cannot reach localhost.
+To publish to your own Cloudflare account, review `wrangler.jsonc`, use a Workers Free account, and run Wrangler's deploy command yourself. Connect Claude's remote custom connector to the resulting `https://<worker>.<subdomain>.workers.dev/sf-transit/mcp` URL, with no authentication. A remote Claude connector cannot reach localhost.
 
-For a stable Claude remote connector, set `vars.PUBLIC_MCP_URL` in `wrangler.jsonc` to the **exact connector URL**, including `/mcp` and any trailing slash. The server derives Claude's widget sandbox domain from it. This value is public and requires no domain registration. Leave it empty for local use or the host's default sandbox. If the connector URL changes, update this value too.
+For a stable Claude remote connector, set `vars.PUBLIC_MCP_URL` in `wrangler.jsonc` to the **exact connector URL**, including `/sf-transit/mcp`, with no trailing slash. The server derives Claude's widget sandbox domain from it. This value is public and requires no domain registration. Leave it empty for local use or the host's default sandbox. If the connector URL changes, update this value too.
+
+The named `production` environment is prepared for the maintainer's `https://lucas.czekaj.us/sf-transit/mcp` URL. It attaches the hostname as a Custom Domain and disables `workers.dev` and preview URLs. This configuration does not mean the service has been deployed. The default configuration has no custom domain, so forks can deploy independently. See the [Cloudflare deployment guide](docs/cloudflare.md) for exact commands, prerequisites, and sharing the hostname with other MCP Workers.
+
+Check the maintainer configuration locally without deploying:
+
+```sh
+npm run build:worker:production
+```
 
 A public deployment must remain within [Transitous's usage policy](https://transitous.org/api/). Coordinate with its maintainers before serving many users or substantial automated traffic. The implementation limits each running process/Worker instance to 20 upstream calls per rolling minute and 600 per rolling day. These courtesy limits reset when an instance restarts and **do not enforce a global hosting quota**. There is no polling, automatic retry, or background traffic. A normal transit search uses one upstream request; an explicit mode comparison uses one per mode.
 

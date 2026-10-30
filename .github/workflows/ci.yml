@@ -14,3 +14,4 @@ jobs:
       - run: npm ci --ignore-scripts
       - run: npm run check
       - run: npm run build:worker
+      - run: npm run build:worker:production

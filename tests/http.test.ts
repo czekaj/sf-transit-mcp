@@ -8,6 +8,7 @@ import {
 } from "@modelcontextprotocol/server/stdio";
 import { z } from "zod";
 import { handleMcpRequest } from "../src/http.js";
+import worker from "../src/index.js";
 
 const modernProtocolVersion = "2026-07-28";
 const createServer = vi.fn(() => {
@@ -30,21 +31,25 @@ function request(
     headers?: Record<string, string>;
     raw?: boolean;
     path?: string;
+    endpoint?: string;
   } = {},
 ): Request {
   const method = options.method ?? "POST";
-  return new Request(`http://localhost/mcp${options.path ?? ""}`, {
-    method,
-    headers: {
-      Host: "localhost",
-      "Content-Type": "application/json",
-      Accept: "application/json, text/event-stream",
-      ...options.headers,
+  return new Request(
+    `http://localhost${options.endpoint ?? "/sf-transit/mcp"}${options.path ?? ""}`,
+    {
+      method,
+      headers: {
+        Host: "localhost",
+        "Content-Type": "application/json",
+        Accept: "application/json, text/event-stream",
+        ...options.headers,
+      },
+      ...(method === "POST"
+        ? { body: options.raw ? String(body) : JSON.stringify(body) }
+        : {}),
     },
-    ...(method === "POST"
-      ? { body: options.raw ? String(body) : JSON.stringify(body) }
-      : {}),
-  });
+  );
 }
 
 const initialize = {
@@ -78,55 +83,79 @@ beforeEach(() => {
 });
 
 describe("MCP HTTP boundary", () => {
-  it("initializes a real MCP server and lists and calls a tool across stateless requests", async () => {
-    const first = await handleMcpRequest(request(initialize), { createServer });
-    expect(first.status).toBe(200);
-    expect(await message(first)).toMatchObject({
-      id: 1,
-      result: { serverInfo: { name: "fixture-transit" } },
-    });
+  it.each(["/sf-transit/mcp", "/mcp"])(
+    "initializes, lists, and calls tools at %s across stateless requests",
+    async (endpoint) => {
+      const first = await handleMcpRequest(request(initialize, { endpoint }), {
+        createServer,
+      });
+      expect(first.status).toBe(200);
+      expect(await message(first)).toMatchObject({
+        id: 1,
+        result: { serverInfo: { name: "fixture-transit" } },
+      });
 
-    const list = await handleMcpRequest(
-      request(
-        { jsonrpc: "2.0", id: 2, method: "tools/list" },
-        {
-          headers: { "MCP-Protocol-Version": "2025-11-25" },
-        },
-      ),
-      { createServer },
-    );
-    expect(list.status).toBe(200);
-    expect(await message(list)).toMatchObject({
-      id: 2,
-      result: { tools: [{ name: "echo_stop" }] },
-    });
-
-    const call = await handleMcpRequest(
-      request(
-        {
-          jsonrpc: "2.0",
-          id: 3,
-          method: "tools/call",
-          params: {
-            name: "echo_stop",
-            arguments: { name: "Embarcadero" },
+      const list = await handleMcpRequest(
+        request(
+          { jsonrpc: "2.0", id: 2, method: "tools/list" },
+          {
+            endpoint,
+            headers: { "MCP-Protocol-Version": "2025-11-25" },
           },
-        },
-        { headers: { "MCP-Protocol-Version": "2025-11-25" } },
-      ),
-      { createServer },
-    );
-    expect(call.status).toBe(200);
-    expect(await message(call)).toMatchObject({
-      id: 3,
-      result: { content: [{ text: "Embarcadero", type: "text" }] },
-    });
-    expect(createServer).toHaveBeenCalledTimes(3);
-    expect(call.headers.get("mcp-session-id")).toBeNull();
-    expect(call.headers.get("Cache-Control")).toBe("no-store");
-    expect(call.headers.get("X-Content-Type-Options")).toBe("nosniff");
-    expect(call.headers.get("Access-Control-Allow-Origin")).toBeNull();
-  });
+        ),
+        { createServer },
+      );
+      expect(list.status).toBe(200);
+      expect(await message(list)).toMatchObject({
+        id: 2,
+        result: { tools: [{ name: "echo_stop" }] },
+      });
+
+      const call = await handleMcpRequest(
+        request(
+          {
+            jsonrpc: "2.0",
+            id: 3,
+            method: "tools/call",
+            params: {
+              name: "echo_stop",
+              arguments: { name: "Embarcadero" },
+            },
+          },
+          { endpoint, headers: { "MCP-Protocol-Version": "2025-11-25" } },
+        ),
+        { createServer },
+      );
+      expect(call.status).toBe(200);
+      expect(await message(call)).toMatchObject({
+        id: 3,
+        result: { content: [{ text: "Embarcadero", type: "text" }] },
+      });
+      expect(createServer).toHaveBeenCalledTimes(3);
+      expect(call.headers.get("mcp-session-id")).toBeNull();
+      expect(call.headers.get("Cache-Control")).toBe("no-store");
+      expect(call.headers.get("X-Content-Type-Options")).toBe("nosniff");
+      expect(call.headers.get("Access-Control-Allow-Origin")).toBeNull();
+    },
+  );
+
+  it.each([
+    "/sf-transit/mcp/",
+    "/sf-transit/mcp-extra",
+    "/other/mcp",
+    "/sf-transit",
+    "/mcp-extra",
+  ])(
+    "rejects unmatched path %s without creating a server",
+    async (endpoint) => {
+      const response = await handleMcpRequest(
+        request(initialize, { endpoint }),
+        { createServer },
+      );
+      expect(response.status).toBe(404);
+      expect(createServer).not.toHaveBeenCalled();
+    },
+  );
 
   it("accepts the current stateless protocol without an initialization handshake", async () => {
     const response = await handleMcpRequest(
@@ -234,6 +263,63 @@ describe("MCP HTTP boundary", () => {
     expect(response.status).toBe(500);
     expect(await response.text()).not.toContain("secret upstream token");
     expect(response.headers.get("Cache-Control")).toBe("no-store");
+  });
+});
+
+describe("Worker discovery", () => {
+  it("advertises the canonical MCP path without an upstream request", async () => {
+    const response = await worker.fetch(new Request("http://localhost/"), {
+      PUBLIC_MCP_URL: "",
+    });
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      mcpEndpoint: "/sf-transit/mcp",
+      authenticationRequired: false,
+    });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("applies the configured public URL to widget metadata at the canonical path", async () => {
+    const response = await worker.fetch(
+      request(
+        { jsonrpc: "2.0", id: 1, method: "resources/list" },
+        { headers: { "MCP-Protocol-Version": "2025-11-25" } },
+      ),
+      { PUBLIC_MCP_URL: "https://lucas.czekaj.us/sf-transit/mcp" },
+    );
+    expect(response.status).toBe(200);
+    expect(await message(response)).toMatchObject({
+      result: {
+        resources: [
+          {
+            _meta: {
+              ui: {
+                domain: "523af263dc6cd39e276831f8080eb955.claudemcpcontent.com",
+              },
+            },
+          },
+        ],
+      },
+    });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("keeps the compatibility path on the host's default widget sandbox", async () => {
+    const response = await worker.fetch(
+      request(
+        { jsonrpc: "2.0", id: 1, method: "resources/list" },
+        {
+          endpoint: "/mcp",
+          headers: { "MCP-Protocol-Version": "2025-11-25" },
+        },
+      ),
+      { PUBLIC_MCP_URL: "https://lucas.czekaj.us/sf-transit/mcp" },
+    );
+    expect(response.status).toBe(200);
+    const reply = await message(response);
+    expect(reply).toHaveProperty("result.resources.0._meta.ui");
+    expect(reply).not.toHaveProperty("result.resources.0._meta.ui.domain");
+    expect(fetch).not.toHaveBeenCalled();
   });
 });
 

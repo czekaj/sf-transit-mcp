@@ -2,6 +2,8 @@ import type { McpServer } from "@modelcontextprotocol/server";
 import { createMcpHandler } from "agents/mcp/server";
 
 const MAX_BODY_BYTES = 64 * 1024;
+export const MCP_ENDPOINT = "/sf-transit/mcp";
+
 export interface McpRequestOptions {
   createServer: () => McpServer;
 }
@@ -70,7 +72,8 @@ export async function handleMcpRequest(
 ): Promise<Response> {
   try {
     const url = new URL(request.url);
-    if (url.pathname !== "/mcp") return error(404, "Not found");
+    if (url.pathname !== MCP_ENDPOINT && url.pathname !== "/mcp")
+      return error(404, "Not found");
     // This endpoint is used by native clients and Claude's backend, not browsers.
     if (request.headers.has("Origin"))
       return error(403, "Browser origins are not allowed");
@@ -93,7 +96,7 @@ export async function handleMcpRequest(
       });
     }
     const handler = createMcpHandler(createServer, {
-      route: "/mcp",
+      route: url.pathname,
       legacy: "stateless",
       corsOptions: false,
       allowedOriginHostnames: [],

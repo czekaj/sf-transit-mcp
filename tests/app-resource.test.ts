@@ -40,7 +40,7 @@ async function rpc(
   serverUrl?: string,
 ): Promise<Result> {
   const response = await handleMcpRequest(
-    new Request("http://localhost/mcp", {
+    new Request("http://localhost/sf-transit/mcp", {
       method: "POST",
       headers: {
         Host: "localhost",
