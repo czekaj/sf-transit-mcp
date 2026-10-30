@@ -1,3 +1,5 @@
+const GITHUB_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.4.7-4.1-1.4-4.1-1.4-.5-1.4-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.6-1.4-5.6-6a4.7 4.7 0 0 1 1.3-3.2c-.1-.3-.6-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.2 2.9.1 3.2a4.7 4.7 0 0 1 1.3 3.2c0 4.6-2.8 5.7-5.6 6 .5.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg>`;
+
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (character) => {
     const entities: Record<string, string> = {
@@ -21,7 +23,7 @@ export function renderPublicDocs(mcpUrl: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Set up SF Bay Area Transit MCP, find transit routes with your AI agent, and review what information the service sends and stores.">
   <meta name="color-scheme" content="light">
-  <title>SF Bay Area Transit MCP — Connection guide</title>
+  <title>SF Bay Area Transit MCP</title>
   <link rel="icon" type="image/png" href="/sf-transit/icon.png">
   <style>
     :root { color-scheme: light; --paper: #f7f5ee; --card: #fffef9; --ink: #202e29; --muted: #53635a; --green: #235b48; --line: #d7dfd5; --accent: #e3b754; }
@@ -37,8 +39,9 @@ export function renderPublicDocs(mcpUrl: string): string {
     .masthead { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding-block: 1.5rem; border-bottom: 1px solid var(--line); }
     .brand { display: flex; align-items: center; gap: .8rem; font-weight: 750; line-height: 1.3; }
     .brand img { width: 3.25rem; height: 3.25rem; border-radius: .7rem; }
-    .brand small { display: block; color: var(--muted); font-weight: 450; font-size: .82rem; }
     nav { display: flex; flex-wrap: wrap; gap: .5rem 1.4rem; font-size: .92rem; }
+    .repo-link { display: inline-flex; align-items: center; gap: .45rem; white-space: nowrap; }
+    .repo-link svg { width: 1.1rem; height: 1.1rem; fill: currentColor; }
     .hero { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); align-items: center; gap: clamp(2.5rem, 5vw, 4rem); padding-block: 4rem; }
     .hero-copy { min-width: 0; }
     .hero-logo { display: block; width: 100%; max-width: 27rem; height: auto; justify-self: center; border-radius: 20%; }
@@ -122,8 +125,8 @@ export function renderPublicDocs(mcpUrl: string): string {
   <a class="skip" href="#main">Skip to content</a>
   <div class="shell">
     <header class="masthead">
-      <div class="brand"><img src="/sf-transit/icon.png" width="52" height="52" alt=""><span>SF Bay Area Transit MCP<small>Connection guide</small></span></div>
-      <nav aria-label="Page sections"><a href="#connect">Connect</a><a href="#journeys">Plan a trip</a><a href="#admin">IT review</a><a href="#help">Get help</a></nav>
+      <div class="brand"><img src="/sf-transit/icon.png" width="52" height="52" alt=""><span>SF Bay Area Transit MCP</span></div>
+      <nav aria-label="Main navigation"><a href="#connect">Connect</a><a href="#journeys">Plan a trip</a><a href="#admin">IT review</a><a href="#help">Get help</a><a class="repo-link" href="https://github.com/czekaj/sf-transit-mcp" aria-label="View sf-transit-mcp on GitHub">${GITHUB_ICON}<span>GitHub</span></a></nav>
     </header>
     <main id="main">
       <div class="hero">
@@ -213,7 +216,7 @@ export function renderPublicDocs(mcpUrl: string): string {
         <h2 id="help-title">Get help</h2>
         <div class="contact">
           <div><p>For questions or bugs, email <a href="mailto:contact@reindexventures.com">contact@reindexventures.com</a> or open a <a href="https://github.com/czekaj/sf-transit-mcp/issues">GitHub issue</a>. Say which AI app you use, what you did, and what happened. Include an example using public places.</p><p>GitHub issues are public. Send security reports, privacy requests, and personal trip details by email.</p></div>
-          <div><p>Created by <strong>Lucas Czekaj</strong>.<br>Operated and published by <strong><a href="https://reindexventures.com/?utm_source=sf-transit-mcp">Reindex Ventures LLC</a></strong>.</p><div class="profile-links"><a href="https://x.com/0xLCZ" aria-label="Lucas Czekaj on X, 0xLCZ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-7.8 8.9L23.5 23h-7.4l-5.8-7.6L3.7 23H.5l8.6-9.8L.1 2h7.6l5.2 6.9L18.9 2Zm-1.3 18.9h2L6.6 4.1H4.4z"/></svg><span>@0xLCZ</span></a><a href="https://github.com/czekaj/sf-transit-mcp" aria-label="SF Bay Area Transit MCP on GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.4.7-4.1-1.4-4.1-1.4-.5-1.4-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.6-1.4-5.6-6a4.7 4.7 0 0 1 1.3-3.2c-.1-.3-.6-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.2 2.9.1 3.2a4.7 4.7 0 0 1 1.3 3.2c0 4.6-2.8 5.7-5.6 6 .5.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg><span>sf-transit-mcp</span></a></div></div>
+          <div><p>Created by <strong>Lucas Czekaj</strong>.<br>Operated and published by <strong><a href="https://reindexventures.com/?utm_source=sf-transit-mcp">Reindex Ventures LLC</a></strong>.</p><div class="profile-links"><a href="https://x.com/0xLCZ" aria-label="Lucas Czekaj on X, 0xLCZ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-7.8 8.9L23.5 23h-7.4l-5.8-7.6L3.7 23H.5l8.6-9.8L.1 2h7.6l5.2 6.9L18.9 2Zm-1.3 18.9h2L6.6 4.1H4.4z"/></svg><span>@0xLCZ</span></a><a href="https://github.com/czekaj/sf-transit-mcp" aria-label="SF Bay Area Transit MCP on GitHub">${GITHUB_ICON}<span>sf-transit-mcp</span></a></div></div>
         </div>
       </section>
     </main>
