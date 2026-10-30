@@ -127,6 +127,8 @@ For a stable Claude remote connector, set `vars.PUBLIC_MCP_URL` in `wrangler.jso
 
 The named `production` environment is prepared for the maintainer's `https://lucas.czekaj.us/sf-transit/mcp` URL. It attaches the hostname as a Custom Domain and disables `workers.dev` and preview URLs. This configuration does not mean the service has been deployed. The default configuration has no custom domain, so forks can deploy independently. See the [Cloudflare deployment guide](docs/cloudflare.md) for exact commands, prerequisites, and sharing the hostname with other MCP Workers.
 
+In that environment, visiting `lucas.czekaj.us/` redirects to `https://www.czekaj.us`, and `/sf-transit` or `/sf-transit/` redirects to this GitHub repository. `/sf-transit/mcp` continues to serve the connector. The default configuration leaves `HOMEPAGE_URL` empty and returns service information at `/`.
+
 Check the maintainer configuration locally without deploying:
 
 ```sh

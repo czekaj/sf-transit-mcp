@@ -10,6 +10,12 @@ import { z } from "zod";
 import { handleMcpRequest } from "../src/http.js";
 import worker from "../src/index.js";
 
+const localEnv: Env = { PUBLIC_MCP_URL: "", HOMEPAGE_URL: "" };
+const productionEnv: Env = {
+  PUBLIC_MCP_URL: "https://lucas.czekaj.us/sf-transit/mcp",
+  HOMEPAGE_URL: "https://www.czekaj.us",
+};
+
 const modernProtocolVersion = "2026-07-28";
 const createServer = vi.fn(() => {
   const server = new McpServer({ name: "fixture-transit", version: "0.1.0" });
@@ -266,16 +272,58 @@ describe("MCP HTTP boundary", () => {
   });
 });
 
-describe("Worker discovery", () => {
+describe("Worker pages and discovery", () => {
   it("advertises the canonical MCP path without an upstream request", async () => {
-    const response = await worker.fetch(new Request("http://localhost/"), {
-      PUBLIC_MCP_URL: "",
-    });
+    const response = await worker.fetch(
+      new Request("http://localhost/"),
+      localEnv,
+    );
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({
       mcpEndpoint: "/sf-transit/mcp",
       authenticationRequired: false,
     });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it.each(["GET", "HEAD"])(
+    "redirects page %s requests to the configured homepage or repository",
+    async (method) => {
+      for (const [path, location] of [
+        ["/", "https://www.czekaj.us"],
+        ["/sf-transit", "https://github.com/czekaj/sf-transit-mcp"],
+        ["/sf-transit/", "https://github.com/czekaj/sf-transit-mcp"],
+      ]) {
+        const response = await worker.fetch(
+          new Request(`http://localhost${path}?source=fixture`, { method }),
+          productionEnv,
+        );
+        expect(response.status).toBe(308);
+        expect(response.headers.get("Location")).toBe(location);
+        expect(response.headers.get("Cache-Control")).toBe(
+          "public, max-age=3600",
+        );
+        expect(await response.text()).toBe("");
+      }
+      expect(fetch).not.toHaveBeenCalled();
+    },
+  );
+
+  it("does not redirect POST requests on page paths or unrelated paths", async () => {
+    for (const path of ["/", "/sf-transit", "/sf-transit-extra"]) {
+      const response = await worker.fetch(
+        new Request(`http://localhost${path}`, { method: "POST", body: "{}" }),
+        productionEnv,
+      );
+      expect(response.status).toBe(404);
+      expect(response.headers.has("Location")).toBe(false);
+    }
+    const unrelated = await worker.fetch(
+      new Request("http://localhost/another-service/mcp"),
+      productionEnv,
+    );
+    expect(unrelated.status).toBe(404);
+    expect(unrelated.headers.has("Location")).toBe(false);
     expect(fetch).not.toHaveBeenCalled();
   });
 
@@ -285,7 +333,7 @@ describe("Worker discovery", () => {
         { jsonrpc: "2.0", id: 1, method: "resources/list" },
         { headers: { "MCP-Protocol-Version": "2025-11-25" } },
       ),
-      { PUBLIC_MCP_URL: "https://lucas.czekaj.us/sf-transit/mcp" },
+      productionEnv,
     );
     expect(response.status).toBe(200);
     expect(await message(response)).toMatchObject({
@@ -313,7 +361,7 @@ describe("Worker discovery", () => {
           headers: { "MCP-Protocol-Version": "2025-11-25" },
         },
       ),
-      { PUBLIC_MCP_URL: "https://lucas.czekaj.us/sf-transit/mcp" },
+      productionEnv,
     );
     expect(response.status).toBe(200);
     const reply = await message(response);

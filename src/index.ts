@@ -5,6 +5,23 @@ import { createTransitServer } from "./tools.js";
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+    const redirectTarget =
+      url.pathname === "/"
+        ? env.HOMEPAGE_URL
+        : url.pathname === "/sf-transit" || url.pathname === "/sf-transit/"
+          ? PROJECT.url
+          : undefined;
+    if (redirectTarget && ["GET", "HEAD"].includes(request.method)) {
+      return new Response(null, {
+        status: 308,
+        headers: {
+          Location: redirectTarget,
+          "Cache-Control": "public, max-age=3600",
+          "X-Content-Type-Options": "nosniff",
+          "Referrer-Policy": "no-referrer",
+        },
+      });
+    }
     if (url.pathname === "/" && request.method === "GET") {
       return Response.json(
         {

@@ -2,7 +2,7 @@
 
 This project runs as a stateless Cloudflare Worker. It needs no API keys, OAuth, storage, Containers, or background jobs. Use an account on **Workers Free** to keep hosting within its free allowance. The Wrangler configuration does not select or enforce your account's billing plan.
 
-The MCP endpoint is `/sf-transit/mcp`, with no trailing slash. `/mcp` remains available for existing connections. A request on a different path from the configured `PUBLIC_MCP_URL` uses the host's default widget sandbox so it is not assigned the canonical URL's sandbox hash. The root URL returns service information and advertises the canonical endpoint; it is not the URL to enter in Claude.
+The MCP endpoint is `/sf-transit/mcp`, with no trailing slash. `/mcp` remains available for existing connections. A request on a different path from the configured `PUBLIC_MCP_URL` uses the host's default widget sandbox so it is not assigned the canonical URL's sandbox hash. When `HOMEPAGE_URL` is empty, the root URL returns service information and advertises the canonical endpoint. Set it to redirect visitors to your website instead. `/sf-transit` and `/sf-transit/` redirect to the GitHub repository. These page redirects do not affect the MCP endpoint.
 
 ## Prepare locally
 
@@ -47,6 +47,7 @@ The named `production` environment prepares these settings:
 | Custom Domain                          | `lucas.czekaj.us`                        |
 | Claude connector URL                   | `https://lucas.czekaj.us/sf-transit/mcp` |
 | `PUBLIC_MCP_URL`                       | Same exact connector URL                 |
+| `HOMEPAGE_URL`                         | `https://www.czekaj.us`                  |
 | `workers.dev` and version preview URLs | Disabled                                 |
 
 These are deployment settings, not a claim that this URL is live.
@@ -67,7 +68,17 @@ npm run build:widget
 WRANGLER_SEND_METRICS=false npx wrangler deploy --env production
 ```
 
-This publishes `sf-transit-mcp-production` and attaches the **whole hostname** `lucas.czekaj.us`. Cloudflare manages its DNS record and HTTPS certificate. The Worker accepts the canonical MCP path, its `/mcp` compatibility alias, and root service information; other paths return 404.
+This publishes `sf-transit-mcp-production` and attaches the **whole hostname** `lucas.czekaj.us`. Cloudflare manages its DNS record and HTTPS certificate. The prepared production routing is:
+
+| Path                            | Behavior                                               |
+| ------------------------------- | ------------------------------------------------------ |
+| `/`                             | Redirect to `https://www.czekaj.us`                    |
+| `/sf-transit` or `/sf-transit/` | Redirect to `https://github.com/czekaj/sf-transit-mcp` |
+| `/sf-transit/mcp`               | Serve MCP                                              |
+| `/mcp`                          | Serve the compatibility MCP endpoint                   |
+| Other unclaimed paths           | Return 404                                             |
+
+Page redirects use HTTP 308 for GET and HEAD, with a one-hour cache lifetime. Their targets are fixed; incoming query strings are not forwarded. POST requests to page paths return 404. The redirects run in the Worker, so no separate Cloudflare redirect rules are needed.
 
 After deployment, verify MCP initialization, tool discovery, and the widget resource through the exact connector URL. These checks do not need a transit API request. Live verification is a separate production action requiring the owner's approval; it is not part of the automated test suite.
 
