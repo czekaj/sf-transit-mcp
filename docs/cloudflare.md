@@ -43,7 +43,7 @@ The named `production` environment prepares these settings:
 
 | Setting                                | Value                                    |
 | -------------------------------------- | ---------------------------------------- |
-| Worker                                 | `sf-transit-mcp-production`              |
+| Worker                                 | `sf-transit-mcp`                         |
 | Custom Domain                          | `lucas.czekaj.us`                        |
 | Claude connector URL                   | `https://lucas.czekaj.us/sf-transit/mcp` |
 | `PUBLIC_MCP_URL`                       | Same exact connector URL                 |
@@ -60,6 +60,22 @@ Check this environment locally:
 npm run build:worker:production
 ```
 
+### Deploy from the connected GitHub repository
+
+In the `sf-transit-mcp` Worker's **Settings → Build**, use:
+
+| Setting           | Value                                  |
+| ----------------- | -------------------------------------- |
+| Production branch | `main`                                 |
+| Build command     | `npm run build:widget`                 |
+| Deploy command    | `npx wrangler deploy --env production` |
+
+Cloudflare runs these commands in its build service; you do not need the CLI installed locally. The production configuration supplies `PUBLIC_MCP_URL` and `HOMEPAGE_URL` automatically. Both the default and production configurations target the same Worker name, so `--env production` is needed to select the maintainer's domain and redirect settings.
+
+Saving build settings applies them to the next build. Retry the latest `main` build to use the updated settings. Future pushes to the connected production branch trigger Cloudflare builds and deployments. See [Workers Builds configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
+
+### Deploy from the CLI
+
 After the owner approves the specific production deployment, log in to the intended account and publish:
 
 ```sh
@@ -68,7 +84,7 @@ npm run build:widget
 WRANGLER_SEND_METRICS=false npx wrangler deploy --env production
 ```
 
-This publishes `sf-transit-mcp-production` and attaches the **whole hostname** `lucas.czekaj.us`. Cloudflare manages its DNS record and HTTPS certificate. The prepared production routing is:
+This publishes `sf-transit-mcp` and attaches the **whole hostname** `lucas.czekaj.us`. Cloudflare manages its DNS record and HTTPS certificate. The prepared production routing is:
 
 | Path                            | Behavior                                               |
 | ------------------------------- | ------------------------------------------------------ |
