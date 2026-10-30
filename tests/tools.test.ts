@@ -244,11 +244,11 @@ describe("transit tools through real MCP HTTP", () => {
     expect(text).toContain("2:05 PM PDT");
     expect(text).toContain("2:45 PM PDT");
     expect(text).toContain(
-      "Wait before leaving: 5 min. Total from requested departure: 45 min.",
+      "Wait before leaving: 5 min. Total from requested departure time: 45 min.",
     );
     expect(text).toContain("Wait 5 min at Embarcadero");
     expect(text).toContain("Wait 3 min at Presidio");
-    expect(text).toContain("live prediction; update age unavailable");
+    expect(text).toContain("live prediction; last update time not provided");
     expect(text).toContain("Scheduled departure: Oct 29, 2:12 PM PDT");
     expect(text).toContain("7 min, scheduled");
     const structured = reply.result?.structuredContent;
@@ -296,7 +296,7 @@ describe("transit tools through real MCP HTTP", () => {
       departureTime: at(3),
     });
     expect(reply.result?.content?.[0]?.text).toContain(
-      "Wait before leaving: 2 min. Total from requested departure: 42 min.",
+      "Wait before leaving: 2 min. Total from requested departure time: 42 min.",
     );
     expect(reply.result?.structuredContent?.request).toMatchObject({
       origin,

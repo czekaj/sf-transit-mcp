@@ -17,12 +17,12 @@ export function formatTripPlan(
 ): string {
   const lines = [
     `${plan.origin.label ?? "Origin"} → ${plan.destination.label ?? "Destination"}`,
-    "Times are in America/Los_Angeles.",
+    "All times are Pacific time.",
   ];
   for (const [index, trip] of plan.itineraries.entries()) {
     lines.push(
       "",
-      `Option ${index + 1}: ${at(trip.departureTime)} → ${at(trip.arrivalTime)}; ${minutes(trip.durationSeconds)} travelling, ${trip.transfers} transfer(s), ${minutes(trip.walkingSeconds)} walking.`,
+      `Option ${index + 1}: ${at(trip.departureTime)} → ${at(trip.arrivalTime)}; ${minutes(trip.durationSeconds)} travel time; transfers: ${trip.transfers}; ${minutes(trip.walkingSeconds)} walking.`,
     );
     if (plan.timeType === "departAfter") {
       const beforeLeaving = Math.max(
@@ -31,7 +31,7 @@ export function formatTripPlan(
           1000,
       );
       lines.push(
-        `Wait before leaving: ${minutes(beforeLeaving)}. Total from requested departure: ${minutes(beforeLeaving + trip.durationSeconds)}.`,
+        `Wait before leaving: ${minutes(beforeLeaving)}. Total from requested departure time: ${minutes(beforeLeaving + trip.durationSeconds)}.`,
       );
     }
     for (const [legIndex, leg] of trip.legs.entries()) {
@@ -56,7 +56,7 @@ export function formatTripPlan(
         isWalking || isCycling
           ? "estimated travel time"
           : leg.realTime
-            ? "live prediction; update age unavailable"
+            ? "live prediction; last update time not provided"
             : "scheduled";
       lines.push(
         `${legIndex + 1}. ${at(leg.departureTime)}: ${action}${leg.headsign ? ` toward ${leg.headsign}` : ""} from ${leg.from.label ?? "origin"}${leg.from.platform ? ` (platform ${leg.from.platform})` : ""} to ${leg.to.label ?? "destination"}; arrive ${at(leg.arrivalTime)} (${minutes(leg.durationSeconds)}, ${basis}).`,

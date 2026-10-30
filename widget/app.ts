@@ -332,7 +332,7 @@ function timingBasis(trip: TripItinerary): string {
   return predictions === legs.length
     ? "Live estimates"
     : predictions
-      ? "Live + schedule"
+      ? "Live and scheduled times"
       : "Scheduled";
 }
 
@@ -378,7 +378,7 @@ export function createTripWidget(root: HTMLElement, bridge: WidgetBridge) {
         element(
           "h1",
           "loading-title",
-          failed ? "This trip couldn't load" : "Finding your way there",
+          failed ? "This trip couldn't load" : "Finding routes",
         ),
       );
       const status = element(
@@ -596,7 +596,7 @@ export function createTripWidget(root: HTMLElement, bridge: WidgetBridge) {
       footer.append(warnings);
     }
     const links = element("nav", "source-links");
-    links.setAttribute("aria-label", "Data attribution");
+    links.setAttribute("aria-label", "Data sources");
     for (const link of view.attribution) {
       const anchor = element("a", "", link.label);
       anchor.href = link.url;
@@ -705,7 +705,7 @@ export function createTripWidget(root: HTMLElement, bridge: WidgetBridge) {
       const basis = isStreet(leg.mode)
         ? "Travel estimate"
         : leg.realTime
-          ? "Live estimate · update age unavailable"
+          ? "Live estimate · last update time not provided"
           : "Scheduled";
       body.append(element("p", "leg-basis", basis));
       if (
@@ -727,7 +727,7 @@ export function createTripWidget(root: HTMLElement, bridge: WidgetBridge) {
             leg.wheelchairAccessible === true
               ? "Vehicle marked wheelchair accessible"
               : leg.wheelchairAccessible === false
-                ? "Vehicle marked inaccessible"
+                ? "Vehicle marked not wheelchair accessible"
                 : "Vehicle accessibility unknown",
           ),
         );

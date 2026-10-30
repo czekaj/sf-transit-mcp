@@ -1,8 +1,8 @@
 # MCP compatibility
 
-The server supports the published **2026-07-28** MCP revision and keeps initialization-based compatibility for older clients. HTTP uses Streamable HTTP at `/sf-transit/mcp` (with `/mcp` retained); local clients use stdio.
+The server supports the published **2026-07-28** MCP revision and accepts the initialization messages used by older clients. Remote clients use Streamable HTTP at `/sf-transit/mcp` (with `/mcp` retained). Local clients use stdio, which exchanges messages through a local process's standard input and output.
 
-The July revision is handled by the official TypeScript SDK and Cloudflare Agents SDK. Their serving wrappers select the protocol from each HTTP request or the opening stdio exchange. The project does not implement a separate protocol parser.
+The official TypeScript SDK and Cloudflare Agents SDK handle the July revision. They select the protocol version from each HTTP request or the opening stdio exchange. The project does not implement a separate protocol parser.
 
 ## Verified locally
 
@@ -13,17 +13,17 @@ The July revision is handled by the official TypeScript SDK and Cloudflare Agent
 | `2025-06-18`, `2025-03-26`  | HTTP initialization and tool calls using each revision's messages                                                                   |
 | `2024-11-05` message format | Compatibility adapter accepts initialization and tool messages; this does not provide the old HTTP+SSE transport                    |
 
-Modern checks also verify `server/discover`, per-result server identity, `resultType`, required cache fields, header/body version agreement, method headers, and unsupported-version errors. A synthetic `plan_trip` call verifies the complete itinerary, attribution, and widget refresh inputs using the July protocol.
+Modern checks also verify `server/discover`, per-result server identity, `resultType`, required cache fields, header/body version agreement, method headers, and unsupported-version errors. A `plan_trip` call with made-up data verifies complete trip instructions, source credits, and the original request used for refresh with the July protocol.
 
 The SDK client defaults to older protocol behavior. The modern checks explicitly enable automatic version negotiation and assert that `2026-07-28` was selected, so a newer SDK package alone cannot produce a false compatibility result.
 
-All checks run offline. HTTP requests go directly into the local handler through an injected fetch function. The stdio fixture blocks external fetch inside its child process. No check contacts the deployed Worker or Transitous. These tests verify the flows this project uses; they are not a certification of every optional MCP feature or every host application's UI behavior.
+All checks run offline. HTTP requests go directly into the local handler through a supplied fetch function. The stdio test blocks external fetch inside its child process. No check contacts the deployed Worker or Transitous. These tests verify the operations this project uses; they do not certify every optional MCP feature or every client's interface.
 
 ## Interactive UI and text fallback
 
-MCP Apps is an optional extension, separate from the core protocol. Hosts with Apps support can display the itinerary widget. Every trip also includes complete text instructions and structured data, so ordinary MCP clients remain useful without rendering a widget.
+MCP Apps is an optional extension, separate from the core protocol. Clients with Apps support can display route cards and trip details. Every trip also includes complete text instructions and structured data, so clients without Apps support still receive the route instructions.
 
-The configured `PUBLIC_MCP_URL` supplies Claude's host-specific widget sandbox domain. Interactive behavior in other hosts needs verification with those hosts; support for the core MCP protocol does not guarantee that every host implements the same UI actions.
+The configured `PUBLIC_MCP_URL` determines the sandbox domain Claude uses to isolate the interactive view. Interactive behavior in other clients needs verification in those clients; support for the core MCP protocol does not guarantee the same interface controls.
 
 ## Deliberate limits
 

@@ -19,7 +19,7 @@ export function renderPublicDocs(mcpUrl: string): string {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Connect your MCP-compatible AI agent to SF Bay Area Transit MCP. Plan journeys, understand the data flow, and review privacy and security information.">
+  <meta name="description" content="Set up SF Bay Area Transit MCP, find transit routes with your AI agent, and review what information the service sends and stores.">
   <meta name="color-scheme" content="light">
   <title>SF Bay Area Transit MCP — Connection guide</title>
   <link rel="icon" type="image/png" href="/sf-transit/icon.png">
@@ -39,22 +39,24 @@ export function renderPublicDocs(mcpUrl: string): string {
     .brand img { width: 3.25rem; height: 3.25rem; border-radius: .7rem; }
     .brand small { display: block; color: var(--muted); font-weight: 450; font-size: .82rem; }
     nav { display: flex; flex-wrap: wrap; gap: .5rem 1.4rem; font-size: .92rem; }
-    .hero { padding-block: 2.75rem 2rem; max-width: 55rem; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1fr) 14rem; column-gap: 2.5rem; padding-block: 2.75rem 2rem; }
+    .hero > :not(.hero-logo) { grid-column: 1; }
+    .hero-logo { grid-column: 2; grid-row: 2 / span 4; align-self: start; width: 100%; height: auto; border-radius: 2rem; }
     .eyebrow { margin: 0 0 .8rem; color: var(--green); font-size: .82rem; font-weight: 750; letter-spacing: .11em; text-transform: uppercase; }
     h1 { margin: 0; max-width: 24ch; font-size: clamp(2.25rem, 4.4vw, 3.4rem); line-height: 1.07; letter-spacing: -.045em; font-weight: 750; }
     .lead { margin: 1.3rem 0 1.1rem; max-width: 48rem; font-size: 1.17rem; color: var(--muted); }
-    .badge { display: inline-block; padding: .25rem .75rem; border: 1px solid var(--line); border-radius: 2rem; background: var(--card); color: var(--green); font-size: .9rem; font-weight: 650; }
+    .badge { display: inline-block; width: fit-content; padding: .25rem .75rem; border: 1px solid var(--line); border-radius: 2rem; background: var(--card); color: var(--green); font-size: .9rem; font-weight: 650; }
+    .hero .endpoint { margin-top: 1.4rem; }
     section { padding-block: 2.3rem; border-top: 1px solid var(--line); }
     h2 { margin: 0 0 1rem; font-size: clamp(1.5rem, 3vw, 1.9rem); line-height: 1.25; letter-spacing: -.025em; }
     h3 { margin: 0 0 .55rem; font-size: 1.06rem; line-height: 1.4; }
     p { margin: 0 0 1rem; }
     p:last-child { margin-bottom: 0; }
     .section-intro { max-width: 49rem; color: var(--muted); }
-    .connection { display: grid; grid-template-columns: 1fr 1.05fr; gap: 2rem; align-items: start; }
-    .endpoint { background: var(--green); color: #fffef9; border-radius: 1rem; padding: 1.4rem; }
+    .endpoint { width: max-content; max-width: 100%; background: var(--green); color: #fffef9; border-radius: 1rem; padding: 1.1rem 1.3rem; }
     .endpoint-label { font-size: .85rem; font-weight: 650; margin-bottom: .65rem; }
     .endpoint code { display: block; font-size: .97rem; line-height: 1.7; overflow-wrap: anywhere; user-select: all; }
-    .endpoint p { font-size: .86rem; margin-top: .9rem; color: #e0eadd; }
+    .endpoint p { max-width: 40ch; font-size: .86rem; margin-top: .65rem; color: #e0eadd; }
     ol { margin: 0; padding-left: 1.4rem; }
     li + li { margin-top: .65rem; }
     .note { padding: .9rem 1.1rem; border-left: 3px solid var(--accent); margin-top: 1.4rem; font-size: .94rem; }
@@ -67,23 +69,38 @@ export function renderPublicDocs(mcpUrl: string): string {
     .details { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
     .details ul { padding-left: 1.2rem; margin: 0; }
     .details li { color: var(--muted); }
-    table { width: 100%; border-collapse: collapse; background: var(--card); font-size: .94rem; }
-    caption { text-align: left; margin-bottom: 1rem; color: var(--muted); }
-    th, td { padding: 1rem 1.1rem; text-align: left; vertical-align: top; border: 1px solid var(--line); overflow-wrap: anywhere; }
-    th { width: 25%; font-weight: 650; }
+    .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .data-card { border-top: 4px solid var(--green); }
+    .data-card ul { margin: .8rem 0 0; padding-left: 1.2rem; }
+    .data-card li { margin-top: .35rem; }
+    .data-label { display: flex; align-items: center; gap: .6rem; color: var(--green); }
+    .data-label svg { width: 1.4rem; height: 1.4rem; flex: 0 0 auto; }
+    .data-label h3 { margin: 0; }
+    .retention { margin-top: 1.7rem; }
+    .retention h3 { margin-bottom: .7rem; }
+    .retention ul { margin: 0; padding-left: 1.2rem; }
+    .feature { display: grid; grid-template-columns: .8fr 1.2fr; gap: 2rem; align-items: start; margin-top: 2rem; }
+    .feature + .feature { padding-top: 2rem; border-top: 1px solid var(--line); }
+    .feature figure { margin: 0; min-width: 0; }
+    .feature img { display: block; width: 100%; height: auto; border: 1px solid var(--line); border-radius: 1rem; }
+    .feature figcaption { color: var(--muted); margin-top: .65rem; font-size: .85rem; }
     .links { display: flex; flex-wrap: wrap; gap: .65rem 1.5rem; margin-top: 1.1rem; }
     .contact { display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem; }
+    .profile-links { display: flex; flex-wrap: wrap; gap: .7rem 1.3rem; margin-top: 1rem; }
+    .profile-links a { display: inline-flex; align-items: center; gap: .45rem; }
+    .profile-links svg { width: 1.1rem; height: 1.1rem; fill: currentColor; }
     footer { margin-top: 1.5rem; padding-block: 2rem 2.5rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
     footer p + p { margin-top: .7rem; }
     @media (max-width: 46rem) {
       .shell { width: min(100% - 2rem, 70rem); }
       .masthead { align-items: flex-start; flex-direction: column; gap: 1rem; }
       .hero { padding-block: 2.8rem 2.2rem; }
-      .connection, .details, .contact { grid-template-columns: 1fr; gap: 1.4rem; }
+      .hero { grid-template-columns: minmax(0, 1fr) 6.5rem; column-gap: 1rem; }
+      .hero > .eyebrow, .hero > .lead, .hero > .badge, .hero > .endpoint { grid-column: 1 / -1; }
+      .hero-logo { grid-column: 2; grid-row: 2; border-radius: 1rem; }
+      .details, .contact, .feature, .data-grid { grid-template-columns: 1fr; gap: 1.4rem; }
       .grid { grid-template-columns: 1fr; }
       .card { padding: 1.15rem; }
-      th, td { padding: .8rem; }
-      th { width: 30%; }
     }
     @media print {
       body { background: white; font-size: 10pt; }
@@ -93,7 +110,7 @@ export function renderPublicDocs(mcpUrl: string): string {
       section { padding-block: 1.3rem; }
       .endpoint { background: white; color: black; border: 1px solid var(--line); }
       .endpoint p { color: black; }
-      .card, tr { break-inside: avoid; }
+      .card, figure { break-inside: avoid; }
     }
   </style>
 </head>
@@ -107,83 +124,90 @@ export function renderPublicDocs(mcpUrl: string): string {
     <main id="main">
       <div class="hero">
         <p class="eyebrow">San Francisco &amp; the Bay Area</p>
-        <h1>Your next journey, with your AI agent.</h1>
-        <p class="lead">Connect an MCP-compatible AI agent to plan Bay Area trips. Ask how to get there and compare journeys with walking, buses, trains, ferries, transfers, and departure and arrival times.</p>
+        <h1>Plan Bay Area transit trips.</h1>
+        <p class="lead">Use your AI agent to find bus, train, and ferry routes. Compare departure times, where to walk, where to change vehicles, and total travel time.</p>
         <span class="badge">Free to use · No API keys or authentication</span>
+        <div class="endpoint"><div class="endpoint-label">Official hosted MCP URL</div><code>${endpoint}</code><p>Copy this complete URL into your AI app's MCP settings.</p></div>
+        <img class="hero-logo" src="/sf-transit/icon.png" width="224" height="224" alt="Golden Gate Bridge and streetcar logo">
       </div>
 
       <section id="connect" aria-labelledby="connect-title">
         <h2 id="connect-title">Connect your AI agent</h2>
-        <div class="connection">
           <ol>
-            <li>Open your agent's MCP or connector settings and add a remote MCP server to connect to the hosted service.</li>
-            <li>Name it <strong>SF Bay Area Transit MCP</strong> and paste the exact server URL shown here. Choose <strong>no authentication</strong> if asked.</li>
-            <li>Enable the server's tools for your conversation or task, then ask your agent for a Bay Area trip.</li>
+            <li>Open your AI app's MCP or connector settings and add a remote MCP server.</li>
+            <li>Name it <strong>SF Bay Area Transit MCP</strong> and paste the official URL above. Choose <strong>no authentication</strong> if asked.</li>
+            <li>Enable the three tools, then ask for a trip between two Bay Area places.</li>
           </ol>
-          <div class="endpoint"><div class="endpoint-label">Official hosted MCP URL</div><code>${endpoint}</code><p>Select and copy the complete URL, including <strong>/sf-transit/mcp</strong>, without a trailing slash.</p></div>
-        </div>
-        <p class="note">Remote MCP support, connection steps, and availability depend on your client and workspace. For local installation and client-specific guidance, use the <a href="https://github.com/czekaj/sf-transit-mcp#readme">installation guide</a>. IT administrators can review the <a href="#admin">data and permissions summary</a> below.</p>
+        <p class="note">Your AI app must support remote MCP servers. Setup steps and work-account restrictions depend on the app. For local installation, use the <a href="https://github.com/czekaj/sf-transit-mcp#readme">README</a>.</p>
       </section>
 
       <section id="journeys" aria-labelledby="journeys-title">
-        <h2 id="journeys-title">Start with a place and a time</h2>
-        <p class="section-intro">Tell your agent your starting point and destination. Leave the time out to depart now, or give a departure time or arrival deadline. Your agent may ask you to choose between matching places.</p>
+        <h2 id="journeys-title">Example requests</h2>
+        <p class="section-intro">Give a starting place and destination. Say when you want to leave or arrive. If you do not specify a time, the service plans a trip leaving now.</p>
         <div class="grid">
           <div class="card"><blockquote class="prompt">How do I get from the Ferry Building to Baker Beach, leaving now?</blockquote></div>
           <div class="card"><blockquote class="prompt">Plan a trip from Oakland City Center to SFO, arriving by 9 tomorrow morning.</blockquote></div>
           <div class="card"><blockquote class="prompt">Compare transit and cycling from Golden Gate Park to the Ferry Building, with at most one transfer.</blockquote></div>
         </div>
-        <p class="note">In clients that support interactive MCP Apps, journeys appear as route cards and a detailed timeline. Other clients receive readable itineraries. Refresh requests an updated trip; opening route details uses the result already returned.</p>
+        <div class="feature">
+          <div><h3>Compare routes</h3><p>See departure and arrival times, total travel time, time spent walking, and how many times you need to change vehicles. Select a route to see its steps.</p><p>These interactive displays require an AI app that supports MCP Apps. Other apps receive the same trip information as text.</p></div>
+          <figure><a href="/sf-transit/screenshots/route-options.png" aria-label="View route comparison screenshot at full size"><img src="/sf-transit/screenshots/route-options.png" width="1464" height="1040" loading="lazy" alt="Claude showing three route choices from the Ferry Building to Baker Beach, including travel time, walking time, and transfers"></a><figcaption>Route comparison in Claude. The times shown are from this example, not a current travel recommendation. Select the image to view it at full size.</figcaption></figure>
+        </div>
+        <div class="feature">
+          <div><h3>Read each step</h3><p>See where to walk, where to board, which service to take, and where to get off. Times and durations are shown for each step.</p><p>Select <strong>Refresh</strong> to request updated routes. Selecting a route or opening its details does not make another trip request.</p></div>
+          <figure><a href="/sf-transit/screenshots/journey-details.png" aria-label="View trip steps screenshot at full size"><img src="/sf-transit/screenshots/journey-details.png" width="1464" height="1090" loading="lazy" alt="Claude showing the walking and bus instructions for the selected route to Baker Beach"></a><figcaption>Trip steps in Claude, cropped from the same example. Select the image to view it at full size.</figcaption></figure>
+        </div>
       </section>
 
       <section aria-labelledby="tools-title">
-        <h2 id="tools-title">Three tools, one journey</h2>
+        <h2 id="tools-title">Available tools</h2>
         <div class="grid">
           <article class="card"><h3>Find a place</h3><p>Search for a Bay Area address, landmark, or transit stop and choose the matching location.</p><code class="tool-name">search_places</code></article>
-          <article class="card"><h3>Plan a journey</h3><p>Compare complete trips with walking legs, transfer waits, transport routes, and travel times. Request a wheelchair profile or walking and personal-bicycle comparisons.</p><code class="tool-name">plan_trip</code></article>
-          <article class="card"><h3>Check service information</h3><p>Read the current time, coverage source, and service limitations without making a request to the routing provider.</p><code class="tool-name">get_service_info</code></article>
+          <article class="card"><h3>Plan a trip</h3><p>Get routes, departure and arrival times, where to walk, and where to change vehicles. Compare transit with walking or riding your own bicycle. You can also request wheelchair routing.</p><code class="tool-name">plan_trip</code></article>
+          <article class="card"><h3>Check service information</h3><p>Read the current time, data sources, and service limits. This tool does not contact Transitous, the service that calculates routes.</p><code class="tool-name">get_service_info</code></article>
         </div>
       </section>
 
       <section aria-labelledby="expect-title">
-        <h2 id="expect-title">Understand your itinerary</h2>
+        <h2 id="expect-title">Times, accessibility, and limits</h2>
         <div class="details">
           <div><h3>Times and accessibility</h3><ul>
-            <li>Times use the Bay Area's Pacific timezone, including daylight-saving changes.</li>
-            <li><strong>Scheduled</strong> times come from a timetable. <strong>Live predictions</strong> are estimates; the provider does not report their age, so the label does not establish freshness.</li>
-            <li>The wheelchair profile applies to walking and transfers. Vehicle accessibility may be unknown; check each transit leg. Source data does not establish current elevator operation or guarantee that every entrance and path is accessible.</li>
+            <li>All times are Pacific time, including daylight-saving changes.</li>
+            <li><strong>Scheduled</strong> times come from a timetable. <strong>Live estimates</strong> come from agency predictions. The data does not say when those estimates were last updated.</li>
+            <li>The wheelchair option changes walking routes and paths between stops. Vehicle accessibility may be unknown; check each bus, train, or ferry in your result. The service does not verify elevator operation or entrance accessibility.</li>
           </ul></div>
           <div><h3>Coverage and limits</h3><ul>
-            <li>Available journeys depend on Transitous's current feeds and service availability.</li>
-            <li>Walking legs connect places and stops; they are not turn-by-turn walking directions.</li>
+            <li>Routes depend on the data supplied by transit agencies and whether Transitous is available.</li>
+            <li>Walking instructions show the places and stops to walk between. They do not include directions for every street or turn.</li>
             <li>This service does not provide fares, tickets or bookings, service alerts, or bike-share availability. Cycling comparisons use a personal bicycle.</li>
-            <li>The community-run provider is intended for light, noncommercial use. See its <a href="https://transitous.org/api/">usage policy</a>.</li>
+            <li>Transitous is run by a community and permits light, noncommercial use. See its <a href="https://transitous.org/api/">usage policy</a>.</li>
           </ul></div>
         </div>
       </section>
 
       <section id="admin" aria-labelledby="admin-title">
-        <h2 id="admin-title">For IT administrators</h2>
-        <table>
-          <caption>Permissions and data handling for the hosted connector. Full details are in the linked policies.</caption>
-          <tbody>
-            <tr><th scope="row">Access and actions</th><td>Public endpoint with no authentication or API keys. The three tools are read-only: they search and return information. They do not book travel, take payments, or access files or a shell.</td></tr>
-            <tr><th scope="row">Data sent to Transitous</th><td>Place-search text, origin and destination coordinates, requested travel times, transport modes, and route preferences, including wheelchair routing. Requests include an application identifier. <a href="https://transitous.org/privacy/">Transitous's policy</a> says logs of the connecting IP address, request time, URL, and User-Agent are kept for up to two days. For hosted use, that connection originates from the Worker; local use connects from the user's network.</td></tr>
-            <tr><th scope="row">Application storage</th><td>No application database, saved profiles, or saved home addresses. Requests and displayed journeys are processed in memory. The usage budget retains numeric request timestamps without trip details or user identifiers.</td></tr>
-            <tr><th scope="row">Client and conversation</th><td>Your MCP client receives tool inputs and results, including the original trip request used for refresh. Conversation retention and use are governed by that client's policies. A home address used for a search, or its coordinates used for routing, is sent to Transitous. Locations and accessibility preferences can be personal information.</td></tr>
-            <tr><th scope="row">Hosting and logs</th><td>Cloudflare processes hosted requests and network metadata. Application code does not log trip inputs or results. Infrastructure logging may occur; retention for Cloudflare edge, security, and diagnostic records has not been verified. See <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare's privacy policy</a>.</td></tr>
-            <tr><th scope="row">Interactive results</th><td>The itinerary view receives data through the MCP client. It loads no external map assets and does not poll in the background. Selecting Refresh makes another trip request.</td></tr>
-            <tr><th scope="row">Local alternative</th><td>A local stdio installation contacts Transitous from the user's network and avoids the operator's hosted Worker. The MCP client and Transitous still receive trip data. Setup is in the <a href="https://github.com/czekaj/sf-transit-mcp#readme">README</a>.</td></tr>
-          </tbody>
-        </table>
+        <h2 id="admin-title">Data and permissions</h2>
+        <p class="section-intro">For users and IT administrators reviewing the hosted service.</p>
+        <div class="data-grid">
+          <article class="card data-card"><div class="data-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg><h3>Sent to Transitous</h3></div><ul><li>Place names or addresses you search for.</li><li>Map coordinates of your starting point and destination.</li><li>Departure or arrival time.</li><li>Transport choices and the wheelchair routing option.</li><li>This service's name and version.</li></ul></article>
+          <article class="card data-card"><div class="data-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><h3>Kept temporarily by this service</h3></div><ul><li>Request details and results while answering your request.</li><li>Times of recent requests to enforce usage limits, without trip details or user identifiers.</li></ul></article>
+          <article class="card data-card"><div class="data-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 4h16v16H4zM4 4l16 16"/></svg><h3>Not saved by this software</h3></div><ul><li>Home-address profiles.</li><li>Search or trip history.</li><li>Trip requests or results in a database or application log.</li></ul></article>
+          <article class="card data-card"><div class="data-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6l-8-3ZM8 12l3 3 5-6"/></svg><h3>Actions the tools cannot take</h3></div><ul><li>Book trips, buy tickets, or make payments.</li><li>Read your files, email, or chat history.</li><li>Run commands or change your accounts.</li></ul></article>
+        </div>
+        <div class="retention"><h3>What other services may keep</h3><ul>
+          <li><strong>Transitous</strong> logs the connecting IP address, request time, service identifier, and full request URL for up to two days. The URL can contain the locations and travel choices listed above. <a href="https://transitous.org/privacy/">Transitous privacy policy</a>.</li>
+          <li><strong>Your AI app</strong> receives the request and results. It may save them with your conversation under its own settings and privacy policy.</li>
+          <li><strong>Cloudflare</strong> hosts this service and processes requests and connection information. It may keep security and diagnostic records. We have not verified how long it keeps those records. <a href="https://www.cloudflare.com/privacypolicy/">Cloudflare privacy policy</a>.</li>
+        </ul></div>
+        <p class="note">If you use your home address in a search, that address or its map coordinates are sent to Transitous. Locations and wheelchair preferences can be personal information.</p>
         <div class="links"><a href="https://github.com/czekaj/sf-transit-mcp/blob/main/PRIVACY.md">Privacy policy</a><a href="https://github.com/czekaj/sf-transit-mcp/blob/main/SECURITY.md">Security policy</a><a href="https://github.com/czekaj/sf-transit-mcp/blob/main/SUPPORT.md">Support</a><a href="https://github.com/czekaj/sf-transit-mcp">Source code</a></div>
       </section>
 
       <section id="help" aria-labelledby="help-title">
         <h2 id="help-title">Get help</h2>
         <div class="contact">
-          <div><p>For questions or ordinary bugs, email <a href="mailto:contact@reindexventures.com">contact@reindexventures.com</a> or open a <a href="https://github.com/czekaj/sf-transit-mcp/issues">GitHub issue</a>. Include your client, what happened, and a public-place example.</p><p>GitHub issues are public. Send security reports, privacy requests, and personal trip details by email.</p></div>
-          <div><p>Created by <strong>Lucas Czekaj</strong>.<br>Operated and published by <strong>Reindex Ventures LLC</strong>.</p><p><a href="https://reindexventures.com/?utm_source=sf-transit-mcp">Visit Reindex Ventures</a> · <a href="https://github.com/czekaj/sf-transit-mcp#readme">Project documentation</a></p></div>
+          <div><p>For questions or bugs, email <a href="mailto:contact@reindexventures.com">contact@reindexventures.com</a> or open a <a href="https://github.com/czekaj/sf-transit-mcp/issues">GitHub issue</a>. Say which AI app you use, what you did, and what happened. Include an example using public places.</p><p>GitHub issues are public. Send security reports, privacy requests, and personal trip details by email.</p></div>
+          <div><p>Created by <strong>Lucas Czekaj</strong>.<br>Operated and published by <strong><a href="https://reindexventures.com/?utm_source=sf-transit-mcp">Reindex Ventures LLC</a></strong>.</p><div class="profile-links"><a href="https://x.com/0xLCZ" aria-label="Lucas Czekaj on X, 0xLCZ"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-7.8 8.9L23.5 23h-7.4l-5.8-7.6L3.7 23H.5l8.6-9.8L.1 2h7.6l5.2 6.9L18.9 2Zm-1.3 18.9h2L6.6 4.1H4.4z"/></svg><span>@0xLCZ</span></a><a href="https://github.com/czekaj/sf-transit-mcp" aria-label="SF Bay Area Transit MCP on GitHub"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.4.7-4.1-1.4-4.1-1.4-.5-1.4-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.6-1.4-5.6-6a4.7 4.7 0 0 1 1.3-3.2c-.1-.3-.6-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.2 2.9.1 3.2a4.7 4.7 0 0 1 1.3 3.2c0 4.6-2.8 5.7-5.6 6 .5.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg><span>sf-transit-mcp</span></a></div></div>
         </div>
       </section>
     </main>

@@ -485,15 +485,15 @@ export function createRoutingClient({
         )
       )
         warnings.push(
-          "Some transit times use the published schedule; live predictions are unavailable for those legs.",
+          "Some bus, train, or ferry times follow the published schedule because live estimates are unavailable.",
         );
       if (itineraries.some((item) => item.realTime))
         warnings.push(
-          "The provider marks some times as real-time estimates, but their update age is unavailable.",
+          "Some times are live estimates, but the data does not say when they were last updated.",
         );
       if (input.wheelchair)
         warnings.push(
-          "The wheelchair profile applies to walking and transfers. Vehicle accessibility may be unknown; check the accessibility information on each transit leg.",
+          "The wheelchair option changes walking routes and paths between stops. Vehicle accessibility may be unknown; check each bus, train, or ferry in your result.",
         );
       return {
         origin: input.origin as Coordinate,

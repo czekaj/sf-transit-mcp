@@ -1,6 +1,6 @@
 # Cloudflare deployment
 
-This project runs as a stateless Cloudflare Worker. It needs no API keys, OAuth, storage, Containers, or background jobs. Use an account on **Workers Free** to keep hosting within its free allowance. The Wrangler configuration does not select or enforce your account's billing plan.
+This project runs as a Cloudflare Worker without saving trip data between requests. It needs no API keys, OAuth, database, Containers, or background jobs. Use an account on **Workers Free** to keep hosting within its free allowance. The Wrangler configuration does not select or enforce your account's billing plan.
 
 The MCP endpoint is `/sf-transit/mcp`, with no trailing slash. `/mcp` remains available for existing connections. Requests on a different origin or path from `PUBLIC_MCP_URL` use the host's default widget sandbox so they are not assigned a different connector URL's hash. When `HOMEPAGE_URL` is empty, the root URL returns service information and advertises the canonical endpoint. Set it to redirect visitors to your website instead. `/sf-transit` and `/sf-transit/` redirect to the GitHub repository. These page redirects do not affect the MCP endpoint.
 
@@ -16,7 +16,7 @@ npm run check
 npm run build:worker
 ```
 
-The checks use synthetic fixtures. The Worker build is a dry run: it bundles locally without creating a deployment, changing DNS, or calling a transit provider. A successful build does not verify the deployed Worker's runtime limits.
+The checks use made-up local examples. The Worker build is a dry run: it bundles locally without creating a deployment, changing DNS, or calling a transit provider. A successful build does not verify the deployed Worker's runtime limits.
 
 ## Deploy your own copy
 
@@ -73,7 +73,7 @@ In the `sf-transit-mcp` Worker's **Settings → Build**, use:
 
 Cloudflare runs these commands in its build service; you do not need the CLI installed locally. The production configuration supplies `PUBLIC_MCP_URL` and `HOMEPAGE_URL` automatically. No manual URL variables or alternate configuration file are needed. Both the default and production configurations target the same Worker name, so `--env production` selects the company domain and redirect settings.
 
-Wrangler treats the repository configuration as authoritative. Editing domains or variables only in the dashboard can be undone on the next deployment; update `wrangler.jsonc` for lasting changes. See [Wrangler's configuration guidance](https://developers.cloudflare.com/workers/wrangler/configuration/#source-of-truth).
+Wrangler uses the repository configuration when deploying. Editing domains or variables only in the dashboard can be undone on the next deployment; update `wrangler.jsonc` for lasting changes. See [Wrangler's configuration guidance](https://developers.cloudflare.com/workers/wrangler/configuration/#source-of-truth).
 
 Saving build settings applies them to the next build. Retry the latest `main` build to use the updated settings. Future pushes to the connected production branch trigger Cloudflare builds and deployments. See [Workers Builds configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
 
@@ -101,7 +101,7 @@ This publishes `sf-transit-mcp` and attaches the **whole hostname** `mcp.riv.lc`
 
 Page redirects use HTTP 308 for GET and HEAD, with a one-hour cache lifetime. Both the homepage and repository redirects add `utm_source=sf-transit-mcp`. Their destinations are fixed, configured destination parameters are preserved, and incoming request query strings are not forwarded. POST requests to page paths return 404. The redirects run in the Worker, so no separate Cloudflare redirect rules are needed.
 
-The icon URL returns `image/png` directly for GET and HEAD, without authentication or redirects. It has a one-hour public cache lifetime and allows cross-origin image access. Directory forms can use `https://mcp.riv.lc/sf-transit/icon.png` after deployment. The image is bundled with the Worker and needs no storage binding or separate image-hosting service.
+The icon URL returns `image/png` directly for GET and HEAD, without authentication or redirects. It has a one-hour public cache lifetime and allows other websites to display the image. Directory forms can use `https://mcp.riv.lc/sf-transit/icon.png` after deployment. The documentation screenshots at `/sf-transit/screenshots/route-options.png` and `/sf-transit/screenshots/journey-details.png` use the same response settings. These images are bundled with the Worker and need no separate image-hosting service.
 
 The documentation URL returns static HTML for GET and HEAD, without authentication, scripts, external fonts, or a separate hosting service. Use `https://mcp.riv.lc/sf-transit/docs` as the directory's public Documentation URL after deployment. The page explains user setup, permissions, data handling, service limitations, and support; the README retains developer and self-hosting instructions.
 
@@ -134,10 +134,10 @@ That Worker must accept its full `/another-service/mcp` path: Cloudflare selects
 | `/another-service/mcp` | The second MCP, once its route is deployed |
 | An unclaimed path      | Default SF Transit Worker, returning 404   |
 
-This uses Cloudflare's routing without an extra gateway Worker. The Custom Domain remains the shared hostname's foundation: keep it in place while other routes depend on it, or migrate it deliberately if the default Worker changes.
+This uses Cloudflare's routing without an extra forwarding Worker. Keep the Custom Domain in place while other routes use the hostname. If the default Worker changes, plan how those routes will continue to work before changing the domain configuration.
 
 ## Free usage limits
 
 Workers Free has a daily request allowance and a per-request CPU limit. When the allowance is exhausted, service can become unavailable; this configuration does not enable a paid upgrade. Check the current [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/) and [limits](https://developers.cloudflare.com/workers/platform/limits/).
 
-Transitous has its own [usage policy](https://transitous.org/api/). The MCP's per-instance courtesy limits do not enforce a global request quota across Cloudflare's network. Coordinate with Transitous before serving many users or substantial automated traffic.
+Transitous has its own [usage policy](https://transitous.org/api/). Each running MCP instance limits requests, but those limits do not enforce a total quota across Cloudflare's network. Coordinate with Transitous before serving many users or substantial automated traffic.

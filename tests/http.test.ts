@@ -322,25 +322,41 @@ describe("Worker pages and discovery", () => {
   });
 
   it.each(["GET", "HEAD"])(
-    "serves the original 512px PNG for directory %s requests",
+    "serves original icon and screenshot PNG bytes for %s requests",
     async (method) => {
-      const icon = readFileSync(
-        new URL("../assets/icon-512.png", import.meta.url),
-      );
-      const response = await worker.fetch(
-        new Request("https://mcp.riv.lc/sf-transit/icon.png", {
-          method,
-          headers: { Origin: "https://claude.ai" },
-        }),
-        productionEnv,
-      );
-      expect(response.status).toBe(200);
-      expect(response.headers.get("Content-Type")).toBe("image/png");
-      expect(response.headers.get("Content-Length")).toBe(String(icon.length));
-      expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
-      expect(response.headers.has("Location")).toBe(false);
-      const body = Buffer.from(await response.arrayBuffer());
-      expect(body).toEqual(method === "HEAD" ? Buffer.alloc(0) : icon);
+      for (const [path, file] of [
+        ["/sf-transit/icon.png", "../assets/icon-512.png"],
+        [
+          "/sf-transit/screenshots/route-options.png",
+          "../assets/claude-submission/01-route-options.png",
+        ],
+        [
+          "/sf-transit/screenshots/journey-details.png",
+          "../assets/claude-submission/02-journey-details.png",
+        ],
+      ] as const) {
+        const image = readFileSync(new URL(file, import.meta.url));
+        const response = await worker.fetch(
+          new Request(`https://mcp.riv.lc${path}`, {
+            method,
+            headers: { Origin: "https://claude.ai" },
+          }),
+          productionEnv,
+        );
+        expect(response.status).toBe(200);
+        expect(response.headers.get("Content-Type")).toBe("image/png");
+        expect(response.headers.get("Content-Length")).toBe(
+          String(image.length),
+        );
+        expect(response.headers.get("Cache-Control")).toBe(
+          "public, max-age=3600",
+        );
+        expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
+        expect(response.headers.get("X-Content-Type-Options")).toBe("nosniff");
+        expect(response.headers.has("Location")).toBe(false);
+        const body = Buffer.from(await response.arrayBuffer());
+        expect(body).toEqual(method === "HEAD" ? Buffer.alloc(0) : image);
+      }
       expect(fetch).not.toHaveBeenCalled();
     },
   );
@@ -441,6 +457,8 @@ describe("Worker pages and discovery", () => {
       "/sf-transit-extra",
       "/sf-transit/docs",
       "/sf-transit/icon.png",
+      "/sf-transit/screenshots/route-options.png",
+      "/sf-transit/screenshots/journey-details.png",
     ]) {
       const response = await worker.fetch(
         new Request(`http://localhost${path}`, { method: "POST", body: "{}" }),

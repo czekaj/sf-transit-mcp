@@ -177,7 +177,9 @@ describe("MOTIS client", () => {
       departureTime: start,
     });
     expect(JSON.stringify(result)).not.toContain("SECRET");
-    expect(result.warnings.join(" ")).toContain("update age is unavailable");
+    expect(result.warnings.join(" ")).toContain(
+      "the data does not say when they were last updated",
+    );
   });
 
   it("passes arrival time, zero transfers and wheelchair profile exactly", async () => {

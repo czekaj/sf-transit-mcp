@@ -4,22 +4,22 @@ This project uses [Transitous](https://transitous.org/) for place search and Bay
 
 ## API contract
 
-The default origin is `https://api.transitous.org`. The client uses:
+The default API address is `https://api.transitous.org`. The client uses:
 
 | Operation                         | Endpoint          | Input                                                               |
 | --------------------------------- | ----------------- | ------------------------------------------------------------------- |
 | Find addresses, places, and stops | `/api/v1/geocode` | Search text, with a San Francisco location bias                     |
 | Plan a journey                    | `/api/v6/plan`    | Selected origin and destination coordinates, travel time, and modes |
 
-The contract follows the [MOTIS v2.10.2 OpenAPI definition](https://raw.githubusercontent.com/motis-project/motis/refs/tags/v2.10.2/openapi.yaml), linked by Transitous's API documentation. Coordinate pairs use latitude,longitude order. Place search returns candidates; select the intended place before requesting a journey. The client filters results to the Bay Area.
+Requests and responses follow the [MOTIS v2.10.2 OpenAPI definition](https://raw.githubusercontent.com/motis-project/motis/refs/tags/v2.10.2/openapi.yaml), linked by Transitous's API documentation. Coordinate pairs use latitude,longitude order. Place search returns matching places; select the intended place before requesting a trip. The client filters results to the Bay Area.
 
-Results preserve scheduled departure and arrival times separately from provider estimates. A leg's `realTime` flag indicates that the provider has live information for that leg. It does not establish the age of that information. A response timestamp records when the MCP produced the result, not when an agency updated its prediction. Walking and cycling durations are routing estimates.
+Results keep scheduled departure and arrival times separate from provider estimates. The `realTime` field indicates that the provider has live information for that part of the trip. It does not say how old that information is. The result's timestamp records when the MCP produced the result, not when an agency updated its estimate. Walking and cycling times are estimates.
 
 ## Regional coverage
 
-Transitous's [published sources](https://transitous.org/sources/) list the regional 511 feed, including Muni/SFMTA, BART, AC Transit, Caltrain, VTA, SamTrans, Golden Gate Transit and Ferry, SF Bay Ferry, and other Bay Area operators. The source list also identifies a regional realtime feed. Its [California source registry](https://github.com/public-transport/transitous/blob/main/feeds/us-ca.json) documents the regional schedule and TripUpdates inputs. Transitous handles upstream access; this MCP does not need a 511 token.
+Transitous's [published sources](https://transitous.org/sources/) list the regional 511 feed, including Muni/SFMTA, BART, AC Transit, Caltrain, VTA, SamTrans, Golden Gate Transit and Ferry, SF Bay Ferry, and other Bay Area operators. The source list also identifies a regional feed for live estimates. Its [California source registry](https://github.com/public-transport/transitous/blob/main/feeds/us-ca.json) documents the schedule and TripUpdates inputs used for those estimates. Transitous obtains these feeds; this MCP does not need a 511 token.
 
-Coverage depends on the provider's current imported schedules and available predictions. A listed agency does not guarantee live predictions for every trip. The source list says OSM supports geocoding and street routing. Address and place matches depend on that map data. An empty search or journey result must be reported as such.
+Coverage depends on the schedules and estimates currently available from the provider. A listed agency does not guarantee live estimates for every trip. Transitous uses OpenStreetMap (OSM) data to find addresses and plan routes along streets. Address and place matches depend on that map data. If no places or routes are found, report that result.
 
 ## Use of the shared service
 
@@ -27,13 +27,13 @@ The [Transitous usage policy](https://transitous.org/api/) permits light use by 
 
 Qualifying light use does not need separate prior approval. Directory publication is not listed as a separate approval trigger. The significant-resource coordination conditions below still apply; a directory listing does not waive them.
 
-This MCP makes requests when a person searches for places or asks for a trip. It does not poll automatically, refresh in the background, scrape the provider, or retry requests indefinitely. A trip comparison can send one request per selected travel mode.
+This MCP makes requests when a person searches for places, asks for a trip, or selects Refresh. It does not repeatedly check for updates, collect routes in bulk, or retry failed requests automatically. A trip comparison can send one request per selected travel mode.
 
 Coordinate with Transitous before operating with many users, significant automated requests, or more than 720 routing requests in 24 hours. That number is a coordination threshold, not a guaranteed allowance. Commercial use is excluded by the policy. Transitous is run by volunteers on a best-effort basis, offers no service guarantee, and may withdraw access. The public default must not be replaced with Transitous staging or internal server addresses.
 
 ## Privacy
 
-Place queries and journey coordinates are sent to Transitous. Its [privacy policy](https://transitous.org/privacy/) states that logs include the requesting IP, time, requested URL, and user agent. URLs can contain address searches, start and destination coordinates, and travel times. Transitous retains these logs for up to two days. Do not put a home address or other private trip into repository examples, fixtures, or application logs.
+Search text and trip coordinates are sent to Transitous. Its [privacy policy](https://transitous.org/privacy/) states that logs include the connecting IP address, time, requested URL, and User-Agent. URLs can contain address searches, start and destination coordinates, and travel times. Transitous retains these logs for up to two days. Do not put a home address or other private trip into repository examples, test data, or application logs.
 
 ## Attribution and data licenses
 
@@ -47,6 +47,6 @@ The repository's software license covers its code. It does not replace the separ
 
 ## Verification
 
-Default tests use synthetic local fixtures and injected HTTP responses. They do not contact Transitous, 511, or any other live service. This keeps repeated tests independent of shared-service capacity and current timetables.
+Default tests use made-up local examples and simulated HTTP responses. They do not contact Transitous, 511, or any other live service. Repeated tests therefore do not use shared-service capacity or depend on current timetables.
 
-A manual live check should use public landmarks rather than a home address and a small, bounded number of requests. Keep it separate from automated tests and background monitoring. Local fixture success verifies the client contract; it does not establish current live route availability.
+A manual live check should use public landmarks rather than a home address and a small, bounded number of requests. Keep it separate from automated tests and background monitoring. Passing local tests shows that the client handles the tested requests and responses; it does not establish current live route availability.

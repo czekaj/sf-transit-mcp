@@ -1,11 +1,17 @@
 import { handleMcpRequest, MCP_ENDPOINT } from "./http.js";
 import { ATTRIBUTION, PROJECT } from "./project.js";
 import { createTransitServer } from "./tools.js";
-import { LISTING_ICON_BASE64 } from "./generated/branding.js";
+import { PUBLIC_ASSETS_BASE64 } from "./generated/public-assets.js";
 import { renderPublicDocs } from "./public-docs.js";
 
-const listingIcon = Uint8Array.from(atob(LISTING_ICON_BASE64), (character) =>
-  character.charCodeAt(0),
+const publicAssets: ReadonlyMap<string, Uint8Array> = new Map(
+  Object.entries(PUBLIC_ASSETS_BASE64).map(
+    ([path, encoded]) =>
+      [
+        path,
+        Uint8Array.from(atob(encoded), (character) => character.charCodeAt(0)),
+      ] as const,
+  ),
 );
 
 export default {
@@ -30,14 +36,12 @@ export default {
         },
       );
     }
-    if (
-      url.pathname === "/sf-transit/icon.png" &&
-      ["GET", "HEAD"].includes(request.method)
-    ) {
-      return new Response(request.method === "HEAD" ? null : listingIcon, {
+    const publicAsset = publicAssets.get(url.pathname);
+    if (publicAsset && ["GET", "HEAD"].includes(request.method)) {
+      return new Response(request.method === "HEAD" ? null : publicAsset, {
         headers: {
           "Content-Type": "image/png",
-          "Content-Length": String(listingIcon.byteLength),
+          "Content-Length": String(publicAsset.byteLength),
           "Cache-Control": "public, max-age=3600",
           "Access-Control-Allow-Origin": "*",
           "X-Content-Type-Options": "nosniff",

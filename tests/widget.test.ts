@@ -45,9 +45,11 @@ describe("journey widget", () => {
     widget.receiveToolResult(result());
     expect(root.querySelectorAll(".route-card")).toHaveLength(2);
     expect(root.querySelector(".route-card[aria-pressed=true]")).not.toBeNull();
-    expect(root.textContent).toContain("Live + schedule");
+    expect(root.textContent).toContain("Live and scheduled times");
     expect(root.textContent).toContain("Leaving now");
-    expect(root.textContent).toContain("update age is unavailable");
+    expect(root.textContent).toContain(
+      "the data does not say when they were last updated",
+    );
     expect(host.callServerTool).not.toHaveBeenCalled();
   });
 

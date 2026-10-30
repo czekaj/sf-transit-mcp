@@ -6,28 +6,30 @@ SF Bay Area Transit MCP is operated and published by **[Reindex Ventures LLC](ht
 
 ## What a trip request contains
 
-The tools process the place names or addresses you search for, origin and destination coordinates, requested travel times, transport modes, and route preferences such as wheelchair access. A location or accessibility preference can be personal information.
+The tools process the place names or addresses you search for, the map coordinates of your starting point and destination, requested travel times, transport choices, and options such as wheelchair routing. Locations and accessibility preferences can be personal information.
 
-The server returns candidate places and itineraries to your MCP client, such as Claude. Trip results also include the validated original trip request so the itinerary widget can refresh it. The client receives these inputs and results and handles its conversation history under its own policies. A home address can remain in your client's context, but an address used in a place search, or its coordinates used to plan a trip, is sent onward as described below.
+The server returns matching places and trip options to your AI app. Trip results include the original request so the route display can request an updated trip when you select Refresh. The app receives the inputs and results and handles conversation history under its own policies. If you use a home address in a search, that address or its map coordinates are sent to Transitous as described below.
 
 ## Hosted service and local use
 
-- **Hosted on Cloudflare Workers:** Tool requests pass through Cloudflare and the operator's Worker before the Worker contacts Transitous. Cloudflare processes request contents and network metadata, such as the connecting IP address and traffic information. When your MCP client connects through its own backend, that connection may come from the client's infrastructure.
-- **Local stdio:** The server runs on your machine and contacts Transitous from your network. Trip requests do not pass through the operator's hosted Worker. Your MCP client still receives the inputs and results; local use is not offline use.
+- **Use the hosted service:** Requests pass through Cloudflare, where this service runs, before it contacts Transitous. Cloudflare processes request contents and connection information, such as the connecting IP address and traffic information. If your AI app sends requests through its own servers, Cloudflare receives that connection from the app's servers.
+- **Run the server on your machine:** The server contacts Transitous from your network. Trip requests do not pass through the operator's hosted service. Your AI app still receives the inputs and results. Running locally still requires an internet connection to Transitous.
 
 Cloudflare describes its handling of service traffic and network information in its [privacy policy](https://www.cloudflare.com/privacypolicy/).
 
 ## Transitous
 
-Place searches send search text to Transitous. Trip planning sends coordinates, travel times, transport modes, and route options, including the wheelchair routing choice. These are HTTPS requests with those values in the request URL's query string. The application also sends a User-Agent identifying the project and version.
+Place searches send search text to Transitous. Trip planning sends map coordinates, travel times, transport choices, and route options, including the wheelchair routing choice. These values are included in the HTTPS request URL. Requests also include the service name and version in the User-Agent header.
 
-[Transitous's privacy policy](https://transitous.org/privacy/) says it logs the connecting IP address, request time, requested URL, and User-Agent for debugging and abuse prevention, and keeps those logs for up to two days. Its policy explains how to request deletion. In hosted mode, the provider connection originates from the Worker; in local mode, it originates from your machine's network.
+[Transitous's privacy policy](https://transitous.org/privacy/) says it logs the connecting IP address, request time, full request URL, and User-Agent to investigate errors and prevent abuse. It keeps those logs for up to two days. Its policy explains how to request deletion. Hosted requests connect from Cloudflare; local requests connect from your machine's network.
 
 ## Storage and logs
 
-The application has no database, saved user profiles, or saved home addresses. Request and itinerary data are processed in memory. The widget holds the displayed itinerary and request while it is in use; it makes another tool request when you select Refresh. The application also keeps numeric request timestamps in process memory for its usage budget, without trip details or user identifiers.
+This software does not save home-address profiles, search history, or trip history. It has no database. It uses request details and results temporarily to answer each request. The route display keeps the trip and original request while it is open, and requests an updated trip when you select Refresh.
 
-The application does not add advertising trackers, analytics SDKs, or tracking cookies, and its code does not log trip inputs or results. This does not describe retention by your MCP client or infrastructure providers. The repository's Cloudflare configuration disables invocation logs and enables sampled observability. We have not verified a retention period for Cloudflare edge, security, or diagnostic records; this service does not promise zero infrastructure logging.
+To enforce usage limits, the software temporarily keeps the times of recent requests. Those records contain no trip details or user identifiers.
+
+The software does not add advertising trackers, analytics software, or tracking cookies. It does not write trip requests or results to application logs. Your AI app and hosting providers may keep their own records. The Cloudflare configuration disables logs for individual requests and enables sampled monitoring. We have not verified how long Cloudflare keeps network, security, or diagnostic records.
 
 Page redirects to the operator's website and the project repository add the fixed referral label `utm_source=sf-transit-mcp`. This value identifies the project, not an individual visitor. Incoming request query strings are not copied into those redirects.
 

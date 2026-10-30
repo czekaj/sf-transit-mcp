@@ -4,20 +4,20 @@ SF Bay Area Transit MCP is operated and published by **[Reindex Ventures LLC](ht
 
 ## Report a vulnerability
 
-Send security reports privately to **[contact@reindexventures.com](mailto:contact@reindexventures.com)**. Include the affected version or commit, the component or endpoint, steps to reproduce, and the impact. Use synthetic locations and remove credentials and personal trip details from examples.
+Send security reports privately to **[contact@reindexventures.com](mailto:contact@reindexventures.com)**. Include the affected version or commit, the part of the service affected, steps to reproduce, and the impact. Use made-up locations and remove credentials and personal trip details from examples.
 
 Please report exploitable vulnerabilities privately before publishing reproduction details. For general support and ordinary bugs, use [GitHub issues](https://github.com/czekaj/sf-transit-mcp/issues).
 
 ## Security boundaries
 
-The hosted MCP endpoint is public and requires no account or API key. Its tools search places, plan journeys, and report service information. They do not book travel, take payments, or provide filesystem or shell access. Tool annotations describe their intended read-only behavior; they are not an authorization system.
+The hosted MCP URL is public and requires no account or API key. Its tools search places, plan trips, and report service information. They do not book travel, take payments, read files, or run commands. Tool annotations describe these limits to AI apps; the annotations do not enforce access controls.
 
-The HTTP wrapper rejects requests with an Origin header, caps incoming POST bodies at 64 KiB, and marks MCP responses `no-store`. Routing requests use the configured Transitous provider, reject redirects, have a 20-second deadline, and cap response size. Errors returned by the application avoid exposing raw provider responses or request URLs.
+The MCP URL rejects requests with an Origin header, limits incoming POST bodies to 64 KiB, and marks MCP responses `no-store`. The public docs and images are served separately. Requests to Transitous reject redirects, have a 20-second timeout, and limit response size. Error messages avoid exposing complete provider responses or request URLs.
 
-The itinerary widget uses the MCP client's bridge to receive results and request refreshes. Its resource policy declares no external network, resource, or frame domains. Attribution links are opened through the host's link mechanism. Place names and provider text are treated as data. These controls also depend on the MCP client enforcing the widget's sandbox and resource policy.
+The route display receives results and requests refreshes through your AI app. Its declared security policy allows no direct network connections, external files, or embedded pages. Source links open through the app. Place names and provider text are displayed as data. These restrictions depend on the app enforcing the display's security policy.
 
-The application has no database or persistent user profiles. Its in-memory request budget is per process or Worker instance; it is not a global rate limit or a guarantee against abuse. Infrastructure providers and MCP clients have their own security and logging practices. See [Privacy](PRIVACY.md) for the data flow and retention limits.
+The software has no database or saved user profiles. Request limits apply separately to each running copy and reset when that copy restarts. They do not enforce one total limit across the hosted service or guarantee protection against abuse. Hosting providers and AI apps have their own security and logging practices. See [Privacy](PRIVACY.md) for what information is sent and stored.
 
 ## Running a copy
 
-Local stdio runs with the permissions of the process that starts it and still makes network requests to Transitous. Review the source and dependencies before running it. Operators of other deployments are responsible for their configuration, access controls, updates, and privacy disclosures.
+A local server communicates with your AI app through its input and output streams, called stdio. It runs with the permissions of the software that starts it and contacts Transitous over the internet. Review the source and dependencies before running it. People who host their own copies are responsible for configuration, access controls, updates, and privacy disclosures.

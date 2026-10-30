@@ -12,21 +12,21 @@ For an eligible noncommercial project, the published channel is [Transitous on M
 
 Hello Transitous maintainers,
 
-I'm Lucas Czekaj, creator of SF Bay Area Transit MCP, an MIT-licensed connector for user-requested San Francisco and Bay Area journeys in Claude. Reindex Ventures LLC is the proposed legal operator and publisher.
+I'm Lucas Czekaj, creator of SF Bay Area Transit MCP, an MIT-licensed connector that plans San Francisco and Bay Area trips when people ask in Claude. Reindex Ventures LLC is the legal operator and publisher.
 
 Source: https://github.com/czekaj/sf-transit-mcp
 
 We are preparing a Claude Connectors Directory listing and are considering its potential to bring many users. We would like to coordinate capacity under your published usage policy.
 
-The connector uses `/api/v1/geocode` and `/api/v6/plan`. A transit search makes one routing request. Explicit walking/bicycle comparisons use one request per selected mode, up to three. Selection and details are local; refresh is user-triggered. There is no polling, automatic retry, or background querying.
+The connector uses `/api/v1/geocode` and `/api/v6/plan`. A transit search makes one routing request. Requested walking or bicycle comparisons use one request per selected mode, up to three. Selecting a route or opening its details uses the results already returned. Selecting Refresh makes a new request. There are no automatic update checks, retries, or background requests.
 
-Requests carry the project name/version/contact in User-Agent. Results credit Transitous and link to your sources, with OpenStreetMap and Bay Area data attribution.
+Requests identify the project name, version, and contact in User-Agent. Results credit Transitous and link to your sources, with credits for OpenStreetMap and Bay Area data.
 
-Current courtesy limits are 20 upstream requests per rolling minute and 600 per rolling day per running instance. They are not a global quota. Directory traffic is unknown.
+Current limits are 20 requests to Transitous per rolling minute and 600 per rolling day per running instance. They do not enforce a total limit across all instances. We do not yet know how much traffic a directory listing would bring.
 
 Business context: The current project is free to use and MIT-licensed, and its code has no advertising or paid-placement features. I intend to include it in my professional portfolio for visibility as its creator. Reindex Ventures LLC is the legal operator and publisher. Your noncommercial-use condition continues to apply.
 
-What aggregate request limits and launch approach would fit your available capacity? Please also flag any issue with the described use under your policy. We can adjust exposure and limits based on your guidance.
+What total request limits and launch approach would fit your available capacity? Please also flag any issue with the described use under your policy. We can adjust how we make the service available and its request limits based on your guidance.
 
 Planned endpoint, pending migration: https://mcp.riv.lc/sf-transit/mcp
 
