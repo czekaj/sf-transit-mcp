@@ -25,6 +25,8 @@ Coverage depends on the provider's current imported schedules and available pred
 
 The [Transitous usage policy](https://transitous.org/api/) permits light use by open-source, noncommercial applications. Publish the code under an appropriate open-source license; light prototype testing before publication is permitted. Every request must identify the application name, version, and a contact URL or email through `User-Agent`.
 
+Qualifying light use does not need separate prior approval. Directory publication is not listed as a separate approval trigger. The significant-resource coordination conditions below still apply; a directory listing does not waive them.
+
 This MCP makes requests when a person searches for places or asks for a trip. It does not poll automatically, refresh in the background, scrape the provider, or retry requests indefinitely. A trip comparison can send one request per selected travel mode.
 
 Coordinate with Transitous before operating with many users, significant automated requests, or more than 720 routing requests in 24 hours. That number is a coordination threshold, not a guaranteed allowance. Commercial use is excluded by the policy. Transitous is run by volunteers on a best-effort basis, offers no service guarantee, and may withdraw access. The public default must not be replaced with Transitous staging or internal server addresses.

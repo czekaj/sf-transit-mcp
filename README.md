@@ -167,7 +167,7 @@ Open `http://127.0.0.1:8798`. The preview uses the real MCP Apps bridge in a san
 
 The protocol layer, routing client, and presentation code are separate. The public service contract follows the [MOTIS API version linked by Transitous](https://transitous.org/api/). See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution and testing guidance.
 
-The [Claude submission materials](docs/claude-submission.md) contain listing copy, reviewer instructions, approved screenshot assets, and the remaining launch requirements. They are prepared materials, not a claim of directory approval or provider permission.
+The [Claude submission materials](docs/claude-submission.md) contain listing copy, reviewer instructions, approved screenshot assets, and the remaining launch requirements. The listing is a draft. Provider use remains subject to [Transitous's published policy](https://transitous.org/api/); qualifying light use does not require separate prior approval.
 
 ### Project artwork
 

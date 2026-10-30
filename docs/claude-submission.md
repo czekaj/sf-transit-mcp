@@ -2,9 +2,9 @@
 
 **Prepared October 30, 2026. Not submitted.** Publisher and legal operator: **Reindex Ventures LLC**. Creator: **Lucas Czekaj**.
 
-## Publication blockers
+## Launch requirements
 
-- **Transitous eligibility and traffic:** Its [policy](https://transitous.org/api/) permits light, open-source, noncommercial use. A free price and LLC ownership do not establish eligibility. Resolve the business context, then coordinate permitted directory traffic before publication. Many users, automated traffic, or more than 720 routing requests per 24 hours require coordination. Current per-instance limits are not a global quota. See the [unsent coordination draft](transitous-coordination-draft.md).
+- **Transitous policy:** Its [published policy](https://transitous.org/api/) permits qualifying light, open-source, noncommercial use without a separate prior-approval process. It asks for coordination when significant resource use is expected, including many users, automated requests, or more than 720 routing requests per 24 hours. A directory listing is not named as a separate approval trigger. Assess the intended use and expected traffic against those conditions; the policy does not define LLC ownership alone as commercial use. Current per-instance limits are not a global quota. Use the [unsent coordination draft](transitous-coordination-draft.md) if coordination or clarification is needed.
 - **Endpoint:** The owner approved preparing `https://mcp.riv.lc/sf-transit/mcp`. Migration and a completion check still require specific production approval. The current endpoint is `https://lucas.czekaj.us/sf-transit/mcp`; the new URL is not claimed live. The separate [company configuration and cutover plan](cloudflare.md#prepared-company-deployment-on-rivlc) keep the current build target unchanged until the move is approved. The GitHub repository remains `czekaj/sf-transit-mcp`.
 - **Public identity and links:** Approved company website: `https://reindexventures.com`. Publish the privacy/support information and verify those public links through an authorized check.
 - **Evidence:** The approved Claude screenshot proves one Ferry Building → Baker Beach flow. It does not prove every tool or the latest release passed. Complete an approved Claude/Inspector pass before confirming the portal's testing statement.
@@ -99,7 +99,7 @@ Claude explicitly supports authless connectors. [Authentication guidance](https:
 
 **Underlying API:** Third party operated by Transitous; not controlled by Reindex Ventures LLC. Choose the portal's corresponding third-party option, not a partnership claim.
 
-**Permission explanation, pending eligibility:** “The connector uses Transitous's public MOTIS routing and geocoding API under its published usage policy, conditional on open-source, noncommercial, light use and attribution. Directory traffic eligibility and capacity have not yet been confirmed.”
+**API-use explanation:** “The connector uses Transitous's public MOTIS routing and geocoding API under its published policy for light, open-source, noncommercial use, with application identification and attribution. We have no separate partnership or special capacity agreement. We must coordinate with Transitous if expected usage meets its significant-resource criteria.”
 
 **Information sent:** Place-search text, selected coordinates, time, and travel preferences needed for the requested journey. Starting addresses can be personal data; a wheelchair preference can reveal sensitive information. No health-data feature, sponsored content, conversation-history access, or stored home profile is offered.
 
@@ -129,7 +129,7 @@ Route selection/details use returned data. Only clicking Refresh should request 
 
 Review the actual portal acknowledgments before accepting them. Current scope: public-data read tools; no financial transfers, runtime AI-media generation, or conversation-history collection. Project artwork was AI-generated with its prompt recorded; answer artwork disclosures accurately.
 
-API legitimacy remains conditional on provider eligibility/capacity. The owner must authorize accepting directory terms on behalf of Reindex Ventures LLC.
+Compliance with Transitous's published use conditions is required. A separate provider approval is not a blanket prerequisite for qualifying light use or directory submission. The owner must authorize accepting directory terms on behalf of Reindex Ventures LLC.
 
 ### 10. Review and submit
 
