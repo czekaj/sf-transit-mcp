@@ -2,6 +2,8 @@
 
 # SF Bay Area Transit MCP
 
+**Created by Lucas Czekaj. Operated and published by [Reindex Ventures LLC](https://reindexventures.com).**
+
 Ask Claude how to get around San Francisco and the Bay Area. Get complete journeys: walking to the stop, which buses or trains to take, transfers, departure and arrival times, and how long the trip takes.
 
 **Free to use. No API keys or authentication.** Runs locally with Claude Desktop or Claude Code, or as a remote MCP on Cloudflare Workers Free. [Transitous](https://transitous.org/) supplies the routing and place search; you do not need to host a routing engine or download feeds.
@@ -75,7 +77,9 @@ claude mcp add sf-transit -- node /absolute/path/to/sf-transit-mcp/dist/stdio.js
 
 The server starts without credentials or environment variables. Tell Claude your starting address, or use an address already in your conversation. The MCP does not save a home profile. Claude resolves places, asks you to choose when needed, then requests the journey.
 
-**Privacy:** place searches and journey coordinates go to Transitous. Its [privacy policy](https://transitous.org/privacy/) says request URLs are logged for up to two days. The MCP does not log or persist addresses or trip results.
+**Privacy:** place searches and journey coordinates go to Transitous. Its [privacy policy](https://transitous.org/privacy/) says request URLs are logged for up to two days. The MCP does not log or persist addresses or trip results. The [project privacy policy](PRIVACY.md) explains operator, client, and infrastructure processing.
+
+For help, see [Support](SUPPORT.md) or open a [GitHub issue](https://github.com/czekaj/sf-transit-mcp/issues). Send security or privacy reports to [contact@reindexventures.com](mailto:contact@reindexventures.com); see [Security](SECURITY.md).
 
 ## What it does
 
@@ -127,14 +131,15 @@ To publish to your own Cloudflare account, review `wrangler.jsonc`, use a Worker
 
 For a stable Claude remote connector, set `vars.PUBLIC_MCP_URL` in `wrangler.jsonc` to the **exact connector URL**, including `/sf-transit/mcp`, with no trailing slash. The server derives Claude's widget sandbox domain from it. This value is public and requires no domain registration. Leave it empty for local use or the host's default sandbox. If the connector URL changes, update this value too.
 
-The named `production` environment is prepared for the maintainer's `https://lucas.czekaj.us/sf-transit/mcp` URL. It attaches the hostname as a Custom Domain and disables `workers.dev` and preview URLs. This configuration does not mean the service has been deployed. The default configuration has no custom domain, so forks can deploy independently. See the [Cloudflare deployment guide](docs/cloudflare.md) for exact commands, prerequisites, and sharing the hostname with other MCP Workers.
+Reindex Ventures LLC is preparing `https://mcp.riv.lc/sf-transit/mcp` as the company-hosted connector. The separate `wrangler.riv.jsonc` configuration targets the existing `sf-transit-mcp` Worker and redirects its root to the company website. The hostname move is pending deployment and verification. The repository remains `czekaj/sf-transit-mcp`.
 
-In that environment, visiting `lucas.czekaj.us/` redirects to `https://www.czekaj.us`, and `/sf-transit` or `/sf-transit/` redirects to this GitHub repository. `/sf-transit/mcp` continues to serve the connector. The default configuration leaves `HOMEPAGE_URL` empty and returns service information at `/`.
+The current named `production` environment in `wrangler.jsonc` still describes the existing `lucas.czekaj.us` deployment. Keeping the company configuration separate prevents a documentation release from silently moving the hostname. The default configuration has no custom domain, so forks can deploy independently. See the [Cloudflare deployment and migration guide](docs/cloudflare.md).
 
 Check the maintainer configuration locally without deploying:
 
 ```sh
 npm run build:worker:production
+npm run build:worker:riv
 ```
 
 A public deployment must remain within [Transitous's usage policy](https://transitous.org/api/). Coordinate with its maintainers before serving many users or substantial automated traffic. The implementation limits each running process/Worker instance to 20 upstream calls per rolling minute and 600 per rolling day. These courtesy limits reset when an instance restarts and **do not enforce a global hosting quota**. There is no polling, automatic retry, or background traffic. A normal transit search uses one upstream request; an explicit mode comparison uses one per mode.
@@ -149,7 +154,7 @@ npm run build:worker
 Tests use synthetic fixtures and injected responses. They do not call live transit APIs. Worker builds and type generation run locally. After changing Wrangler configuration, regenerate types:
 
 ```sh
-WRANGLER_SEND_METRICS=false npx wrangler types
+npm run types:worker
 ```
 
 Preview the widget with fictional transit services and public-place examples:
@@ -161,6 +166,8 @@ npm run preview:widget
 Open `http://127.0.0.1:8798`. The preview uses the real MCP Apps bridge in a sandboxed iframe, with controls for theme, narrow layout, empty results, and failed refreshes. It makes **no transit API requests**. Rebuild and reload after editing the widget. `npm run build:widget` creates the self-contained HTML and a content-versioned MCP resource; generated files are not committed.
 
 The protocol layer, routing client, and presentation code are separate. The public service contract follows the [MOTIS API version linked by Transitous](https://transitous.org/api/). See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution and testing guidance.
+
+The [Claude submission materials](docs/claude-submission.md) contain listing copy, reviewer instructions, approved screenshot assets, and the remaining launch requirements. They are prepared materials, not a claim of directory approval or provider permission.
 
 ### Project artwork
 

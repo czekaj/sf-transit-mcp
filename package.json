@@ -24,6 +24,9 @@
     "assets",
     "docs",
     "README.md",
+    "PRIVACY.md",
+    "SECURITY.md",
+    "SUPPORT.md",
     "LICENSE"
   ],
   "engines": {
@@ -42,6 +45,8 @@
     "prepare": "npm run build",
     "build:worker": "npm run build:widget && WRANGLER_SEND_METRICS=false wrangler deploy --dry-run --env \"\"",
     "build:worker:production": "npm run build:widget && WRANGLER_SEND_METRICS=false wrangler deploy --dry-run --env production",
+    "build:worker:riv": "npm run build:widget && WRANGLER_SEND_METRICS=false wrangler deploy --dry-run --config wrangler.riv.jsonc --env \"\"",
+    "types:worker": "WRANGLER_SEND_METRICS=false wrangler types --strict-vars=false",
     "preview:widget": "npm run build:widget && node scripts/preview-widget.mjs",
     "check": "npm run format:check && npm run typecheck && npm test && npm run build"
   },

@@ -1,0 +1,34 @@
+{
+  "source": "docs/claude-trip-example.png",
+  "source_sha256": "bbaf04dc82dbe6b2e3d8aea06b062b52bcbd3dd30e6ad25317e832b88acf846a",
+  "source_kind": "Owner-provided screenshot of a real Claude conversation",
+  "operation": "Rectangular crop only; no resizing, redrawing, or generated content",
+  "evidence": "Three views of one recorded trip, not three independent tests or current schedules",
+  "images": [
+    {
+      "file": "assets/claude-submission/01-route-options.png",
+      "crop_box": [34, 328, 1498, 1368],
+      "dimensions": [1464, 1040],
+      "sha256": "34f4863b4eedde3f3ca5b96b9d9b3a602bc5af56095b1046d8b425d6d8e82ff9",
+      "prompt": "How do I get from the Ferry Building to Baker Beach, leaving now?",
+      "caption": "Route alternatives and timing"
+    },
+    {
+      "file": "assets/claude-submission/02-journey-details.png",
+      "crop_box": [34, 1388, 1498, 2478],
+      "dimensions": [1464, 1090],
+      "sha256": "d051a8a5cea2ce8cacf4f4a51d524e337205857a967646e7c364916bf6661380",
+      "prompt": "How do I get from the Ferry Building to Baker Beach, leaving now?",
+      "caption": "Expanded journey timeline"
+    },
+    {
+      "file": "assets/claude-submission/03-full-widget.png",
+      "crop_box": [34, 328, 1498, 2478],
+      "dimensions": [1464, 2150],
+      "sha256": "f51dfce9e06e52a0a5e36551e8387afc0a46213041846d54234ee0d0a16af4f2",
+      "prompt": "How do I get from the Ferry Building to Baker Beach, leaving now?",
+      "caption": "Full captured app area"
+    }
+  ],
+  "source_dimensions": [1528, 2478]
+}

@@ -2,7 +2,9 @@
 
 This project runs as a stateless Cloudflare Worker. It needs no API keys, OAuth, storage, Containers, or background jobs. Use an account on **Workers Free** to keep hosting within its free allowance. The Wrangler configuration does not select or enforce your account's billing plan.
 
-The MCP endpoint is `/sf-transit/mcp`, with no trailing slash. `/mcp` remains available for existing connections. A request on a different path from the configured `PUBLIC_MCP_URL` uses the host's default widget sandbox so it is not assigned the canonical URL's sandbox hash. When `HOMEPAGE_URL` is empty, the root URL returns service information and advertises the canonical endpoint. Set it to redirect visitors to your website instead. `/sf-transit` and `/sf-transit/` redirect to the GitHub repository. These page redirects do not affect the MCP endpoint.
+The MCP endpoint is `/sf-transit/mcp`, with no trailing slash. `/mcp` remains available for existing connections. Requests on a different origin or path from `PUBLIC_MCP_URL` use the host's default widget sandbox so they are not assigned a different connector URL's hash. When `HOMEPAGE_URL` is empty, the root URL returns service information and advertises the canonical endpoint. Set it to redirect visitors to your website instead. `/sf-transit` and `/sf-transit/` redirect to the GitHub repository. These page redirects do not affect the MCP endpoint.
+
+The project is created by **Lucas Czekaj** and operated and published by **[Reindex Ventures LLC](https://reindexventures.com)**. Its repository stays at `czekaj/sf-transit-mcp`.
 
 ## Prepare locally
 
@@ -37,7 +39,45 @@ The default `wrangler.jsonc` configuration has no custom domain or account ID. I
 
 Add the resulting HTTPS endpoint to Claude as a custom connector with no authentication. The Cloudflare login is for the person deploying the Worker; people using the MCP do not need a Cloudflare account.
 
-## Maintainer deployment on czekaj.us
+## Prepared company deployment on riv.lc
+
+The requested new connector URL is **`https://mcp.riv.lc/sf-transit/mcp`**. Its complete deployment configuration is [`wrangler.riv.jsonc`](../wrangler.riv.jsonc):
+
+| Setting          | Value                               |
+| ---------------- | ----------------------------------- |
+| Worker           | `sf-transit-mcp`                    |
+| Custom Domain    | `mcp.riv.lc`                        |
+| `PUBLIC_MCP_URL` | `https://mcp.riv.lc/sf-transit/mcp` |
+| `HOMEPAGE_URL`   | `https://reindexventures.com`       |
+| Repository       | `czekaj/sf-transit-mcp`             |
+
+This is a prepared target, not a claim that the hostname is live. `wrangler.jsonc` and its current named `production` environment remain unchanged during preparation. The connected Cloudflare build keeps using that file until its deploy command is changed explicitly.
+
+Check the company configuration locally:
+
+```sh
+npm run build:worker:riv
+```
+
+### Cut over after approval
+
+1. Approve the specific company-domain deployment and its verification before accessing production. Confirm the `riv.lc` zone and available `mcp.riv.lc` hostname are in the intended Workers Free account.
+2. Review the Worker's current domain bindings before changing the connected build command. Both configuration files target the same Worker. Replacing its Custom Domain configuration can reconcile or remove existing bindings; do not assume `lucas.czekaj.us` is preserved. Any change or retirement of that personal hostname requires separate, explicit approval. Prepare a transition that retains it if continuity is required.
+3. Once that plan is approved, set the existing `sf-transit-mcp` Worker's Git build settings to the values below and run the approved deployment.
+
+| Setting                        | Company deployment value                                   |
+| ------------------------------ | ---------------------------------------------------------- |
+| Repository / production branch | `czekaj/sf-transit-mcp` / `main`                           |
+| Build command                  | `npm run build:widget`                                     |
+| Deploy command                 | `npx wrangler deploy --config wrangler.riv.jsonc --env ""` |
+
+The company file contains its production values directly at the top level. Use the command as written; the existing `--env production` command selects a different configuration. No manual URL variables are required. No new paid service, storage, or account ID is introduced.
+
+After deployment, the company hostname should redirect `/` to `https://reindexventures.com`, redirect `/sf-transit` and `/sf-transit/` to the unchanged GitHub repository, and serve MCP at `/sf-transit/mcp`. Verify those responses and standard MCP discovery/resources in a bounded, approved completion check; these checks need no routing-provider requests. Update Claude to the exact new connector URL so its widget domain matches.
+
+The user requested that the personal website be left alone. This preparation makes no requests to `www.czekaj.us`, changes no DNS records, and makes no claim to diagnose or fix its reported 403. The supplied curl output establishes that `lucas.czekaj.us/` returned the intended 308; it does not show the cause of an error on the destination site.
+
+## Existing deployment on czekaj.us
 
 The named `production` environment prepares these settings:
 
@@ -50,7 +90,7 @@ The named `production` environment prepares these settings:
 | `HOMEPAGE_URL`                         | `https://www.czekaj.us`                  |
 | `workers.dev` and version preview URLs | Disabled                                 |
 
-These are deployment settings, not a claim that this URL is live.
+These are the existing configuration's settings. Keep its build command until a company-domain migration is approved; publishing the documentation alone does not select `wrangler.riv.jsonc`.
 
 Before publishing, confirm that `czekaj.us` is an active Cloudflare zone in the Workers Free account you intend to use, and that `lucas.czekaj.us` is available for this service. Cloudflare cannot create a Custom Domain over an existing CNAME. Review any existing DNS record or service before changing it.
 
@@ -100,9 +140,9 @@ After deployment, verify MCP initialization, tool discovery, and the widget reso
 
 See [Cloudflare Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/) and [Wrangler environments](https://developers.cloudflare.com/workers/wrangler/environments/) for how these settings work.
 
-## Share the hostname with other MCPs
+## Share the company hostname with other MCPs
 
-The Custom Domain makes SF Transit the default Worker for `lucas.czekaj.us`. It does not prevent other Workers from serving specific paths on that hostname. [Cloudflare Routes run before the Custom Domain Worker](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/#interaction-with-routes).
+After the company migration, the Custom Domain makes SF Transit the default Worker for `mcp.riv.lc`. Other Workers can serve specific paths on that hostname. [Cloudflare Routes run before the Custom Domain Worker](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/#interaction-with-routes).
 
 For a second MCP, configure a route in **that project's Worker configuration**, for example:
 
@@ -110,8 +150,8 @@ For a second MCP, configure a route in **that project's Worker configuration**, 
 {
   "routes": [
     {
-      "pattern": "lucas.czekaj.us/another-service/*",
-      "zone_name": "czekaj.us",
+      "pattern": "mcp.riv.lc/another-service/*",
+      "zone_name": "riv.lc",
     },
   ],
 }

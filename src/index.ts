@@ -46,10 +46,13 @@ export default {
     return handleMcpRequest(request, {
       createServer: () => {
         const serverUrl = env.PUBLIC_MCP_URL;
-        // Compatibility paths use the host's default widget sandbox. Never pin
-        // them to the hash of a different connector URL.
+        // Only pin the configured origin and path. Aliases use the host's default
+        // widget sandbox rather than another connector URL's domain hash.
+        const configuredUrl = serverUrl ? new URL(serverUrl) : undefined;
         return createTransitServer(
-          serverUrl && new URL(serverUrl).pathname === url.pathname
+          serverUrl &&
+            configuredUrl?.origin === url.origin &&
+            configuredUrl.pathname === url.pathname
             ? { serverUrl }
             : {},
         );

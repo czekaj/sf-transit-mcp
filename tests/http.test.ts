@@ -15,6 +15,10 @@ const productionEnv: Env = {
   PUBLIC_MCP_URL: "https://lucas.czekaj.us/sf-transit/mcp",
   HOMEPAGE_URL: "https://www.czekaj.us",
 };
+const companyEnv: Env = {
+  PUBLIC_MCP_URL: "https://mcp.riv.lc/sf-transit/mcp",
+  HOMEPAGE_URL: "https://reindexventures.com",
+};
 
 const modernProtocolVersion = "2026-07-28";
 const createServer = vi.fn(() => {
@@ -38,15 +42,17 @@ function request(
     raw?: boolean;
     path?: string;
     endpoint?: string;
+    origin?: string;
   } = {},
 ): Request {
   const method = options.method ?? "POST";
+  const origin = options.origin ?? "http://localhost";
   return new Request(
-    `http://localhost${options.endpoint ?? "/sf-transit/mcp"}${options.path ?? ""}`,
+    `${origin}${options.endpoint ?? "/sf-transit/mcp"}${options.path ?? ""}`,
     {
       method,
       headers: {
-        Host: "localhost",
+        Host: new URL(origin).host,
         "Content-Type": "application/json",
         Accept: "application/json, text/event-stream",
         ...options.headers,
@@ -331,7 +337,10 @@ describe("Worker pages and discovery", () => {
     const response = await worker.fetch(
       request(
         { jsonrpc: "2.0", id: 1, method: "resources/list" },
-        { headers: { "MCP-Protocol-Version": "2025-11-25" } },
+        {
+          origin: "https://lucas.czekaj.us",
+          headers: { "MCP-Protocol-Version": "2025-11-25" },
+        },
       ),
       productionEnv,
     );
@@ -349,6 +358,49 @@ describe("Worker pages and discovery", () => {
         ],
       },
     });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("uses the company hostname's own widget domain after the prepared migration", async () => {
+    const response = await worker.fetch(
+      request(
+        { jsonrpc: "2.0", id: 1, method: "resources/list" },
+        {
+          origin: "https://mcp.riv.lc",
+          headers: { "MCP-Protocol-Version": "2025-11-25" },
+        },
+      ),
+      companyEnv,
+    );
+    expect(response.status).toBe(200);
+    expect(await message(response)).toHaveProperty(
+      "result.resources.0._meta.ui.domain",
+      "57607a0a9dd337ff32fd37994ebf31c0.claudemcpcontent.com",
+    );
+    const root = await worker.fetch(
+      new Request("https://mcp.riv.lc/"),
+      companyEnv,
+    );
+    expect(root.status).toBe(308);
+    expect(root.headers.get("Location")).toBe("https://reindexventures.com");
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("does not pin an old hostname to the new hostname's widget domain", async () => {
+    const response = await worker.fetch(
+      request(
+        { jsonrpc: "2.0", id: 1, method: "resources/list" },
+        {
+          origin: "https://lucas.czekaj.us",
+          headers: { "MCP-Protocol-Version": "2025-11-25" },
+        },
+      ),
+      companyEnv,
+    );
+    expect(response.status).toBe(200);
+    const reply = await message(response);
+    expect(reply).toHaveProperty("result.resources.0._meta.ui");
+    expect(reply).not.toHaveProperty("result.resources.0._meta.ui.domain");
     expect(fetch).not.toHaveBeenCalled();
   });
 

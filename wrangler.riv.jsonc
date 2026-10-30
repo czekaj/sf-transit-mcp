@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  // Prepared company deployment. The existing Cloudflare Git build does not
+  // select this file until its deploy command explicitly uses --config.
+  "name": "sf-transit-mcp",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-29",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "mcp.riv.lc", "custom_domain": true }],
+  "vars": {
+    "PUBLIC_MCP_URL": "https://mcp.riv.lc/sf-transit/mcp",
+    "HOMEPAGE_URL": "https://reindexventures.com",
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 0.01,
+    "logs": { "invocation_logs": false },
+  },
+}
