@@ -102,7 +102,9 @@ Selecting a route and opening details use the results already returned. Refresh 
 
 The widget supports light and dark themes, narrow screens, keyboard controls, and fullscreen details where the host supports them. This version presents route cards and a journey timeline; it does not include a street map.
 
-![Local itinerary widget preview with fictional services and times](docs/widget-preview.jpg)
+<p><a href="docs/claude-trip-example.png"><img src="docs/claude-trip-example.png" alt="Claude showing Ferry Building to Baker Beach route options and a detailed walking and Muni journey" width="720" /></a></p>
+
+_A Ferry Building → Baker Beach trip displayed in Claude. Select the screenshot to view it at full size._
 
 The published Transitous feed list includes Muni, BART, Caltrain, AC Transit, VTA, SamTrans, and regional ferries. Available journeys and predictions depend on current source data. Search is restricted to a bounding box around the Bay Area. Walking output describes legs between places and stops; it is not turn-by-turn navigation. Wheelchair routes depend on source accessibility data. Fares, service alerts, and bike-share availability are not currently returned.
 
