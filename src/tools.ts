@@ -6,6 +6,7 @@ import { createBudgetedFetch } from "./budget.js";
 import { formatTripPlan } from "./format.js";
 import { ATTRIBUTION, ATTRIBUTION_TEXT, PROJECT } from "./project.js";
 import { createRoutingClient, RoutingError } from "./routing/client.js";
+import { logRoutingFailure } from "./routing/diagnostics.js";
 import {
   planTripInputSchema,
   searchPlacesInputSchema,
@@ -30,6 +31,7 @@ export function createTransitServer(
     baseUrl: PROJECT.providerUrl,
     userAgent: PROJECT.userAgent,
     fetcher: options.fetcher ?? publicFetch,
+    onFailure: logRoutingFailure,
     ...(options.now ? { now: options.now } : {}),
   });
   const server = new McpServer(

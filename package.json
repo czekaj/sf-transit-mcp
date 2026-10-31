@@ -62,6 +62,7 @@
     "esbuild": "0.28.2",
     "happy-dom": "21.0.4",
     "marked": "18.1.2",
+    "miniflare": "5.20261023.3-beta",
     "prettier": "3.9.10",
     "tsx": "4.23.15",
     "typescript": "7.0.2",

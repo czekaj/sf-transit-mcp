@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { RoutingFailure, RoutingOperation } from "./diagnostics.js";
 import {
   BAY_AREA_BOUNDS,
   planTripInputSchema,
@@ -196,11 +197,13 @@ export function createRoutingClient({
   userAgent,
   fetcher,
   now = () => new Date(),
+  onFailure,
 }: {
   baseUrl: string;
   userAgent: string;
   fetcher: typeof fetch;
   now?: () => Date;
+  onFailure?: (failure: RoutingFailure) => void;
 }) {
   let base: URL;
   try {
@@ -232,7 +235,13 @@ export function createRoutingClient({
     );
   }
 
-  async function get(path: string, params: URLSearchParams): Promise<unknown> {
+  async function get(
+    operation: RoutingOperation,
+    path: string,
+    params: URLSearchParams,
+  ): Promise<unknown> {
+    const started = performance.now();
+    let status: number | undefined;
     const controller = new AbortController();
     let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
     let rejectDeadline!: (reason: RoutingError) => void;
@@ -255,11 +264,14 @@ export function createRoutingClient({
         fetcher(url, {
           method: "GET",
           headers: { Accept: "application/json", "User-Agent": userAgent },
-          redirect: "error",
+          // Workers supports only manual/follow. Reject redirects below without
+          // forwarding trip parameters or application headers to another origin.
+          redirect: "manual",
           signal: controller.signal,
         }),
         deadline,
       ]);
+      status = response.status;
       if (!response.ok)
         throw new RoutingError(
           "UNAVAILABLE",
@@ -314,6 +326,32 @@ export function createRoutingClient({
         );
       }
     } catch (error) {
+      // A RoutingError thrown before a response can be the local request budget,
+      // not a provider failure. Only transport failures, timeouts, and responses
+      // received from the provider belong in upstream diagnostics.
+      if (
+        controller.signal.aborted ||
+        status !== undefined ||
+        !(error instanceof RoutingError)
+      ) {
+        try {
+          onFailure?.({
+            operation,
+            category: controller.signal.aborted
+              ? "timeout"
+              : error instanceof RoutingError
+                ? error.code === "INVALID_RESPONSE"
+                  ? "invalid_response"
+                  : "http"
+                : "network",
+            durationMs: performance.now() - started,
+            ...(status !== undefined ? { status } : {}),
+            error,
+          });
+        } catch {
+          // A diagnostic sink must not change the error returned to the user.
+        }
+      }
       if (controller.signal.aborted)
         throw new RoutingError(
           "TIMEOUT",
@@ -346,7 +384,7 @@ export function createRoutingClient({
       const parsed = z
         .array(match)
         .max(100)
-        .safeParse(await get("/api/v1/geocode", params));
+        .safeParse(await get("search_places", "/api/v1/geocode", params));
       if (!parsed.success)
         throw new RoutingError(
           "INVALID_RESPONSE",
@@ -427,7 +465,7 @@ export function createRoutingClient({
           if (input.maxTransfers !== undefined)
             params.set("maxTransfers", String(input.maxTransfers));
           const parsed = planResponse.safeParse(
-            await get("/api/v6/plan", params),
+            await get("plan_trip", "/api/v6/plan", params),
           );
           if (!parsed.success)
             throw new RoutingError(

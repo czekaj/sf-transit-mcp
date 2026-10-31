@@ -166,7 +166,7 @@ describe("MOTIS client", () => {
     expect(url.searchParams.get("time")).toBe(now().toISOString());
     expect(url.searchParams.get("directModes")).toBe("");
     expect(url.searchParams.get("useRoutedTransfers")).toBe("true");
-    expect(fetcher.mock.calls[0]![1]?.redirect).toBe("error");
+    expect(fetcher.mock.calls[0]![1]?.redirect).toBe("manual");
     expect(
       new Headers(fetcher.mock.calls[0]![1]?.headers).get("User-Agent"),
     ).toBe(userAgent);
@@ -390,6 +390,39 @@ describe("MOTIS client", () => {
     await expect(client.searchPlaces({ query: "Home" })).rejects.not.toThrow(
       "SECRET",
     );
+  });
+
+  it("reports failure metadata and tolerates a broken diagnostic sink", async () => {
+    const onFailure = vi.fn();
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(new Response(null, { status: 503 }));
+    const client = createRoutingClient({
+      baseUrl: "http://localhost",
+      userAgent,
+      fetcher,
+      onFailure,
+    });
+    await expect(
+      client.searchPlaces({ query: "Fixture Station" }),
+    ).rejects.toMatchObject({ code: "UNAVAILABLE" });
+    expect(onFailure).toHaveBeenCalledWith(
+      expect.objectContaining({
+        operation: "search_places",
+        category: "http",
+        status: 503,
+        durationMs: expect.any(Number),
+      }),
+    );
+    onFailure.mockImplementation(() => {
+      throw new Error("fixture logger unavailable");
+    });
+    await expect(
+      client.searchPlaces({ query: "Fixture Station" }),
+    ).rejects.toMatchObject({
+      code: "UNAVAILABLE",
+      message: "The routing service is unavailable. Try again shortly.",
+    });
   });
 
   it("rejects malformed and oversized provider responses", async () => {

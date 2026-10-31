@@ -18,6 +18,34 @@ npm run build:worker
 
 The checks use made-up local examples. The Worker build is a dry run: it bundles locally without creating a deployment, changing DNS, or calling a transit provider. A successful build does not verify the deployed Worker's runtime limits.
 
+## Logs and traces
+
+The root `observability` block in `wrangler.jsonc` applies to the default Worker and is inherited by `env.production`, which does not override it:
+
+```jsonc
+"observability": {
+  "enabled": true,
+  "head_sampling_rate": 0.01,
+  "redact_query_string": false,
+  "logs": {
+    "enabled": true,
+    "head_sampling_rate": 0.01,
+    "invocation_logs": false,
+    "persist": true,
+  },
+  "traces": {
+    "enabled": true,
+    "head_sampling_rate": 0.01,
+    "persist": true,
+  },
+  "issues": { "enabled": true },
+}
+```
+
+Cloudflare persists sampled logs and traces, for a 1% sample of requests for each. Invocation logs are disabled. Issue detection uses the supported `observability.issues.enabled` setting in Wrangler 4.156.0.
+
+Query strings remain visible in logs and traces. In particular, sampled traces may capture outbound Transitous URLs containing locations, travel times, and routing preferences. Application failure logs contain only the operation, error category, HTTP status when available, duration, and allowlisted technical error names or codes; they exclude trip payloads, locations, and request or response bodies. See [`PRIVACY.md`](../PRIVACY.md) for the hosted service disclosure. These settings do not select or change the account's billing plan.
+
 ## Deploy your own copy
 
 The default `wrangler.jsonc` configuration has no custom domain or account ID. It deploys independently of the maintainer's domain.

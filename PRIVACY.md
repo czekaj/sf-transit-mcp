@@ -1,6 +1,6 @@
 # Privacy policy
 
-Last updated: October 30, 2026
+Last updated: October 31, 2026
 
 SF Bay Area Transit MCP is operated and published by **[Reindex Ventures LLC](https://reindexventures.com)** and was created by **Lucas Czekaj**. This notice covers this project's software and the hosted service operated by Reindex Ventures LLC. Other people who run a copy may use different infrastructure and policies.
 
@@ -29,7 +29,9 @@ This software does not save home-address profiles, search history, or trip histo
 
 To enforce usage limits, the software temporarily keeps the times of recent requests. Those records contain no trip details or user identifiers.
 
-The software does not add advertising trackers, analytics software, or tracking cookies. It does not write trip requests or results to application logs. Your AI app and hosting providers may keep their own records. The Cloudflare configuration disables logs for individual requests and enables sampled monitoring. We have not verified how long Cloudflare keeps network, security, or diagnostic records.
+The software does not add advertising trackers, analytics software, or tracking cookies. It does not write trip requests, results, or saved profiles to application logs. Failure logs contain only the operation, error category, HTTP status when available, duration, and allowlisted technical error names or codes; they exclude locations and request or response bodies. Your AI app and hosting providers may keep their own records.
+
+The Cloudflare configuration enables persisted logs and traces for a 1% sample of requests, disables invocation logs, and enables issue detection. URL query strings are not redacted from logs and traces. Sampled traces may therefore contain outbound Transitous request URLs, including locations, travel times, and routing preferences. We have not verified how long Cloudflare keeps network, security, or diagnostic records.
 
 The homepage redirect to the operator's website adds the fixed referral label `utm_source=sf-transit-mcp`. This value identifies the project, not an individual visitor. Incoming request query strings are not copied into that redirect.
 
