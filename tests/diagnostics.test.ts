@@ -33,6 +33,18 @@ describe("routing provider diagnostics", () => {
     });
   });
 
+  it("allows departures diagnostics without logging stop identifiers", () => {
+    const event = capture({
+      operation: "get_stop_departures",
+      error: new Error("SECRET-stop-id"),
+      stopId: "SECRET-stop-id",
+      category: "network",
+      durationMs: 12,
+    } as RoutingFailure);
+    expect(event.operation).toBe("get_stop_departures");
+    expect(JSON.stringify(event)).not.toContain("SECRET-stop-id");
+  });
+
   it.each([200, 299, 300, 302, 399, 400, 429, 500, 599])(
     "includes HTTP status %i when diagnosing a failed operation",
     (status) => {

@@ -74,6 +74,7 @@ export function renderPublicPage({
     li + li { margin-top: .65rem; }
     .note { padding: .9rem 1.1rem; border-left: 3px solid var(--accent); margin-top: 1.4rem; font-size: .94rem; }
     .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .tools-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .card { background: var(--card); border: 1px solid var(--line); border-radius: 1rem; padding: 1.3rem; }
     .card p { color: var(--muted); font-size: .95rem; }
     .prompt { margin: 0; font-size: 1rem; }
@@ -142,7 +143,7 @@ export function renderPublicPage({
   <div class="shell">
     <header class="masthead">
       <div class="brand"><img src="/sf-transit/icon.png" width="52" height="52" alt=""><span>SF Bay Area Transit MCP</span></div>
-      <nav aria-label="Main navigation"><a href="/sf-transit#connect">Connect</a><a href="/sf-transit#journeys">Plan a trip</a><a href="/sf-transit#admin">IT review</a><a href="/sf-transit#help">Get help</a><a class="repo-link" href="https://github.com/czekaj/sf-transit-mcp" aria-label="View sf-transit-mcp on GitHub">${GITHUB_ICON}<span>GitHub</span></a></nav>
+      <nav aria-label="Main navigation"><a href="/sf-transit#connect">Connect</a><a href="/sf-transit#journeys">Plan a trip</a><a href="/sf-transit#departures">Departures</a><a href="/sf-transit#admin">IT review</a><a href="/sf-transit#help">Get help</a><a class="repo-link" href="https://github.com/czekaj/sf-transit-mcp" aria-label="View sf-transit-mcp on GitHub">${GITHUB_ICON}<span>GitHub</span></a></nav>
     </header>
     <main id="main">
       ${content}

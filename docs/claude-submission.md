@@ -28,13 +28,14 @@ Use the approved target only after migration and verification; do not submit an 
 
 This inventory reflects local source, not new live verification. The portal imports the server's current metadata. Each tool exposes the same human-readable name in both `title` and `annotations.title` for MCP clients and the directory validator.
 
-| Tool               | Title                       | readOnlyHint | destructiveHint | idempotentHint | openWorldHint |
-| ------------------ | --------------------------- | ------------ | --------------- | -------------- | ------------- |
-| `search_places`    | Find Bay Area places        | true         | false           | true           | true          |
-| `plan_trip`        | Plan a Bay Area trip        | true         | false           | true           | true          |
-| `get_service_info` | Transit service information | true         | false           | true           | false         |
+| Tool                  | Title                       | readOnlyHint | destructiveHint | idempotentHint | openWorldHint |
+| --------------------- | --------------------------- | ------------ | --------------- | -------------- | ------------- |
+| `search_places`       | Find Bay Area places        | true         | false           | true           | true          |
+| `plan_trip`           | Plan a Bay Area trip        | true         | false           | true           | true          |
+| `get_stop_departures` | Next Bay Area departures    | true         | false           | true           | true          |
+| `get_service_info`    | Transit service information | true         | false           | true           | false         |
 
-Place search returns matching places to choose from. Trip planning returns complete journeys plus route cards. Service information returns time, sources, and limitations without contacting Transitous. There are no write tools. Import the current `ui://` resource URI, which includes a version identifier, rather than pasting one from an older build.
+Place search returns matching places to choose from. Trip planning returns complete journeys plus route cards. Stop departures return a standalone board and readable text, with live estimates or scheduled times per departure. Service information returns time, sources, and limitations without contacting Transitous. There are no write tools. Import the current `ui://` resource URI, which includes a version identifier, rather than pasting one from an older build.
 
 ### 3. Listing
 
@@ -50,15 +51,15 @@ Place search returns matching places to choose from. Trip planning returns compl
 
 > Plan San Francisco and Bay Area trips with your AI agent. Compare buses, trains, ferries, walking, and cycling, with departure times and total travel time.
 
-**Description — 1130 characters including paragraph breaks; maximum 2,000:**
+**Description — maximum 2,000 characters:**
 
 Plan trips across San Francisco and the Bay Area with your AI agent. Search for an address, landmark, or transit stop, then compare routes showing which services to take, where to walk, where to change vehicles, and when to leave and arrive.
 
 Coverage includes BART, Muni, Caltrain, AC Transit, VTA, SamTrans, Golden Gate Transit and Ferry, and SF Bay Ferry, depending on available routing data. Set a departure time or arrival deadline, limit transfers, or compare transit with walking or riding your own bicycle.
 
-In AI apps that support MCP Apps, compare routes in an interactive display and open each route's instructions. Other apps receive the trip information as text. Times come from schedules or live estimates where available. Fares, tickets, service alerts, bike-share availability, and turn-by-turn walking directions are not included.
+Ask for next departures at a selected stop, including Embarcadero BART or Muni. In AI apps that support MCP Apps, compare routes, open trip instructions, and view departure boards on their own or at a trip’s boarding stop. Other apps receive the trip information as text. Times come from schedules or live estimates where available. Fares, tickets, service alerts, bike-share availability, and turn-by-turn walking directions are not included.
 
-Free and open source, with no API keys or authentication. Routing and place search use Transitous for light, noncommercial use. Search text, trip coordinates, and travel preferences are sent to that service.
+Free and open source, with no API keys or authentication. Routing, place search, and stop departures use Transitous for light, noncommercial use. Search text, trip coordinates, travel preferences, and requested stop IDs and departure times are sent to that service.
 
 Created by Lucas Czekaj. Operated and published by Reindex Ventures LLC.
 
@@ -83,7 +84,7 @@ The Documentation URL is the HTML user guide and IT-admin review page, covering 
 
 **Primary:** Plan trips between Bay Area places. Compare where to walk, which vehicles to take, where to switch vehicles, and when to leave and arrive.
 
-**Additional:** Set an arrival deadline or compare transit with a direct walk or personal-bicycle trip. Request wheelchair routing for streets and paths; results state when vehicle accessibility is unknown.
+**Additional:** Check next departures at a selected BART, Muni, or other Bay Area stop. Set an arrival deadline or compare transit with a direct walk or personal-bicycle trip. Request wheelchair routing for streets and paths; results state when vehicle accessibility is unknown.
 
 **Setup:** Connect to the universal HTTPS endpoint. No service account, provider key, OAuth client, or credentials.
 
@@ -110,15 +111,15 @@ Claude explicitly supports connectors without authentication. [Authentication gu
 
 ### 7. Data handling
 
-**API ownership:** Select **Calls a third-party API we don't control**. Transitous operates the underlying routing and place-search API. Reindex Ventures LLC operates the MCP server, but has no separate partnership agreement with Transitous. Its public policy permits qualifying light, open-source, noncommercial use. Explain that permission basis in Additional notes. The portal warns that third-party API use typically blocks listing; acceptance is not confirmed by the provider's permission to use its API.
+**API ownership:** Select **Calls a third-party API we don't control**. Transitous operates the underlying routing, place-search, and stop-departure API. Reindex Ventures LLC operates the MCP server, but has no separate partnership agreement with Transitous. Its public policy permits qualifying light, open-source, noncommercial use. Explain that permission basis in Additional notes. The portal warns that third-party API use typically blocks listing; acceptance is not confirmed by the provider's permission to use its API.
 
 **Personal health data:** Select **Other / depends on configuration** and explain the wheelchair-routing option. When requested by the user, the server processes and forwards that preference to Transitous; it can indicate a disability. The server does not access medical records or healthcare accounts, and does not save trip history.
 
 **Sponsored or promoted content:** Select **No**.
 
-**API-use explanation:** “The connector uses Transitous's public MOTIS API for trip planning and place search under its published policy for light, open-source, noncommercial use. Requests identify the application, and results credit the data sources. We have no separate partnership or special capacity agreement. We must coordinate with Transitous if expected usage meets its published criteria for significant resource use.”
+**API-use explanation:** “The connector uses Transitous's public MOTIS API for trip planning, place search, and stop departures under its published policy for light, open-source, noncommercial use. Requests identify the application, and results credit the data sources. We have no separate partnership or special capacity agreement. We must coordinate with Transitous if expected usage meets its published criteria for significant resource use.”
 
-**Information sent:** Place-search text, selected coordinates, time, and travel preferences needed for the requested journey. Starting addresses can be personal data; a wheelchair preference can reveal sensitive information. The connector does not access conversation history or save a home profile.
+**Information sent:** Place-search text, selected coordinates, time, and travel preferences needed for the requested journey; stop IDs, requested departure times, and result limits for departure boards. Starting addresses can be personal data; a wheelchair preference can reveal sensitive information. The connector does not access conversation history or save a home profile.
 
 **Privacy policy:** Use the hosted [privacy policy](https://mcp.riv.lc/sf-transit/privacy) after deployment. Its content is generated from [PRIVACY.md](../PRIVACY.md). It explains who operates the service, what Cloudflare processes, what Transitous receives and retains, and how to contact the operator. Do not answer “no data transmitted.”
 
@@ -130,15 +131,17 @@ Claude explicitly supports connectors without authentication. [Authentication gu
 
 “Connect to `https://mcp.riv.lc/sf-transit/mcp` with authentication set to None. No account, credentials, or seeded account data are required. Use public places rather than a home address. Returned journeys depend on the current timetable and provider availability.”
 
-| Reviewer prompt                                                                                         | Expected check                                              |
-| ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| “What time is it in San Francisco, and what data does this connector use?”                              | `get_service_info`: time zone, sources, limitations.        |
-| “Find the Ferry Building and Baker Beach in San Francisco. Show candidates if a place is ambiguous.”    | `search_places`: candidate labels and coordinates.          |
-| “Plan a transit trip from the Ferry Building to Baker Beach, leaving now. Include walks and transfers.” | `plan_trip`: complete text and route cards where supported. |
-| “Plan the same trip arriving by 4 PM tomorrow with at most one transfer.”                               | Arrival deadline, Pacific time, transfer constraint.        |
-| “Compare that trip with a direct walk or a personal bicycle trip.”                                      | Explicit mode comparison.                                   |
+| Reviewer prompt                                                                                         | Expected check                                                                                 |
+| ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| “What time is it in San Francisco, and what data does this connector use?”                              | `get_service_info`: time zone, sources, limitations.                                           |
+| “Find the Ferry Building and Baker Beach in San Francisco. Show candidates if a place is ambiguous.”    | `search_places`: candidate labels and coordinates.                                             |
+| “Plan a transit trip from the Ferry Building to Baker Beach, leaving now. Include walks and transfers.” | `plan_trip`: complete text and route cards where supported.                                    |
+| “What departs next from Embarcadero BART?”                                                              | `search_places` resolves the stop; `get_stop_departures` returns live or scheduled departures. |
+| “Show the next Muni N departures at Embarcadero.”                                                       | Muni stop selection and departure board; distinguish scheduled rows from live estimates.       |
+| “Plan the same trip arriving by 4 PM tomorrow with at most one transfer.”                               | Arrival deadline, Pacific time, transfer constraint.                                           |
+| “Compare that trip with a direct walk or a personal bicycle trip.”                                      | Explicit mode comparison.                                                                      |
 
-Selecting a route and opening its details use the results already returned. Only clicking Refresh should request new routes. Check that results distinguish scheduled times from estimates and state when accessibility is unknown.
+Selecting a route and opening its details use the results already returned. Opening **Next departures at this stop** should request one board for that boarding stop. Refreshing the board should request departures without changing the trip. Route and destination filters should narrow loaded rows without a request. Nothing should poll or retry automatically. Trip Refresh should request new routes. Check that results distinguish scheduled times from estimates and state when accessibility is unknown.
 
 **Testing confirmation:** Pending an approved check of every tool in Claude and MCP Inspector. Do not mark it complete based on the single supplied capture. [Review criteria](https://claude.com/docs/connectors/building/review-criteria)
 

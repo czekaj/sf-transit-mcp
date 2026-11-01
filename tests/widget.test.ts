@@ -6,6 +6,7 @@ import {
   parseTripView,
   type WidgetBridge,
 } from "../widget/app.js";
+import { parseDepartureView } from "../widget/departures.js";
 import fixture from "./fixtures/widget-trip.json";
 
 let root: HTMLElement;
@@ -321,5 +322,259 @@ describe("journey widget", () => {
       expect(root.querySelectorAll(".timeline-leg")).toHaveLength(9);
       expect(host.callServerTool).not.toHaveBeenCalled();
     },
+  );
+});
+
+describe("departure boards", () => {
+  const stop = {
+    stopId: "stop-1",
+    latitude: 37.79,
+    longitude: -122.4,
+    label: "Embarcadero",
+  };
+  function result() {
+    return {
+      structuredContent: {
+        kind: "departures",
+        stop,
+        timeZone: "America/Los_Angeles",
+        generatedAt: "2026-10-29T14:00:00-07:00",
+        requestedTime: "2026-10-29T14:00:00-07:00",
+        request: { stop, limit: 20 },
+        warnings: [],
+        attribution: [{ label: "Transitous", url: "https://transitous.org/" }],
+        departures: [true, false, false].map((live, index) => ({
+          stopId: "stop-1",
+          route: index ? "Green" : "Blue",
+          mode: "SUBWAY",
+          headsign: index ? "Daly City" : "Dublin / Pleasanton",
+          routeColor: "71BDF4",
+          departureTime: "2026-10-29T14:06:00-07:00",
+          scheduledDepartureTime: "2026-10-29T14:05:00-07:00",
+          realTime: live,
+          cancelled: index === 1,
+          pickupAllowed: index !== 2,
+        })),
+      },
+    };
+  }
+  let root: HTMLElement;
+  beforeEach(() => {
+    document.body.replaceChildren();
+    root = document.createElement("div");
+    document.body.append(root);
+  });
+  function host() {
+    return {
+      callServerTool: vi
+        .fn<WidgetBridge["callServerTool"]>()
+        .mockResolvedValue(result()),
+      openLink: vi.fn().mockResolvedValue({}),
+    };
+  }
+  function button(label: string) {
+    return [...root.querySelectorAll("button")].find((b) =>
+      b.textContent?.includes(label),
+    )!;
+  }
+  const settle = async () => {
+    await Promise.resolve();
+    await Promise.resolve();
+  };
+  it("renders standalone live, cancellation and no pickup states without requesting", () => {
+    const bridge = host();
+    const widget = createTripWidget(root, bridge);
+    widget.receiveToolResult(result());
+    expect(root.querySelectorAll(".departure-row")).toHaveLength(3);
+    expect(root.textContent).toContain("RETRIEVED");
+    expect(root.textContent).not.toContain("min after retrieval");
+    expect(
+      root.querySelector(".matrix-departure")?.getAttribute("aria-label"),
+    ).toMatch(/\d:\d{2} [AP]M/);
+    expect(root.querySelectorAll(".matrix-status.is-unavailable")).toHaveLength(
+      2,
+    );
+    expect(root.querySelectorAll(".matrix-departure.is-live")).toHaveLength(1);
+    expect(bridge.callServerTool).not.toHaveBeenCalled();
+    const select = root.querySelector("select")!;
+    select.value = "Blue";
+    select.dispatchEvent(new Event("change"));
+    expect(root.querySelectorAll(".departure-row")).toHaveLength(1);
+    expect(root.textContent).toContain("Filters use these results only");
+    expect(bridge.callServerTool).not.toHaveBeenCalled();
+  });
+  it("keeps previous departures on refresh failure and sanitizes errors", async () => {
+    const bridge = host();
+    bridge.callServerTool.mockRejectedValue(Error("SECRET"));
+    const widget = createTripWidget(root, bridge);
+    widget.receiveToolResult(result());
+    button("Refresh departures").click();
+    await settle();
+    expect(root.textContent).toContain(
+      "Refresh failed. Showing previous departures.",
+    );
+    expect(root.textContent).not.toContain("SECRET");
+    expect(root.querySelectorAll(".departure-row")).toHaveLength(3);
+    expect(bridge.callServerTool.mock.calls[0]![0]).toEqual({
+      name: "get_stop_departures",
+      arguments: { stop, limit: 20 },
+    });
+  });
+  it("renders empty and pending standalone states with no automatic calls", () => {
+    const bridge = host();
+    const widget = createTripWidget(root, bridge);
+    widget.receiveToolInput({ arguments: { stop } });
+    expect(root.textContent).toContain("Loading departures");
+    const empty = result();
+    empty.structuredContent.departures = [];
+    widget.receiveToolResult(empty);
+    expect(root.textContent).toContain("No departures returned");
+    expect(bridge.callServerTool).not.toHaveBeenCalled();
+  });
+  it("preserves stop IDs and opens a board only on explicit click without replacing trip", async () => {
+    const bridge = host();
+    const widget = createTripWidget(root, bridge);
+    const incoming = structuredClone(fixture);
+    const leg = incoming.structuredContent.itineraries[0]!.legs.find(
+      (l) => l.mode !== "WALK",
+    )!;
+    Object.assign(leg.from, stop);
+    expect(
+      parseTripView(incoming.structuredContent).itineraries[0]!.legs.find(
+        (l) => l.mode !== "WALK",
+      )!.from.stopId,
+    ).toBe("stop-1");
+    widget.receiveToolResult(incoming);
+    button("Journey details").click();
+    expect(bridge.callServerTool).not.toHaveBeenCalled();
+    button("Next departures").click();
+    await settle();
+    expect(root.querySelectorAll(".route-card")).toHaveLength(2);
+    expect(root.querySelectorAll(".departure-row")).toHaveLength(3);
+    widget.receiveToolResult(result());
+    expect(root.querySelectorAll(".route-card")).toHaveLength(2);
+  });
+  it("fences an old inline call when a newer trip starts", async () => {
+    const bridge = host();
+    let complete!: (v: unknown) => void;
+    bridge.callServerTool.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          complete = resolve;
+        }),
+    );
+    const widget = createTripWidget(root, bridge);
+    const incoming = structuredClone(fixture);
+    Object.assign(
+      incoming.structuredContent.itineraries[0]!.legs.find(
+        (l) => l.mode !== "WALK",
+      )!.from,
+      stop,
+    );
+    widget.receiveToolResult(incoming);
+    button("Journey details").click();
+    button("Next departures").click();
+    widget.receiveToolInput({ arguments: incoming.structuredContent.request });
+    complete(result());
+    await settle();
+    widget.receiveToolResult(result());
+    expect(root.querySelector(".departure-panel")).toBeNull();
+    expect(root.textContent).toContain("Planning a new trip");
+  });
+  it("does not offer a board for missing stop IDs", () => {
+    const widget = createTripWidget(root, host());
+    widget.receiveToolResult(structuredClone(fixture));
+    button("Journey details").click();
+    expect(root.querySelector(".departures-open")).toBeNull();
+  });
+  it("rejects untrusted fields and preserves provider labels as text", () => {
+    const source = result();
+    for (const change of [
+      (x: ReturnType<typeof result>) => {
+        x.structuredContent.departures[0]!.routeColor = "red;";
+      },
+      (x: ReturnType<typeof result>) => {
+        x.structuredContent.generatedAt = "bad";
+      },
+      (x: ReturnType<typeof result>) => {
+        x.structuredContent.request.limit = 21;
+      },
+      (x: ReturnType<typeof result>) => {
+        x.structuredContent.attribution[0]!.url = "javascript:alert(1)";
+      },
+    ]) {
+      const bad = structuredClone(source);
+      change(bad);
+      expect(() => parseDepartureView(bad.structuredContent)).toThrow();
+    }
+    source.structuredContent.stop = {
+      ...stop,
+      label: "<img src=x onerror=alert(1)>",
+    };
+    const widget = createTripWidget(root, host());
+    widget.receiveToolResult(source);
+    expect(root.querySelector(".departure-panel h2 img")).toBeNull();
+    expect(root.textContent).toContain("<img src=x");
+  });
+});
+
+it("keeps matrix labels in fixed padded slots and preserves long destinations", () => {
+  const stop = { stopId: "matrix-stop", latitude: 37.79, longitude: -122.4 };
+  const widget = createTripWidget(root, bridge());
+  widget.receiveToolResult({
+    structuredContent: {
+      kind: "departures",
+      stop,
+      timeZone: "America/Los_Angeles",
+      generatedAt: "2026-10-29T14:00:00-07:00",
+      requestedTime: "2026-10-29T14:00:00-07:00",
+      request: { stop },
+      warnings: [],
+      attribution: [],
+      departures: [
+        {
+          stopId: stop.stopId,
+          route: "Yellow",
+          agency: "BART",
+          mode: "SUBWAY",
+          headsign: "San Francisco Airport",
+          departureTime: "2026-10-29T14:06:00-07:00",
+          scheduledDepartureTime: "2026-10-29T14:06:00-07:00",
+          realTime: false,
+          cancelled: false,
+          pickupAllowed: true,
+        },
+        {
+          stopId: stop.stopId,
+          route: "Blue",
+          mode: "SUBWAY",
+          headsign: "A very long destination that stays completely readable",
+          departureTime: "2026-10-29T14:06:00-07:00",
+          scheduledDepartureTime: "2026-10-29T14:06:00-07:00",
+          realTime: true,
+          cancelled: false,
+          pickupAllowed: true,
+        },
+      ],
+    },
+  });
+  const first = root.querySelector(".departure-row")!;
+  for (const [selector, slots] of [
+    [".matrix-line", 6],
+    [".matrix-destination", 22],
+    [".matrix-status", 9],
+    [".matrix-departure", 8],
+  ] as const) {
+    const field = first.querySelector(selector)!;
+    expect(field.querySelectorAll(".matrix-text")).toHaveLength(1);
+    expect(field.querySelectorAll(".matrix-cell")).toHaveLength(slots);
+  }
+  expect(
+    first.querySelector(".matrix-destination .matrix-mobile")?.textContent,
+  ).toBe("San Francisco Airport");
+  const long = root.querySelectorAll(".matrix-destination")[1]!;
+  expect(long.querySelectorAll(".matrix-text").length).toBeGreaterThan(1);
+  expect(long.getAttribute("aria-label")).toBe(
+    "A very long destination that stays completely readable",
   );
 });

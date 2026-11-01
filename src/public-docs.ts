@@ -32,7 +32,7 @@ export function renderPublicDocs(mcpUrl: string): string {
           <ol>
             <li>Open your AI app's MCP or connector settings and add a remote MCP server.</li>
             <li>Name it <strong>SF Bay Area Transit MCP</strong> and paste the official URL above. Choose <strong>no authentication</strong> if asked.</li>
-            <li>Enable the three tools, then ask for a trip between two Bay Area places.</li>
+            <li>Enable the four tools, then ask for a trip or the next departures from a Bay Area stop.</li>
           </ol>
         <p class="note">Your AI app must support remote MCP servers. Setup steps and work-account restrictions depend on the app. For local installation, use the <a href="https://github.com/czekaj/sf-transit-mcp#readme">README</a>.</p>
       </section>
@@ -55,11 +55,29 @@ export function renderPublicDocs(mcpUrl: string): string {
         </div>
       </section>
 
+      <section id="departures" aria-labelledby="departures-title">
+        <h2 id="departures-title">Next departures</h2>
+        <p class="section-intro">Ask your AI agent what leaves next from a transit stop. Each departure shows its line, destination, departure time, and whether it uses a live estimate or the timetable. The screenshots below use example data.</p>
+        <div class="feature">
+          <div><h3>Check a station</h3><blockquote class="prompt">What are the next departures from Embarcadero BART?</blockquote><p>Compare the returned departures, or filter them by line and destination. BART line names use their colors. A pulsing green dot beside a time identifies a live estimate. Scheduled times use plain text without a dot.</p></div>
+          <figure><a href="/sf-transit/screenshots/bart-departures.jpg" aria-label="View BART departure screenshot at full size"><img src="/sf-transit/screenshots/bart-departures.jpg" width="853" height="1045" loading="lazy" alt="BART departure board in the transit widget, with colored line names and separate live and scheduled times"></a><figcaption>The working departure widget with example BART data. These are not current departure times.</figcaption></figure>
+        </div>
+        <div class="feature">
+          <div><h3>Distinguish live and scheduled times</h3><blockquote class="prompt">When does the N Judah leave Judah and 9th Avenue toward Ocean Beach?</blockquote><p>A stop can have both live estimates and scheduled departures. A scheduled time means no live estimate was supplied; it does not confirm that a vehicle is on time.</p><p>Filters apply to the loaded results. Select <strong>Refresh departures</strong> to request another board. The display does not request updates in the background.</p></div>
+          <figure><a href="/sf-transit/screenshots/muni-departures.jpg" aria-label="View Muni departure screenshot at full size"><img src="/sf-transit/screenshots/muni-departures.jpg" width="853" height="1069" loading="lazy" alt="Muni departure board showing a scheduled N Judah departure alongside later live estimates"></a><figcaption>The same widget with example Muni data. The red clock records when this service retrieved the board, not when the agency updated its estimates.</figcaption></figure>
+        </div>
+        <div class="feature">
+          <div><h3>Check a stop during your trip</h3><p>Open trip details and select <strong>Next departures at this stop</strong> at a boarding stop. This requests departures for that stop when its identifier is available in the trip result.</p><p>Refreshing the board updates the stop's departures. It keeps your selected trip and its times unchanged. Cancelled services and departures where boarding is not allowed are labeled clearly.</p></div>
+          <figure><a href="/sf-transit/screenshots/trip-with-departures.jpg" aria-label="View departures in trip details at full size"><img src="/sf-transit/screenshots/trip-with-departures.jpg" width="853" height="2097" loading="lazy" alt="Trip details from the Ferry Building to Baker Beach with a departure board at the bus boarding stop"></a><figcaption>Trip details and stop departures in the working widget, using example data. Apps without interactive views receive departure information as text.</figcaption></figure>
+        </div>
+      </section>
+
       <section aria-labelledby="tools-title">
         <h2 id="tools-title">Available tools</h2>
-        <div class="grid">
+        <div class="grid tools-grid">
           <article class="card"><h3>Find a place</h3><p>Search for a Bay Area address, landmark, or transit stop and choose the matching location.</p><code class="tool-name">search_places</code></article>
           <article class="card"><h3>Plan a trip</h3><p>Get routes, departure and arrival times, where to walk, and where to change vehicles. Compare transit with walking or riding your own bicycle. You can also request wheelchair routing.</p><code class="tool-name">plan_trip</code></article>
+          <article class="card"><h3>Check next departures</h3><p>See upcoming departures at a Bay Area transit stop, including live estimates, scheduled times, and whether boarding is allowed.</p><code class="tool-name">get_stop_departures</code></article>
           <article class="card"><h3>Check service information</h3><p>Read the current time, data sources, and service limits. This tool does not contact Transitous, the service that calculates routes.</p><code class="tool-name">get_service_info</code></article>
         </div>
       </section>
@@ -85,7 +103,7 @@ export function renderPublicDocs(mcpUrl: string): string {
         <h2 id="admin-title">Data and permissions</h2>
         <p class="section-intro">For users and IT administrators reviewing the hosted service.</p>
         <div class="data-grid">
-          <article class="card data-card"><div class="data-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg><h3>Sent to Transitous</h3></div><ul><li>Place names or addresses you search for.</li><li>Map coordinates of your starting point and destination.</li><li>Departure or arrival time.</li><li>Transport choices and the wheelchair routing option.</li><li>This service's name and version.</li></ul></article>
+          <article class="card data-card"><div class="data-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg><h3>Sent to Transitous</h3></div><ul><li>Place names or addresses you search for.</li><li>Map coordinates of your starting point and destination.</li><li>Transit stop identifiers for departure requests.</li><li>Departure or arrival time.</li><li>Transport choices and the wheelchair routing option.</li><li>This service's name and version.</li></ul></article>
           <article class="card data-card"><div class="data-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><h3>Kept temporarily by this service</h3></div><ul><li>Request details and results while answering your request.</li><li>Times of recent requests to enforce usage limits, without trip details or user identifiers.</li></ul></article>
           <article class="card data-card"><div class="data-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 4h16v16H4zM4 4l16 16"/></svg><h3>Not saved by this software</h3></div><ul><li>Home-address profiles.</li><li>Search or trip history.</li><li>Trip requests or results in a database or application log.</li></ul></article>
           <article class="card data-card"><div class="data-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6l-8-3ZM8 12l3 3 5-6"/></svg><h3>Actions the tools cannot take</h3></div><ul><li>Book trips, buy tickets, or make payments.</li><li>Read your files, email, or chat history.</li><li>Run commands or change your accounts.</li></ul></article>

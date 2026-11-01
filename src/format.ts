@@ -1,4 +1,4 @@
-import type { TripPlan } from "./routing/types.js";
+import type { StopDepartures, TripPlan } from "./routing/types.js";
 
 const clock = new Intl.DateTimeFormat("en-US", {
   timeZone: "America/Los_Angeles",
@@ -74,5 +74,26 @@ export function formatTripPlan(
     }
   }
   if (plan.warnings.length) lines.push("", ...plan.warnings);
+  return lines.join("\n");
+}
+
+export function formatStopDepartures(result: StopDepartures): string {
+  const lines = [
+    `Departures from ${result.stop.label ?? "the selected stop"}`,
+    "All times are Pacific time.",
+  ];
+  for (const departure of result.departures) {
+    lines.push(
+      `${at(departure.departureTime)}: ${[departure.agency, departure.route].filter(Boolean).join(" ")}${departure.headsign ? ` toward ${departure.headsign}` : ""}${departure.platform ? ` (platform ${departure.platform})` : ""} — ${departure.cancelled ? "CANCELLED; " : ""}${!departure.pickupAllowed ? "boarding unavailable; " : ""}${departure.realTime ? "live prediction" : "scheduled"}.`,
+    );
+    if (
+      departure.realTime &&
+      departure.departureTime !== departure.scheduledDepartureTime
+    )
+      lines.push(
+        `Scheduled departure: ${at(departure.scheduledDepartureTime)}.`,
+      );
+  }
+  lines.push(...result.warnings);
   return lines.join("\n");
 }

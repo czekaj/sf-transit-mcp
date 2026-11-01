@@ -50,7 +50,9 @@ export default {
     if (publicAsset && ["GET", "HEAD"].includes(request.method)) {
       return new Response(request.method === "HEAD" ? null : publicAsset, {
         headers: {
-          "Content-Type": "image/png",
+          "Content-Type": url.pathname.endsWith(".jpg")
+            ? "image/jpeg"
+            : "image/png",
           "Content-Length": String(publicAsset.byteLength),
           "Cache-Control": "public, max-age=3600",
           "Access-Control-Allow-Origin": "*",

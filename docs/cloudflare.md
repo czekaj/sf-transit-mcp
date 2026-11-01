@@ -44,7 +44,7 @@ The root `observability` block in `wrangler.jsonc` applies to the default Worker
 
 Cloudflare persists sampled logs and traces, for a 1% sample of requests for each. Invocation logs are disabled. Issue detection uses the supported `observability.issues.enabled` setting in Wrangler 4.156.0.
 
-Query strings remain visible in logs and traces. In particular, sampled traces may capture outbound Transitous URLs containing locations, travel times, and routing preferences. Application failure logs contain only the operation, error category, HTTP status when available, duration, and allowlisted technical error names or codes; they exclude trip payloads, locations, and request or response bodies. See [`PRIVACY.md`](../PRIVACY.md) for the hosted service disclosure. These settings do not select or change the account's billing plan.
+Query strings remain visible in logs and traces. In particular, sampled traces may capture outbound Transitous URLs containing locations, stop IDs, travel times, and routing preferences. Application failure logs contain only the operation, error category, HTTP status when available, duration, and allowlisted technical error names or codes; they exclude trip payloads, locations, and request or response bodies. See [`PRIVACY.md`](../PRIVACY.md) for the hosted service disclosure. These settings do not select or change the account's billing plan.
 
 ## Deploy your own copy
 

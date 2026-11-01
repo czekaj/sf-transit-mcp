@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { handleMcpRequest } from "../src/http.js";
 import { createTransitServer } from "../src/tools.js";
+import departures from "./fixtures/departures-bart.json";
 import { ATTRIBUTION } from "../src/project.js";
 
 // Synthetic timetable: public place names, invented services and times, never live data.
@@ -177,7 +178,7 @@ describe("transit tools through real MCP HTTP", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
-  it("initializes and exposes three read-only tools without contacting an upstream", async () => {
+  it("initializes and exposes four read-only tools without contacting an upstream", async () => {
     const { rpc, fetcher } = harness();
     expect(
       await rpc("initialize", {
@@ -190,12 +191,69 @@ describe("transit tools through real MCP HTTP", () => {
     expect(result.result?.tools?.map((tool) => tool.name)).toEqual([
       "search_places",
       "plan_trip",
+      "get_stop_departures",
       "get_service_info",
     ]);
     expect(
       result.result?.tools?.every((tool) => tool.annotations.readOnlyHint),
     ).toBe(true);
     expect(fetcher).not.toHaveBeenCalled();
+  });
+
+  it("serves departures with attribution and refresh inputs", async () => {
+    const { call, rpc, fetcher } = harness(
+      vi
+        .fn<typeof fetch>()
+        .mockImplementation(async () => Response.json(departures)),
+    );
+    const stop = {
+      stopId: departures.place.stopId,
+      latitude: departures.place.lat,
+      longitude: departures.place.lon,
+    };
+    const reply = await call("get_stop_departures", { stop });
+    expect(reply.result?.isError).not.toBe(true);
+    expect(reply.result?.structuredContent).toMatchObject({
+      kind: "departures",
+      request: { stop, limit: 10 },
+      attribution: ATTRIBUTION,
+    });
+    expect(reply.result?.content?.[0]?.text).toContain("live prediction");
+    for (const source of ATTRIBUTION)
+      expect(reply.result?.content?.[0]?.text).toContain(source.url);
+    const listed = await rpc("tools/list");
+    expect(
+      listed.result?.tools?.find((tool) => tool.name === "get_stop_departures"),
+    ).toMatchObject({
+      annotations: {
+        title: "Next Bay Area departures",
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+      _meta: { ui: { resourceUri: expect.any(String) } },
+    });
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+
+  it("includes selected stop IDs in plain text search results", async () => {
+    const { call } = harness(
+      vi.fn<typeof fetch>().mockResolvedValue(
+        Response.json([
+          {
+            id: "fixture-stop",
+            name: "Fixture Stop",
+            lat: 37.77,
+            lon: -122.43,
+            type: "STOP",
+            areas: [],
+          },
+        ]),
+      ),
+    );
+    const reply = await call("search_places", { query: "Fixture Stop" });
+    expect(reply.result?.content?.[0]?.text).toContain("Stop ID: fixture-stop");
   });
 
   it("returns ambiguous search candidates with attribution in text and structured content", async () => {

@@ -4,11 +4,11 @@ Last updated: October 31, 2026
 
 SF Bay Area Transit MCP is operated and published by **[Reindex Ventures LLC](https://reindexventures.com)** and was created by **Lucas Czekaj**. This notice covers this project's software and the hosted service operated by Reindex Ventures LLC. Other people who run a copy may use different infrastructure and policies.
 
-## What a trip request contains
+## What requests contain
 
-The tools process the place names or addresses you search for, the map coordinates of your starting point and destination, requested travel times, transport choices, and options such as wheelchair routing. Locations and accessibility preferences can be personal information.
+The tools process the place names or addresses you search for, the map coordinates of your starting point and destination, requested travel times, transport choices, and options such as wheelchair routing. Departure-board requests also process the selected stop ID, coordinates, label when supplied, requested departure time, and result limit. Locations and accessibility preferences can be personal information.
 
-The server returns matching places and trip options to your AI app. Trip results include the original request so the route display can request an updated trip when you select Refresh. The app receives the inputs and results and handles conversation history under its own policies. If you use a home address in a search, that address or its map coordinates are sent to Transitous as described below.
+The server returns matching places, trip options, and stop departures to your AI app. Trip results include the original request so the route display can request an updated trip when you select Refresh. The app receives the inputs and results and handles conversation history under its own policies. If you use a home address in a search, that address or its map coordinates are sent to Transitous as described below.
 
 ## Hosted service and local use
 
@@ -19,19 +19,19 @@ Cloudflare describes its handling of service traffic and network information in 
 
 ## Transitous
 
-Place searches send search text to Transitous. Trip planning sends map coordinates, travel times, transport choices, and route options, including the wheelchair routing choice. These values are included in the HTTPS request URL. Requests also include the service name and version in the User-Agent header.
+Place searches send search text to Transitous. Trip planning sends map coordinates, travel times, transport choices, and route options, including the wheelchair routing choice. Departure-board requests send the stop ID, departure time, and result limit to Transitous. These values are included in the HTTPS request URL. Requests also include the service name and version in the User-Agent header.
 
 [Transitous's privacy policy](https://transitous.org/privacy/) says it logs the connecting IP address, request time, full request URL, and User-Agent to investigate errors and prevent abuse. It keeps those logs for up to two days. Its policy explains how to request deletion. Hosted requests connect from Cloudflare; local requests connect from your machine's network.
 
 ## Storage and logs
 
-This software does not save home-address profiles, search history, or trip history. It has no database. It uses request details and results temporarily to answer each request. The route display keeps the trip and original request while it is open, and requests an updated trip when you select Refresh.
+This software does not save home-address profiles, search history, or trip history. It has no database. It uses request details and results temporarily to answer each request. The route display keeps the trip and original request while it is open, and requests an updated trip when you select Refresh. The departure display keeps its stop request and results while open; opening or refreshing a board requests departures only. It does not poll in the background or retry automatically.
 
 To enforce usage limits, the software temporarily keeps the times of recent requests. Those records contain no trip details or user identifiers.
 
 The software does not add advertising trackers, analytics software, or tracking cookies. It does not write trip requests, results, or saved profiles to application logs. Failure logs contain only the operation, error category, HTTP status when available, duration, and allowlisted technical error names or codes; they exclude locations and request or response bodies. Your AI app and hosting providers may keep their own records.
 
-The Cloudflare configuration enables persisted logs and traces for a 1% sample of requests, disables invocation logs, and enables issue detection. URL query strings are not redacted from logs and traces. Sampled traces may therefore contain outbound Transitous request URLs, including locations, travel times, and routing preferences. We have not verified how long Cloudflare keeps network, security, or diagnostic records.
+The Cloudflare configuration enables persisted logs and traces for a 1% sample of requests, disables invocation logs, and enables issue detection. URL query strings are not redacted from logs and traces. Sampled traces may therefore contain outbound Transitous request URLs, including locations, stop IDs, travel times, and routing preferences. We have not verified how long Cloudflare keeps network, security, or diagnostic records.
 
 The homepage redirect to the operator's website adds the fixed referral label `utm_source=sf-transit-mcp`. This value identifies the project, not an individual visitor. Incoming request query strings are not copied into that redirect.
 

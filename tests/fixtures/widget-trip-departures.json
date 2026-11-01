@@ -1,0 +1,280 @@
+{
+  "_fixture": {
+    "synthetic": true,
+    "notice": "Invented trips and departure times at public places. No transit service is contacted."
+  },
+  "content": [
+    {
+      "type": "text",
+      "text": "Fictional preview data; not current travel advice."
+    }
+  ],
+  "structuredContent": {
+    "origin": {
+      "latitude": 37.7955,
+      "longitude": -122.3937,
+      "label": "Ferry Building"
+    },
+    "destination": {
+      "latitude": 37.7924,
+      "longitude": -122.482,
+      "label": "Baker Beach"
+    },
+    "requestedTime": "2026-11-01T00:00:00Z",
+    "timeType": "departAfter",
+    "generatedAt": "2026-10-31T23:58:00Z",
+    "timeZone": "America/Los_Angeles",
+    "itineraries": [
+      {
+        "kind": "transit",
+        "departureTime": "2026-11-01T00:04:00Z",
+        "arrivalTime": "2026-11-01T01:06:00Z",
+        "durationSeconds": 3720,
+        "transfers": 0,
+        "walkingSeconds": 1320,
+        "waitingSeconds": 0,
+        "realTime": true,
+        "legs": [
+          {
+            "mode": "WALK",
+            "departureTime": "2026-11-01T00:04:00Z",
+            "arrivalTime": "2026-11-01T00:11:00Z",
+            "scheduledDepartureTime": "2026-11-01T00:04:00Z",
+            "scheduledArrivalTime": "2026-11-01T00:11:00Z",
+            "durationSeconds": 420,
+            "realTime": false,
+            "to": {
+              "stopId": "us-ca-fixture_sacramento-davis",
+              "label": "Sacramento St & Davis St",
+              "latitude": 37.7947,
+              "longitude": -122.3967
+            },
+            "stayOnVehicle": false,
+            "from": {
+              "latitude": 37.7955,
+              "longitude": -122.3937,
+              "label": "Ferry Building"
+            }
+          },
+          {
+            "mode": "BUS",
+            "departureTime": "2026-11-01T00:11:00Z",
+            "arrivalTime": "2026-11-01T00:51:00Z",
+            "scheduledDepartureTime": "2026-11-01T00:11:00Z",
+            "scheduledArrivalTime": "2026-11-01T00:51:00Z",
+            "durationSeconds": 2400,
+            "realTime": true,
+            "to": {
+              "stopId": "us-ca-fixture_california25",
+              "label": "California St & 25th Ave",
+              "latitude": 37.7848,
+              "longitude": -122.485
+            },
+            "stayOnVehicle": false,
+            "from": {
+              "stopId": "us-ca-fixture_sacramento-davis",
+              "label": "Sacramento St & Davis St",
+              "latitude": 37.7947,
+              "longitude": -122.3967
+            },
+            "route": "1",
+            "headsign": "Geary + 33rd Avenue",
+            "agency": "San Francisco Municipal Transportation Agency"
+          },
+          {
+            "mode": "WALK",
+            "departureTime": "2026-11-01T00:51:00Z",
+            "arrivalTime": "2026-11-01T01:06:00Z",
+            "scheduledDepartureTime": "2026-11-01T00:51:00Z",
+            "scheduledArrivalTime": "2026-11-01T01:06:00Z",
+            "durationSeconds": 900,
+            "realTime": false,
+            "to": {
+              "latitude": 37.7924,
+              "longitude": -122.482,
+              "label": "Baker Beach"
+            },
+            "stayOnVehicle": false,
+            "from": {
+              "stopId": "us-ca-fixture_california25",
+              "label": "California St & 25th Ave",
+              "latitude": 37.7848,
+              "longitude": -122.485
+            }
+          }
+        ]
+      },
+      {
+        "kind": "transit",
+        "departureTime": "2026-11-01T00:02:00Z",
+        "arrivalTime": "2026-11-01T01:10:00Z",
+        "durationSeconds": 4080,
+        "transfers": 1,
+        "walkingSeconds": 960,
+        "waitingSeconds": 600,
+        "realTime": true,
+        "legs": [
+          {
+            "mode": "WALK",
+            "departureTime": "2026-11-01T00:02:00Z",
+            "arrivalTime": "2026-11-01T00:09:00Z",
+            "scheduledDepartureTime": "2026-11-01T00:02:00Z",
+            "scheduledArrivalTime": "2026-11-01T00:09:00Z",
+            "durationSeconds": 420,
+            "realTime": false,
+            "to": {
+              "stopId": "us-ca-fixture_sacramento-davis",
+              "label": "Sacramento St & Davis St",
+              "latitude": 37.7947,
+              "longitude": -122.3967
+            },
+            "stayOnVehicle": false,
+            "from": {
+              "latitude": 37.7955,
+              "longitude": -122.3937,
+              "label": "Ferry Building"
+            }
+          },
+          {
+            "mode": "BUS",
+            "departureTime": "2026-11-01T00:11:00Z",
+            "arrivalTime": "2026-11-01T00:41:00Z",
+            "scheduledDepartureTime": "2026-11-01T00:11:00Z",
+            "scheduledArrivalTime": "2026-11-01T00:41:00Z",
+            "durationSeconds": 1800,
+            "realTime": true,
+            "to": {
+              "stopId": "us-ca-fixture_california25",
+              "label": "California St & 25th Ave",
+              "latitude": 37.7848,
+              "longitude": -122.485
+            },
+            "stayOnVehicle": false,
+            "from": {
+              "stopId": "us-ca-fixture_sacramento-davis",
+              "label": "Sacramento St & Davis St",
+              "latitude": 37.7947,
+              "longitude": -122.3967
+            },
+            "route": "1",
+            "headsign": "Geary + 33rd Avenue",
+            "agency": "San Francisco Municipal Transportation Agency"
+          },
+          {
+            "mode": "BUS",
+            "departureTime": "2026-11-01T00:49:00Z",
+            "arrivalTime": "2026-11-01T01:01:00Z",
+            "scheduledDepartureTime": "2026-11-01T00:49:00Z",
+            "scheduledArrivalTime": "2026-11-01T01:01:00Z",
+            "durationSeconds": 720,
+            "realTime": true,
+            "to": {
+              "stopId": "us-ca-fixture_bowley",
+              "label": "Bowley St & Lincoln Blvd",
+              "latitude": 37.7902,
+              "longitude": -122.483
+            },
+            "stayOnVehicle": false,
+            "from": {
+              "stopId": "us-ca-fixture_25california",
+              "label": "25th Ave & California St",
+              "latitude": 37.7848,
+              "longitude": -122.485
+            },
+            "route": "29",
+            "headsign": "Baker Beach",
+            "agency": "San Francisco Municipal Transportation Agency"
+          },
+          {
+            "mode": "WALK",
+            "departureTime": "2026-11-01T01:01:00Z",
+            "arrivalTime": "2026-11-01T01:10:00Z",
+            "scheduledDepartureTime": "2026-11-01T01:01:00Z",
+            "scheduledArrivalTime": "2026-11-01T01:10:00Z",
+            "durationSeconds": 540,
+            "realTime": false,
+            "to": {
+              "latitude": 37.7924,
+              "longitude": -122.482,
+              "label": "Baker Beach"
+            },
+            "stayOnVehicle": false,
+            "from": {
+              "stopId": "us-ca-fixture_bowley",
+              "label": "Bowley St & Lincoln Blvd",
+              "latitude": 37.7902,
+              "longitude": -122.483
+            }
+          }
+        ]
+      },
+      {
+        "kind": "walk",
+        "departureTime": "2026-11-01T00:00:00Z",
+        "arrivalTime": "2026-11-01T01:29:00Z",
+        "durationSeconds": 5340,
+        "transfers": 0,
+        "walkingSeconds": 5340,
+        "waitingSeconds": 0,
+        "realTime": false,
+        "legs": [
+          {
+            "mode": "WALK",
+            "departureTime": "2026-11-01T00:00:00Z",
+            "arrivalTime": "2026-11-01T01:29:00Z",
+            "scheduledDepartureTime": "2026-11-01T00:00:00Z",
+            "scheduledArrivalTime": "2026-11-01T01:29:00Z",
+            "durationSeconds": 5340,
+            "realTime": false,
+            "to": {
+              "latitude": 37.7924,
+              "longitude": -122.482,
+              "label": "Baker Beach"
+            },
+            "stayOnVehicle": false,
+            "from": {
+              "latitude": 37.7955,
+              "longitude": -122.3937,
+              "label": "Ferry Building"
+            }
+          }
+        ]
+      }
+    ],
+    "warnings": ["Example routes and times for the local preview."],
+    "wheelchairRequested": false,
+    "request": {
+      "origin": {
+        "latitude": 37.7955,
+        "longitude": -122.3937,
+        "label": "Ferry Building"
+      },
+      "destination": {
+        "latitude": 37.7924,
+        "longitude": -122.482,
+        "label": "Baker Beach"
+      },
+      "modes": ["transit", "walk"],
+      "limit": 3,
+      "wheelchair": false
+    },
+    "attribution": [
+      {
+        "label": "Routing by Transitous",
+        "url": "https://transitous.org/"
+      },
+      {
+        "label": "Transitous data sources",
+        "url": "https://transitous.org/sources/"
+      },
+      {
+        "label": "© OpenStreetMap contributors",
+        "url": "https://www.openstreetmap.org/copyright"
+      },
+      {
+        "label": "Bay Area data provided by 511.org",
+        "url": "https://511.org/"
+      }
+    ]
+  }
+}

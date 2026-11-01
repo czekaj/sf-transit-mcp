@@ -29,7 +29,7 @@ function claudeDomain(serverUrl: string): string {
   return `${createHash("sha256").update(serverUrl).digest("hex").slice(0, 32)}.claudemcpcontent.com`;
 }
 
-/** Static UI only: trip data arrives through the host's tool-result bridge. */
+/** Static UI only: trips and departures arrive through the host's tool-result bridge. */
 export function registerItineraryResource(
   server: McpServer,
   serverUrl?: string,
@@ -47,12 +47,12 @@ export function registerItineraryResource(
   };
   registerAppResource(
     server,
-    "Bay Area itinerary",
+    "Bay Area transit",
     WIDGET_RESOURCE_URI,
     {
       icons: BRAND_ICONS,
       description:
-        "Interactive journey alternatives, walking and transfer timelines, and service timing information.",
+        "Interactive trips, walking and transfer instructions, and stop departure boards with live and scheduled times.",
       mimeType: RESOURCE_MIME_TYPE,
       _meta: { ui },
     },

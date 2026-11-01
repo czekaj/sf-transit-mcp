@@ -1,6 +1,7 @@
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { build } from "esbuild";
 import { fileURLToPath } from "node:url";
+import { readFileSync } from "node:fs";
 import {
   Miniflare,
   Response as FixtureResponse,
@@ -26,7 +27,16 @@ beforeAll(async () => {
               now: () => new Date("2026-10-31T20:00:00Z"),
             });
             try {
-              const result = new URL(request.url).pathname === "/plan"
+              const path = new URL(request.url).pathname;
+              const result = path === "/departures"
+                ? await client.getStopDepartures({
+                    stop: {
+                      stopId: "us-ca-SF-bayarea_mtc:embarcadero-bart",
+                      latitude: 37.7927,
+                      longitude: -122.397,
+                    },
+                  })
+                : path === "/plan"
                 ? await client.planTrip({
                     origin: { latitude: 37.77, longitude: -122.43 },
                     destination: { latitude: 37.79, longitude: -122.48 },
@@ -133,6 +143,37 @@ describe("routing in the actual Workers runtime with a fake provider", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toMatchObject({
       itineraries: [{ durationSeconds: 1800 }],
+    });
+    expect(provider).toHaveBeenCalledTimes(1);
+  });
+
+  it("retrieves a bounded stop board in Workers using a saved provider response", async () => {
+    const board = JSON.parse(
+      readFileSync(
+        new URL("./fixtures/departures-bart.json", import.meta.url),
+        "utf8",
+      ),
+    );
+    const provider = vi.fn<V4FetchHandler>().mockImplementation((request) => {
+      const url = new URL(request.url);
+      expect(url.hostname).toBe("routing.fixture.invalid");
+      expect(url.pathname).toBe("/api/v6/stoptimes");
+      expect(url.searchParams.get("stopId")).toBe(
+        "us-ca-SF-bayarea_mtc:embarcadero-bart",
+      );
+      expect(url.searchParams.get("n")).toBe("10");
+      return FixtureResponse.json(board);
+    });
+    const response = await start(provider).dispatchFetch(
+      "http://localhost/departures",
+    );
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      kind: "departures",
+      timeZone: "America/Los_Angeles",
+      departures: expect.arrayContaining([
+        expect.objectContaining({ route: "Blue", realTime: true }),
+      ]),
     });
     expect(provider).toHaveBeenCalledTimes(1);
   });

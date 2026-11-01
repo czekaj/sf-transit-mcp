@@ -8,4 +8,4 @@ Include the AI app you use, what you expected, and what happened. If you run a l
 
 Send security reports privately using [Security](SECURITY.md). The [privacy policy](PRIVACY.md) explains who receives trip data, how it is handled, and how to contact the operator about privacy.
 
-Transitous provides trip planning using available timetables and predictions. Missing trips or predictions may be caused by incomplete data or a service problem. Include the starting place, destination, and intended departure or arrival time so the problem can be investigated.
+Transitous provides trip planning and stop departures using available timetables and predictions. Missing trips or predictions may be caused by incomplete data or a service problem. Include the starting place, destination, and intended departure or arrival time so the problem can be investigated. For departure-board problems, include the public stop name, route or destination, requested time, and whether the row was marked live or scheduled. The retrieval time is not the agency’s prediction-update time.

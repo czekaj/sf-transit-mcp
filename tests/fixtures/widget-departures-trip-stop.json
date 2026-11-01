@@ -1,0 +1,92 @@
+{
+  "_fixture": {
+    "synthetic": true,
+    "notice": "Invented departure times at public stops. No transit service is contacted."
+  },
+  "content": [
+    {
+      "type": "text",
+      "text": "Fictional preview data; not current travel advice."
+    }
+  ],
+  "structuredContent": {
+    "kind": "departures",
+    "stop": {
+      "stopId": "us-ca-fixture_sacramento-davis",
+      "label": "Sacramento St & Davis St",
+      "latitude": 37.7947,
+      "longitude": -122.3967
+    },
+    "generatedAt": "2026-11-01T00:00:00Z",
+    "requestedTime": "2026-11-01T00:00:00Z",
+    "timeZone": "America/Los_Angeles",
+    "departures": [
+      {
+        "stopId": "us-ca-fixture_sacramento-davis",
+        "route": "1",
+        "headsign": "Geary + 33rd Avenue",
+        "departureTime": "2026-11-01T00:11:00Z",
+        "scheduledDepartureTime": "2026-11-01T00:11:00Z",
+        "realTime": true,
+        "cancelled": false,
+        "pickupAllowed": true,
+        "agency": "San Francisco Municipal Transportation Agency",
+        "mode": "BUS"
+      },
+      {
+        "stopId": "us-ca-fixture_sacramento-davis",
+        "route": "1",
+        "headsign": "Geary + 33rd Avenue",
+        "departureTime": "2026-11-01T00:23:00Z",
+        "scheduledDepartureTime": "2026-11-01T00:23:00Z",
+        "realTime": true,
+        "cancelled": false,
+        "pickupAllowed": true,
+        "agency": "San Francisco Municipal Transportation Agency",
+        "mode": "BUS"
+      },
+      {
+        "stopId": "us-ca-fixture_sacramento-davis",
+        "route": "1",
+        "headsign": "Geary + 33rd Avenue",
+        "departureTime": "2026-11-01T00:31:00Z",
+        "scheduledDepartureTime": "2026-11-01T00:31:00Z",
+        "realTime": false,
+        "cancelled": false,
+        "pickupAllowed": true,
+        "agency": "San Francisco Municipal Transportation Agency",
+        "mode": "BUS"
+      }
+    ],
+    "warnings": [
+      "Live estimates are available for some departures. The agency’s last update time is not provided."
+    ],
+    "request": {
+      "stop": {
+        "stopId": "us-ca-fixture_sacramento-davis",
+        "label": "Sacramento St & Davis St",
+        "latitude": 37.7947,
+        "longitude": -122.3967
+      },
+      "limit": 20
+    },
+    "attribution": [
+      {
+        "label": "Routing by Transitous",
+        "url": "https://transitous.org/"
+      },
+      {
+        "label": "Transitous data sources",
+        "url": "https://transitous.org/sources/"
+      },
+      {
+        "label": "© OpenStreetMap contributors",
+        "url": "https://www.openstreetmap.org/copyright"
+      },
+      {
+        "label": "Bay Area data provided by 511.org",
+        "url": "https://511.org/"
+      }
+    ]
+  }
+}

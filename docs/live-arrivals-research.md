@@ -1,5 +1,7 @@
 # Live arrival and departure data research
 
+The project now implements stop departures through `get_stop_departures` on its existing MCP endpoint. See the [user guide](../README.md#next-departures) and [provider contract](providers.md). The dated checks below are historical evidence, not a claim of current feed availability.
+
 Checked October 31, 2026. This is a research record, not a claim that a stop-arrivals tool has shipped.
 
 ## Recommendation

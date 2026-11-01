@@ -2,12 +2,19 @@ import { z } from "zod";
 import type { RoutingFailure, RoutingOperation } from "./diagnostics.js";
 import {
   BAY_AREA_BOUNDS,
+  getStopDeparturesInputSchema,
   planTripInputSchema,
   searchPlacesInputSchema,
 } from "./schemas.js";
-import type { PlanTripInput, SearchPlacesInput } from "./schemas.js";
+import type {
+  GetStopDeparturesInput,
+  PlanTripInput,
+  SearchPlacesInput,
+} from "./schemas.js";
 import type {
   Coordinate,
+  StopDepartures,
+  StopDeparture,
   PlaceCandidate,
   PlaceSearchResult,
   TripItinerary,
@@ -81,6 +88,66 @@ const match = z.object({
     )
     .max(40),
 });
+
+const departurePlace = place.extend({
+  stopId: text.min(1),
+  parentId: text.optional(),
+  departure: time,
+  scheduledDeparture: time,
+  scheduledTrack: text.optional(),
+  pickupType: z.enum(["NORMAL", "NOT_ALLOWED"]).optional(),
+  cancelled: z.boolean().optional(),
+});
+const stopTime = z.object({
+  place: departurePlace,
+  mode: text.min(1),
+  realTime: z.boolean(),
+  headsign: text.nullish(),
+  agencyId: text.optional(),
+  agencyName: text,
+  routeId: text,
+  routeColor: z
+    .string()
+    .regex(/^[0-9a-fA-F]{6}$/)
+    .optional(),
+  routeShortName: text,
+  routeLongName: text,
+  displayName: text,
+  pickupDropoffType: z.enum(["NORMAL", "NOT_ALLOWED"]),
+  cancelled: z.boolean(),
+  tripCancelled: z.boolean(),
+});
+const stopTimesResponse = z.object({
+  place: place.extend({ stopId: text.min(1), parentId: text.optional() }),
+  stopTimes: z.array(stopTime).max(500),
+});
+function departureRoute(item: z.infer<typeof stopTime>): string {
+  const route =
+    item.displayName || item.routeShortName || item.routeLongName || item.mode;
+  const bartLine = /^(Blue|Green|Yellow|Red|Orange)(?:-[NS])?$/i.exec(route);
+  if (
+    (item.agencyId === "BA" || item.agencyName === "Bay Area Rapid Transit") &&
+    bartLine
+  ) {
+    const line = bartLine[1]!;
+    return line[0]!.toUpperCase() + line.slice(1).toLowerCase();
+  }
+  return route;
+}
+// Stations can span several platforms; never accept a distant stop merely
+// because its provider ID or parent ID matches the requested station.
+function nearby(
+  a: { latitude: number; longitude: number },
+  b: { lat: number; lon: number },
+): boolean {
+  const lat = ((a.latitude + b.lat) * Math.PI) / 360;
+  return (
+    Math.hypot(
+      (a.latitude - b.lat) * 111_320,
+      (a.longitude - b.lon) * 111_320 * Math.cos(lat),
+    ) <= 1000
+  );
+}
 
 export class RoutingError extends Error {
   constructor(
@@ -373,6 +440,116 @@ export function createRoutingClient({
   }
 
   return {
+    async getStopDepartures(
+      raw: GetStopDeparturesInput,
+    ): Promise<StopDepartures> {
+      const input = validate(getStopDeparturesInputSchema, raw);
+      const generatedAt = now().toISOString();
+      const requestedTime = input.departureTime ?? generatedAt;
+      const params = new URLSearchParams({
+        stopId: input.stop.stopId,
+        time: requestedTime,
+        arriveBy: "false",
+        direction: "LATER",
+        n: String(input.limit),
+        fetchStops: "false",
+        withScheduledSkippedStops: "true",
+      });
+      const parsed = stopTimesResponse.safeParse(
+        await get("get_stop_departures", "/api/v6/stoptimes", params),
+      );
+      if (!parsed.success)
+        throw new RoutingError(
+          "INVALID_RESPONSE",
+          "The departures service returned an invalid response.",
+        );
+      const station = parsed.data.place;
+      if (
+        station.stopId !== input.stop.stopId ||
+        !inside(station.lat, station.lon) ||
+        !nearby(input.stop, station)
+      )
+        throw new RoutingError(
+          "INVALID_RESPONSE",
+          "The departures service returned a different stop.",
+        );
+      const sameStation = (event: z.infer<typeof departurePlace>) =>
+        event.stopId === station.stopId ||
+        event.parentId === station.stopId ||
+        station.parentId === event.stopId ||
+        Boolean(station.parentId && station.parentId === event.parentId);
+      if (
+        parsed.data.stopTimes.some(
+          (item) =>
+            !inside(item.place.lat, item.place.lon) ||
+            !nearby(input.stop, item.place) ||
+            !sameStation(item.place),
+        )
+      )
+        throw new RoutingError(
+          "INVALID_RESPONSE",
+          "The departures service returned a different stop.",
+        );
+      const departures: StopDeparture[] = parsed.data.stopTimes
+        .map((item) => ({
+          stopId: item.place.stopId,
+          route: departureRoute(item),
+          ...(item.routeId ? { routeId: item.routeId } : {}),
+          ...(item.routeColor ? { routeColor: item.routeColor } : {}),
+          ...(item.agencyName ? { agency: item.agencyName } : {}),
+          ...(item.headsign ? { headsign: item.headsign } : {}),
+          departureTime: item.realTime
+            ? item.place.departure
+            : item.place.scheduledDeparture,
+          scheduledDepartureTime: item.place.scheduledDeparture,
+          realTime: item.realTime,
+          cancelled:
+            item.cancelled ||
+            item.tripCancelled ||
+            (item.place.cancelled ?? false),
+          pickupAllowed:
+            item.pickupDropoffType === "NORMAL" &&
+            item.place.pickupType !== "NOT_ALLOWED" &&
+            !item.cancelled &&
+            !item.tripCancelled &&
+            !item.place.cancelled,
+          ...((item.realTime ? item.place.track : item.place.scheduledTrack)
+            ? {
+                platform: item.realTime
+                  ? item.place.track!
+                  : item.place.scheduledTrack!,
+              }
+            : {}),
+          mode: item.mode,
+        }))
+        .filter(
+          (item) => Date.parse(item.departureTime) >= Date.parse(requestedTime),
+        )
+        .sort(
+          (a, b) => Date.parse(a.departureTime) - Date.parse(b.departureTime),
+        )
+        .slice(0, input.limit);
+      const warnings: string[] = [];
+      if (!departures.length)
+        warnings.push(
+          "No departures were returned for this stop and time. Check another time or stop.",
+        );
+      if (departures.some((item) => !item.realTime))
+        warnings.push(
+          "Some departures follow the published schedule because live estimates are unavailable.",
+        );
+      if (departures.some((item) => item.realTime))
+        warnings.push("Live predictions do not include a last update time.");
+      return {
+        kind: "departures",
+        stop: { ...normalizePlace(station), stopId: station.stopId },
+        generatedAt,
+        requestedTime,
+        timeZone: "America/Los_Angeles",
+        departures,
+        warnings,
+      };
+    },
     async searchPlaces(raw: SearchPlacesInput): Promise<PlaceSearchResult> {
       const input = validate(searchPlacesInputSchema, raw);
       const params = new URLSearchParams({

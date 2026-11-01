@@ -56,3 +56,28 @@ export interface PlaceSearchResult {
   requiresSelection: boolean;
   warnings: string[];
 }
+
+export interface StopDeparture {
+  stopId: string;
+  route: string;
+  routeId?: string;
+  routeColor?: string;
+  agency?: string;
+  headsign?: string;
+  departureTime: string;
+  scheduledDepartureTime: string;
+  realTime: boolean;
+  cancelled: boolean;
+  pickupAllowed: boolean;
+  platform?: string;
+  mode: string;
+}
+export interface StopDepartures {
+  kind: "departures";
+  stop: TripPlace & { stopId: string };
+  generatedAt: string;
+  requestedTime: string;
+  timeZone: "America/Los_Angeles";
+  departures: StopDeparture[];
+  warnings: string[];
+}

@@ -18,7 +18,7 @@ Source: https://github.com/czekaj/sf-transit-mcp
 
 We are preparing a Claude Connectors Directory listing and are considering its potential to bring many users. We would like to coordinate capacity under your published usage policy.
 
-The connector uses `/api/v1/geocode` and `/api/v6/plan`. A transit search makes one routing request. Requested walking or bicycle comparisons use one request per selected mode, up to three. Selecting a route or opening its details uses the results already returned. Selecting Refresh makes a new request. There are no automatic update checks, retries, or background requests.
+The connector uses `/api/v1/geocode`, `/api/v6/plan`, and `/api/v6/stoptimes`. A transit search makes one routing request. Requested walking or bicycle comparisons use one request per selected mode, up to three. Selecting a route or opening its details uses the results already returned. Opening a stop board makes one stop-times request; refreshing it makes one more and leaves the trip unchanged. Board filters use loaded results. Selecting Refresh makes a new request. There are no automatic update checks, retries, or background requests.
 
 Requests identify the project name, version, and contact in User-Agent. Results credit Transitous and link to your sources, with credits for OpenStreetMap and Bay Area data.
 

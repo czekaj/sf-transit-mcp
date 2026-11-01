@@ -1,0 +1,116 @@
+{
+  "_fixture": {
+    "synthetic": true,
+    "notice": "Invented departure times at public stops. No transit service is contacted."
+  },
+  "content": [
+    {
+      "type": "text",
+      "text": "Fictional preview data; not current travel advice."
+    }
+  ],
+  "structuredContent": {
+    "kind": "departures",
+    "stop": {
+      "stopId": "us-ca-fixture_judah9",
+      "label": "Judah & 9th Avenue",
+      "latitude": 37.7621,
+      "longitude": -122.4664
+    },
+    "generatedAt": "2026-11-01T00:00:00Z",
+    "requestedTime": "2026-11-01T00:00:00Z",
+    "timeZone": "America/Los_Angeles",
+    "departures": [
+      {
+        "stopId": "us-ca-fixture_judah9",
+        "route": "N",
+        "headsign": "Ocean Beach",
+        "departureTime": "2026-11-01T00:03:00Z",
+        "scheduledDepartureTime": "2026-11-01T00:03:00Z",
+        "realTime": false,
+        "cancelled": false,
+        "pickupAllowed": true,
+        "agency": "San Francisco Municipal Transportation Agency",
+        "mode": "TRAM"
+      },
+      {
+        "stopId": "us-ca-fixture_judah9",
+        "route": "N",
+        "headsign": "Ocean Beach",
+        "departureTime": "2026-11-01T00:08:00Z",
+        "scheduledDepartureTime": "2026-11-01T00:10:00Z",
+        "realTime": true,
+        "cancelled": false,
+        "pickupAllowed": true,
+        "agency": "San Francisco Municipal Transportation Agency",
+        "mode": "TRAM"
+      },
+      {
+        "stopId": "us-ca-fixture_judah9",
+        "route": "N",
+        "headsign": "Ocean Beach",
+        "departureTime": "2026-11-01T00:15:00Z",
+        "scheduledDepartureTime": "2026-11-01T00:15:00Z",
+        "realTime": true,
+        "cancelled": false,
+        "pickupAllowed": true,
+        "agency": "San Francisco Municipal Transportation Agency",
+        "mode": "TRAM"
+      },
+      {
+        "stopId": "us-ca-fixture_judah9",
+        "route": "N",
+        "headsign": "Ocean Beach",
+        "departureTime": "2026-11-01T00:24:00Z",
+        "scheduledDepartureTime": "2026-11-01T00:24:00Z",
+        "realTime": true,
+        "cancelled": false,
+        "pickupAllowed": true,
+        "agency": "San Francisco Municipal Transportation Agency",
+        "mode": "TRAM"
+      },
+      {
+        "stopId": "us-ca-fixture_judah9",
+        "route": "N",
+        "headsign": "Caltrain",
+        "departureTime": "2026-11-01T00:05:00Z",
+        "scheduledDepartureTime": "2026-11-01T00:05:00Z",
+        "realTime": true,
+        "cancelled": false,
+        "pickupAllowed": true,
+        "agency": "San Francisco Municipal Transportation Agency",
+        "mode": "TRAM"
+      }
+    ],
+    "warnings": [
+      "Live estimates are available for some departures. The agency’s last update time is not provided."
+    ],
+    "request": {
+      "stop": {
+        "stopId": "us-ca-fixture_judah9",
+        "label": "Judah & 9th Avenue",
+        "latitude": 37.7621,
+        "longitude": -122.4664
+      },
+      "limit": 20
+    },
+    "attribution": [
+      {
+        "label": "Routing by Transitous",
+        "url": "https://transitous.org/"
+      },
+      {
+        "label": "Transitous data sources",
+        "url": "https://transitous.org/sources/"
+      },
+      {
+        "label": "© OpenStreetMap contributors",
+        "url": "https://www.openstreetmap.org/copyright"
+      },
+      {
+        "label": "Bay Area data provided by 511.org",
+        "url": "https://511.org/"
+      }
+    ]
+  }
+}

@@ -6,13 +6,17 @@
 
 Use your AI agent to plan trips in San Francisco and the Bay Area. Results show where to walk, which buses or trains to take, where to transfer, and when to depart and arrive.
 
-**Free to use. No API keys or authentication.** Connect an AI agent or app that supports remote MCP servers, or run the server on your computer. MCP connects AI apps to tools. Apps that support MCP Apps can display interactive trip details. The hosted service runs on Cloudflare Workers Free. [Transitous](https://transitous.org/) provides trip planning and place search.
+**Free to use. No API keys or authentication.** Connect an AI agent or app that supports remote MCP servers, or run the server on your computer. MCP connects AI apps to tools. Apps that support MCP Apps can display interactive trip details. The hosted service runs on Cloudflare Workers Free. [Transitous](https://transitous.org/) provides trip planning, place search, and stop departures.
 
 > “How do I get from the Ferry Building to Baker Beach, leaving now?”
 >
 > “I need to reach the Ferry Building by 9 tomorrow morning.”
 >
 > “Compare transit with cycling, and avoid more than one transfer.”
+>
+> “What departs next from Embarcadero BART?”
+>
+> “Show the next Muni N departures at Embarcadero.”
 
 The default provider is for **light, noncommercial, open-source use**. It is a community service, and availability is not guaranteed. See [provider details](docs/providers.md).
 
@@ -29,7 +33,7 @@ The default provider is for **light, noncommercial, open-source use**. It is a c
 2. Set authentication to **None** if asked.
 3. Ask: “How do I get from the Ferry Building to Baker Beach, leaving now?”
 
-The [user guide and IT review](https://mcp.riv.lc/sf-transit) explain setup, tool permissions, data handling, support, and service limits. Place searches and trip coordinates are sent to Transitous; see the [privacy policy](https://mcp.riv.lc/sf-transit/privacy).
+The [user guide and IT review](https://mcp.riv.lc/sf-transit) explain setup, tool permissions, data handling, support, and service limits. Place searches, trip coordinates, and requested stop IDs and departure times are sent to Transitous; see the [privacy policy](https://mcp.riv.lc/sf-transit/privacy).
 
 ### Install a local server from GitHub
 
@@ -92,17 +96,18 @@ claude mcp add sf-transit -- node /absolute/path/to/sf-transit-mcp/dist/stdio.js
 
 The server starts without credentials or environment variables. Include your starting address in the trip request, or use an address already in your conversation. This service does not save a home address. When several places match, choose the intended place before planning the trip.
 
-**Privacy:** place searches and trip coordinates go to Transitous. Its [privacy policy](https://transitous.org/privacy/) says request URLs are logged for up to two days. This application's code does not log or save addresses or trip results. Your AI app and hosting providers have their own retention practices. The [project privacy policy](https://mcp.riv.lc/sf-transit/privacy) explains who receives the data and how it is handled.
+**Privacy:** place searches, trip coordinates, and requested stop IDs and departure times go to Transitous. Its [privacy policy](https://transitous.org/privacy/) says request URLs are logged for up to two days. This application's code does not log or save addresses or trip results. Your AI app and hosting providers have their own retention practices. The [project privacy policy](https://mcp.riv.lc/sf-transit/privacy) explains who receives the data and how it is handled.
 
 For help, see [Support](SUPPORT.md) or open a [GitHub issue](https://github.com/czekaj/sf-transit-mcp/issues). Send security or privacy reports to [contact@reindexventures.com](mailto:contact@reindexventures.com); see [Security](SECURITY.md).
 
 ## What it does
 
-| Tool               | Purpose                                                                                         |
-| ------------------ | ----------------------------------------------------------------------------------------------- |
-| `search_places`    | Find matching Bay Area addresses, landmarks, and stops, with their coordinates.                 |
-| `plan_trip`        | Plan trips leaving now, departing after a time, or arriving by a deadline.                      |
-| `get_service_info` | Read the current time, data sources, credits, and service limits without contacting Transitous. |
+| Tool                  | Purpose                                                                                         |
+| --------------------- | ----------------------------------------------------------------------------------------------- |
+| `search_places`       | Find matching Bay Area addresses, landmarks, and stops, with their coordinates.                 |
+| `plan_trip`           | Plan trips leaving now, departing after a time, or arriving by a deadline.                      |
+| `get_stop_departures` | Get upcoming departures at a selected Bay Area stop, with live estimates where available.       |
+| `get_service_info`    | Read the current time, data sources, credits, and service limits without contacting Transitous. |
 
 Transit trips include walking to and from stops. You can limit transfers, request the wheelchair routing option, or compare transit with walking or using your own bicycle. Results include readable instructions and data the app can display.
 
@@ -128,6 +133,22 @@ The interactive view supports light and dark themes, narrow screens, keyboard co
 _A Ferry Building → Baker Beach trip displayed in Claude. Select the screenshot to view it at full size._
 
 Transitous lists data sources for Muni, BART, Caltrain, AC Transit, VTA, SamTrans, and regional ferries. Available trips and predictions depend on the data currently supplied. Place search is limited to the Bay Area. Walking instructions describe connections between places and stops, without turn-by-turn directions. The wheelchair routing option applies to walking and transfer paths. Vehicle accessibility may be unknown; check each transit section. The data does not confirm current elevator operation or guarantee accessible entrances and paths. Results do not include fares, tickets, service alerts, or bike-share availability.
+
+### Next departures
+
+Ask for upcoming departures at a stop to open a departure board. In trip details, select **Next departures at this stop** at a boarding step. Each departure identifies a live estimate or scheduled time, plus the route, destination, agency, platform, cancellation, and boarding information when supplied.
+
+Select Refresh to request that board again. This does not change the selected trip. Route and destination filters narrow the results already loaded; they do not fetch more departures. There is no automatic polling or retry. **Retrieved** shows when the result was fetched, not when the agency last updated its predictions. Times use Pacific time.
+
+The screenshots below show the interactive view with **example data**, not current departures.
+
+<p><a href="docs/arrival-previews/bart-departures.jpg"><img src="docs/arrival-previews/bart-departures.jpg" alt="BART departure board showing colored line names, destinations, and example live and scheduled times" width="720" /></a></p>
+
+<p><a href="docs/arrival-previews/muni-departures.jpg"><img src="docs/arrival-previews/muni-departures.jpg" alt="Muni departure board showing an example scheduled departure followed by live estimates" width="720" /></a></p>
+
+<p><a href="docs/arrival-previews/trip-with-departures.jpg"><img src="docs/arrival-previews/trip-with-departures.jpg" alt="Trip details showing an example departure board opened at the selected boarding stop" width="720" /></a></p>
+
+Select a screenshot to view it at full size. See the [design notes](design/arrivals/README.md) and [live-arrivals research](docs/live-arrivals-research.md) for the visual design history and data-source findings.
 
 ## Cloudflare hosting
 
@@ -156,7 +177,7 @@ Check the maintainer configuration locally without deploying:
 npm run build:worker:production
 ```
 
-A public deployment must follow [Transitous's usage policy](https://transitous.org/api/). Coordinate with its maintainers before serving many users or sending substantial automated traffic. Each running server or Worker instance limits Transitous requests to 20 in the previous minute and 600 in the previous 24 hours. These limits reset when an instance restarts and **do not limit total requests across all instances**. The service does not request updates in the background or retry automatically. A normal transit search makes one Transitous request. Comparing transport modes makes one request per mode.
+A public deployment must follow [Transitous's usage policy](https://transitous.org/api/). Coordinate with its maintainers before serving many users or sending substantial automated traffic. Each running server or Worker instance limits Transitous requests to 20 in the previous minute and 600 in the previous 24 hours. These limits reset when an instance restarts and **do not limit total requests across all instances**. The service does not request updates in the background or retry automatically. A stop-departure request makes one Transitous request. A normal transit search makes one Transitous request. Comparing transport modes makes one request per mode.
 
 ## Development
 
@@ -182,6 +203,8 @@ Open `http://127.0.0.1:8798`. The preview uses the MCP Apps connection in an iso
 The MCP connection, Transitous requests, and display code are separate. Requests and responses follow the [MOTIS API version linked by Transitous](https://transitous.org/api/). See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution and testing guidance.
 
 The [Claude submission materials](docs/claude-submission.md) contain listing copy, reviewer instructions, approved screenshot assets, and the remaining launch requirements. The listing is a draft. Provider use remains subject to [Transitous's published policy](https://transitous.org/api/); qualifying light use does not require separate prior approval.
+
+The widget preview also includes standalone BART and Muni departure boards and a board opened from trip details, all using fictional examples.
 
 ### Project artwork
 

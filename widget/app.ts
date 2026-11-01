@@ -5,6 +5,11 @@ import {
   type McpUiHostContext,
 } from "@modelcontextprotocol/ext-apps";
 import { BRAND_ICON_SRC } from "../src/generated/branding.js";
+import {
+  createDepartureBoard,
+  parseDepartureView,
+  parseDepartureRequest,
+} from "./departures.js";
 import { PROJECT } from "../src/project.js";
 import type {
   Coordinate,
@@ -23,7 +28,7 @@ export interface TripView extends TripPlan {
 }
 export interface WidgetBridge {
   callServerTool(params: {
-    name: "plan_trip";
+    name: "plan_trip" | "get_stop_departures";
     arguments: TripRequest;
   }): Promise<unknown>;
   openLink(params: { url: string }): Promise<unknown>;
@@ -135,6 +140,7 @@ function place(value: unknown): TripPlace {
   const item = record(value);
   return {
     ...coordinate(item),
+    ...(item.stopId !== undefined ? { stopId: string(item.stopId, 500) } : {}),
     ...(item.platform !== undefined ? { platform: string(item.platform) } : {}),
   };
 }
@@ -362,6 +368,9 @@ export function createTripWidget(root: HTMLElement, bridge: WidgetBridge) {
   let canFullscreen = false;
   let fullscreen = false;
   let revision = 0;
+  let standalone = false;
+  let boardStop: string | undefined;
+  const board = createDepartureBoard(bridge, () => render());
 
   function render() {
     if (destroyed) return;
@@ -371,6 +380,10 @@ export function createTripWidget(root: HTMLElement, bridge: WidgetBridge) {
     root.replaceChildren();
     root.classList.add("trip-app");
     root.setAttribute("aria-busy", String(pending || awaitingResult));
+    if (standalone) {
+      root.append(brandLabel(), board.render());
+      return;
+    }
     if (!view) {
       const state = element("section", "initial-state");
       state.append(
@@ -502,6 +515,10 @@ export function createTripWidget(root: HTMLElement, bridge: WidgetBridge) {
       const basis = element("span", "timing-basis", timingBasis(trip));
       button.append(top, duration, times, badges, stats, basis);
       button.addEventListener("click", () => {
+        if (selected !== index) {
+          board.reset();
+          boardStop = undefined;
+        }
         selected = index;
         render();
       });
@@ -731,6 +748,30 @@ export function createTripWidget(root: HTMLElement, bridge: WidgetBridge) {
                 : "Vehicle accessibility unknown",
           ),
         );
+      if (!isStreet(leg.mode) && !leg.stayOnVehicle && leg.from.stopId) {
+        const stopId = leg.from.stopId;
+        const show = element(
+          "button",
+          "button secondary-button departures-open",
+          "Next departures at this stop",
+        );
+        show.type = "button";
+        show.disabled = awaitingResult;
+        show.addEventListener("click", () => {
+          boardStop = stopId;
+          void board.load({
+            stop: {
+              stopId,
+              latitude: leg.from.latitude,
+              longitude: leg.from.longitude,
+              ...(leg.from.label ? { label: leg.from.label } : {}),
+            },
+            limit: 20,
+          });
+        });
+        body.append(show);
+        if (boardStop === stopId) body.append(board.render());
+      }
       row.append(time, body);
       list.append(row);
     });
@@ -753,6 +794,9 @@ export function createTripWidget(root: HTMLElement, bridge: WidgetBridge) {
       const envelope = record(result);
       if (envelope.isError === true) throw new Error("Tool error");
       const next = parseTripView(envelope.structuredContent);
+      standalone = false;
+      board.reset();
+      boardStop = undefined;
       view = next;
       if (!next.itineraries.length) expanded = false;
       selected = Math.min(selected, Math.max(0, next.itineraries.length - 1));
@@ -767,6 +811,33 @@ export function createTripWidget(root: HTMLElement, bridge: WidgetBridge) {
     render();
   }
   function receiveToolResult(result: unknown) {
+    if (destroyed) return;
+    try {
+      const envelope = record(result);
+      if (record(envelope.structuredContent).kind === "departures") {
+        const next = parseDepartureView(envelope.structuredContent);
+        // App calls may also be delivered as host notifications. Keep the journey.
+        if (view && !standalone) {
+          return;
+        }
+        standalone = true;
+        awaitingResult = false;
+        board.receive(next);
+        render();
+        return;
+      }
+    } catch {
+      /* Trip/error envelopes are handled below. */
+    }
+    if (standalone) {
+      try {
+        parseTripView(record(result).structuredContent);
+      } catch {
+        board.fail();
+        render();
+        return;
+      }
+    }
     revision += 1;
     applyToolResult(result);
   }
@@ -797,7 +868,20 @@ export function createTripWidget(root: HTMLElement, bridge: WidgetBridge) {
   function receiveToolInput(value: unknown) {
     if (destroyed) return;
     try {
-      const input = request(record(value).arguments);
+      const raw = record(value).arguments;
+      if (record(raw).stop !== undefined) {
+        const input = parseDepartureRequest(raw);
+        if (view && !standalone && boardStop === input.stop.stopId) return;
+        revision += 1;
+        standalone = true;
+        board.prepare(input);
+        render();
+        return;
+      }
+      const input = request(raw);
+      board.reset();
+      boardStop = undefined;
+      standalone = false;
       const origin = record(input.origin);
       const destination = record(input.destination);
       inputLabels = {
@@ -834,6 +918,10 @@ export function createTripWidget(root: HTMLElement, bridge: WidgetBridge) {
       render();
     },
     showConnectionError() {
+      if (standalone) {
+        board.fail();
+        return;
+      }
       revision += 1;
       awaitingResult = false;
       failed = true;
@@ -845,6 +933,7 @@ export function createTripWidget(root: HTMLElement, bridge: WidgetBridge) {
     destroy() {
       revision += 1;
       destroyed = true;
+      board.reset();
       root.replaceChildren();
     },
   };

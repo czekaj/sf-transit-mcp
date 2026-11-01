@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>SF Transit · Arrival designs</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="preview-shell">
+      <header class="preview-toolbar" aria-label="Design preview controls">
+        <div class="preview-caption">
+          Design preview <span>· example data</span>
+        </div>
+        <div class="preview-controls">
+          <nav class="preview-views" aria-label="Preview">
+            <button type="button" data-view="bart">BART board</button>
+            <button type="button" data-view="muni">Muni board</button>
+            <button type="button" data-view="trip">Trip details</button>
+          </nav>
+          <div class="theme-switch" aria-label="Color theme">
+            <button type="button" data-theme="light" aria-label="Light theme">
+              Light
+            </button>
+            <button type="button" data-theme="dark" aria-label="Dark theme">
+              Dark
+            </button>
+          </div>
+        </div>
+      </header>
+      <main id="app" class="transit-widget"></main>
+      <p
+        id="preview-status"
+        class="preview-status"
+        role="status"
+        aria-live="polite"
+      ></p>
+    </div>
+  </body>
+</html>

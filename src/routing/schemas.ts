@@ -62,3 +62,16 @@ export const searchPlacesInputSchema = z
 
 export type PlanTripInput = z.input<typeof planTripInputSchema>;
 export type SearchPlacesInput = z.input<typeof searchPlacesInputSchema>;
+
+export const getStopDeparturesInputSchema = z
+  .object({
+    stop: coordinateSchema
+      .extend({ stopId: z.string().trim().min(1).max(500) })
+      .strict(),
+    departureTime: timestamp.optional(),
+    limit: z.number().int().min(1).max(20).default(10),
+  })
+  .strict();
+export type GetStopDeparturesInput = z.input<
+  typeof getStopDeparturesInputSchema
+>;

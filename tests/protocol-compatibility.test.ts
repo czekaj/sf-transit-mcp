@@ -78,6 +78,7 @@ async function exercise(client: Client, modern: boolean): Promise<void> {
   expect(listing.tools.map((tool) => tool.name)).toEqual([
     "search_places",
     "plan_trip",
+    "get_stop_departures",
     "get_service_info",
   ]);
   for (const tool of listing.tools) {

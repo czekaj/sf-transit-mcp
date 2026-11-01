@@ -19,6 +19,12 @@ const publicAssetFiles = {
     "../assets/claude-submission/01-route-options.png",
   "/sf-transit/screenshots/journey-details.png":
     "../assets/claude-submission/02-journey-details.png",
+  "/sf-transit/screenshots/bart-departures.jpg":
+    "../docs/arrival-previews/bart-departures.jpg",
+  "/sf-transit/screenshots/muni-departures.jpg":
+    "../docs/arrival-previews/muni-departures.jpg",
+  "/sf-transit/screenshots/trip-with-departures.jpg":
+    "../docs/arrival-previews/trip-with-departures.jpg",
 };
 const publicAssets = {};
 for (const [path, file] of Object.entries(publicAssetFiles)) {
@@ -27,7 +33,7 @@ for (const [path, file] of Object.entries(publicAssetFiles)) {
 }
 await writeFile(
   new URL("public-assets.ts", generated),
-  `// Generated from public PNG assets by scripts/build-widget.mjs.\nexport const PUBLIC_ASSETS_BASE64 = ${JSON.stringify(publicAssets)} as const;\n`,
+  `// Generated from public image assets by scripts/build-widget.mjs.\nexport const PUBLIC_ASSETS_BASE64 = ${JSON.stringify(publicAssets)} as const;\n`,
 );
 const privacyMarkdown = await readFile(
   new URL("../PRIVACY.md", import.meta.url),

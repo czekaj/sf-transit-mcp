@@ -13,6 +13,21 @@ const fixture = (await fetch("/fixture.json").then((response) =>
     warnings: string[];
   };
 };
+type BoardFixture = CallToolResult & {
+  structuredContent: {
+    kind: "departures";
+    stop: { stopId: string; latitude: number; longitude: number };
+    request: Record<string, unknown>;
+    departures: unknown[];
+    warnings: string[];
+  };
+};
+const boards = (await Promise.all(
+  ["bart", "muni", "trip-stop"].map(async (name) =>
+    fetch(`/departures-${name}.json`).then((response) => response.json()),
+  ),
+)) as BoardFixture[];
+let currentFixture: typeof fixture | BoardFixture = fixture;
 const frame = document.querySelector<HTMLIFrameElement>("#view")!;
 const status = document.querySelector<HTMLElement>("#status")!;
 let refreshes = 0;
@@ -51,7 +66,10 @@ bridge.onrequestdisplaymode = async ({ mode }) => {
   return { mode };
 };
 bridge.oninitialized = () => {
-  void showFixture();
+  const view = new URLSearchParams(window.location.search).get("view");
+  void showFixture(
+    view === "bart" ? boards[0] : view === "muni" ? boards[1] : fixture,
+  );
 };
 bridge.onsizechange = ({ height }) => {
   if (height !== undefined) frame.style.height = `${Math.ceil(height)}px`;
@@ -61,12 +79,24 @@ bridge.onopenlink = async ({ url }) => {
   return {};
 };
 bridge.oncalltool = async ({ name, arguments: args }) => {
-  if (
-    name !== "plan_trip" ||
-    JSON.stringify(canonical(args)) !==
+  let result: typeof fixture | BoardFixture;
+  if (name === "get_stop_departures") {
+    const stop = args?.stop as Record<string, unknown> | undefined;
+    const board = boards.find(
+      (item) =>
+        stop?.stopId === item.structuredContent.stop.stopId &&
+        stop.latitude === item.structuredContent.stop.latitude &&
+        stop.longitude === item.structuredContent.stop.longitude,
+    );
+    if (!board) throw new Error("Preview only accepts the example stops");
+    result = board;
+  } else if (
+    name === "plan_trip" &&
+    JSON.stringify(canonical(args)) ===
       JSON.stringify(canonical(fixture.structuredContent.request))
   )
-    throw new Error("Preview only accepts the original synthetic trip request");
+    result = fixture;
+  else throw new Error("Preview only accepts the example transit requests");
   refreshes++;
   status.textContent = `Simulated refreshes: ${refreshes}. No live service was contacted.`;
   if (failNext) {
@@ -81,11 +111,12 @@ bridge.oncalltool = async ({ name, arguments: args }) => {
       ],
     };
   }
-  return structuredClone(fixture);
+  return structuredClone(result);
 };
-async function showFixture() {
-  await bridge.sendToolInput({ arguments: fixture.structuredContent.request });
-  await bridge.sendToolResult(structuredClone(fixture));
+async function showFixture(next: typeof fixture | BoardFixture = fixture) {
+  currentFixture = next;
+  await bridge.sendToolInput({ arguments: next.structuredContent.request });
+  await bridge.sendToolResult(structuredClone(next));
   status.textContent = `Connected to the sandboxed widget. Simulated refreshes: ${refreshes}.`;
 }
 document.querySelector("#theme")!.addEventListener("click", () => {
@@ -107,10 +138,20 @@ document.querySelector("#mobile")!.addEventListener("click", (event) => {
 document.querySelector("#normal")!.addEventListener("click", () => {
   void showFixture();
 });
+document.querySelector("#bart")!.addEventListener("click", () => {
+  void showFixture(boards[0]);
+});
+document.querySelector("#muni")!.addEventListener("click", () => {
+  void showFixture(boards[1]);
+});
 document.querySelector("#empty")!.addEventListener("click", () => {
-  const empty = structuredClone(fixture);
-  empty.structuredContent.itineraries = [];
-  empty.structuredContent.warnings = ["No journeys found for this time."];
+  const empty = structuredClone(currentFixture);
+  if ("departures" in empty.structuredContent)
+    empty.structuredContent.departures = [];
+  else empty.structuredContent.itineraries = [];
+  empty.structuredContent.warnings = [
+    "No results were found for this example.",
+  ];
   void bridge.sendToolResult(empty);
 });
 document.querySelector("#error")!.addEventListener("click", () => {

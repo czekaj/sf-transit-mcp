@@ -15,7 +15,7 @@ const bundle = await build({
 });
 const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SF Bay Area Transit MCP · Widget preview</title><style>
 *{box-sizing:border-box}body{margin:0;padding:28px;background:#f5f5f2;color:#282b27;font:15px system-ui,sans-serif}main{max-width:780px;margin:auto}h1{font-size:20px;margin:0 0 6px}.note{color:#61665e;margin:0 0 20px}.controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}button{font:inherit;min-height:40px;padding:8px 12px;border:1px solid #cccfc8;border-radius:9px;background:white;color:#282b27;cursor:pointer}button[aria-pressed=true]{background:#e1e9df;border-color:#6d8e65}#frame-wrap{max-width:740px;margin:auto;transition:max-width .15s}iframe{display:block;width:100%;height:500px;border:1px solid #d8ddd4;border-radius:16px;background:white}#status{margin:18px 0;color:#61665e;font-size:13px}body[data-theme=dark]{background:#20231f;color:#eceee9}body[data-theme=dark] .note,body[data-theme=dark] #status{color:#b7bdb2}@media(max-width:420px){body{padding:10px}h1{font-size:18px}}
-</style></head><body><main><h1>SF Bay Area Transit MCP</h1><p class="note">Local widget preview · synthetic data · no transit API requests</p><div class="controls"><button id="theme">Dark theme</button><button id="mobile" aria-pressed="false">Mobile width</button><button id="normal">Show routes</button><button id="empty">No routes</button><button id="error">Tool error</button><button id="fail-refresh" aria-pressed="false">Fail next refresh</button></div><div id="frame-wrap"><iframe id="view" title="Bay Area itinerary widget" sandbox="allow-scripts"></iframe></div><p id="status" role="status">Connecting the local MCP Apps host…</p></main><script type="module" src="/host.js"></script></body></html>`;
+</style></head><body><main><h1>SF Bay Area Transit MCP</h1><p class="note">Local widget preview · example data · no transit API requests</p><div class="controls"><button id="theme">Dark theme</button><button id="mobile" aria-pressed="false">Mobile width</button><button id="normal">Show routes</button><button id="bart">BART departures</button><button id="muni">Muni departures</button><button id="empty">Empty results</button><button id="error">Tool error</button><button id="fail-refresh" aria-pressed="false">Fail next refresh</button></div><div id="frame-wrap"><iframe id="view" title="Bay Area transit widget" sandbox="allow-scripts"></iframe></div><p id="status" role="status">Connecting the local MCP Apps host…</p></main><script type="module" src="/host.js"></script></body></html>`;
 const server = createServer(async (request, response) => {
   try {
     if (request.method !== "GET") {
@@ -28,7 +28,19 @@ const server = createServer(async (request, response) => {
       "/host.js": { type: "text/javascript", body: bundle.outputFiles[0].text },
       "/fixture.json": {
         type: "application/json",
-        path: "tests/fixtures/widget-trip.json",
+        path: "tests/fixtures/widget-trip-departures.json",
+      },
+      "/departures-bart.json": {
+        type: "application/json",
+        path: "tests/fixtures/widget-departures-bart.json",
+      },
+      "/departures-muni.json": {
+        type: "application/json",
+        path: "tests/fixtures/widget-departures-muni.json",
+      },
+      "/departures-trip-stop.json": {
+        type: "application/json",
+        path: "tests/fixtures/widget-departures-trip-stop.json",
       },
       "/widget.html": { type: "text/html", path: "dist/widget.html" },
     };
@@ -55,8 +67,11 @@ const server = createServer(async (request, response) => {
     response.writeHead(500).end("Preview failed");
   }
 });
-server.listen(8798, "127.0.0.1", () =>
-  console.log("Offline widget preview: http://127.0.0.1:8798"),
+const port = Number(process.env.TRANSIT_PREVIEW_PORT ?? 8798);
+if (!Number.isInteger(port) || port < 1024 || port > 65535)
+  throw new Error("TRANSIT_PREVIEW_PORT must be a port from 1024 to 65535");
+server.listen(port, "127.0.0.1", () =>
+  console.log(`Offline widget preview: http://127.0.0.1:${port}`),
 );
 for (const signal of ["SIGINT", "SIGTERM"])
   process.once(signal, () => server.close());

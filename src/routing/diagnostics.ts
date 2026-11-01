@@ -1,4 +1,5 @@
-export type RoutingOperation = "search_places" | "plan_trip";
+export type RoutingOperation =
+  "search_places" | "plan_trip" | "get_stop_departures";
 export type RoutingFailureCategory =
   "network" | "http" | "timeout" | "invalid_response";
 
@@ -52,7 +53,12 @@ function transportCode(error: unknown): string | undefined {
 export function logRoutingFailure(failure: RoutingFailure): void {
   try {
     const { operation, category, durationMs, status, error } = failure;
-    if (operation !== "search_places" && operation !== "plan_trip") return;
+    if (
+      operation !== "search_places" &&
+      operation !== "plan_trip" &&
+      operation !== "get_stop_departures"
+    )
+      return;
     if (
       category !== "network" &&
       category !== "http" &&

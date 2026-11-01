@@ -366,17 +366,34 @@ describe("Worker pages and discovery", () => {
   });
 
   it.each(["GET", "HEAD"])(
-    "serves original icon and screenshot PNG bytes for %s requests",
+    "serves original icon and screenshot image bytes with the correct MIME type for %s requests",
     async (method) => {
-      for (const [path, file] of [
-        ["/sf-transit/icon.png", "../assets/icon-512.png"],
+      for (const [path, file, contentType] of [
+        ["/sf-transit/icon.png", "../assets/icon-512.png", "image/png"],
         [
           "/sf-transit/screenshots/route-options.png",
           "../assets/claude-submission/01-route-options.png",
+          "image/png",
         ],
         [
           "/sf-transit/screenshots/journey-details.png",
           "../assets/claude-submission/02-journey-details.png",
+          "image/png",
+        ],
+        [
+          "/sf-transit/screenshots/bart-departures.jpg",
+          "../docs/arrival-previews/bart-departures.jpg",
+          "image/jpeg",
+        ],
+        [
+          "/sf-transit/screenshots/muni-departures.jpg",
+          "../docs/arrival-previews/muni-departures.jpg",
+          "image/jpeg",
+        ],
+        [
+          "/sf-transit/screenshots/trip-with-departures.jpg",
+          "../docs/arrival-previews/trip-with-departures.jpg",
+          "image/jpeg",
         ],
       ] as const) {
         const image = readFileSync(new URL(file, import.meta.url));
@@ -388,7 +405,7 @@ describe("Worker pages and discovery", () => {
           productionEnv,
         );
         expect(response.status).toBe(200);
-        expect(response.headers.get("Content-Type")).toBe("image/png");
+        expect(response.headers.get("Content-Type")).toBe(contentType);
         expect(response.headers.get("Content-Length")).toBe(
           String(image.length),
         );
@@ -509,6 +526,9 @@ describe("Worker pages and discovery", () => {
       "/sf-transit/icon.png",
       "/sf-transit/screenshots/route-options.png",
       "/sf-transit/screenshots/journey-details.png",
+      "/sf-transit/screenshots/bart-departures.jpg",
+      "/sf-transit/screenshots/muni-departures.jpg",
+      "/sf-transit/screenshots/trip-with-departures.jpg",
     ]) {
       const response = await worker.fetch(
         new Request(`http://localhost${path}`, { method: "POST", body: "{}" }),

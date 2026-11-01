@@ -21,7 +21,9 @@ All checks run offline. HTTP requests go directly into the local handler through
 
 ## Interactive UI and text fallback
 
-MCP Apps is an optional extension, separate from the core protocol. Clients with Apps support can display route cards and trip details. Every trip also includes complete text instructions and structured data, so clients without Apps support still receive the route instructions.
+MCP Apps is an optional extension, separate from the core protocol. Clients with Apps support can display route cards, trip details, and stop-departure boards. Every trip also includes complete text instructions and structured data, so clients without Apps support still receive the route instructions.
+
+The read-only `get_stop_departures` tool uses the existing MCP endpoint and returns readable text and structured data alongside its board. In trip details, opening **Next departures at this stop** makes an explicit tool request; refreshing the board does not refresh the trip. Route and destination filters use only loaded results. There is no automatic polling or retry.
 
 The configured `PUBLIC_MCP_URL` determines the sandbox domain Claude uses to isolate the interactive view. Interactive behavior in other clients needs verification in those clients; support for the core MCP protocol does not guarantee the same interface controls.
 
