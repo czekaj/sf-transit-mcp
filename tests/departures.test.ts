@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import bart from "./fixtures/departures-bart.json";
 import muni from "./fixtures/departures-muni.json";
+import fremont from "./fixtures/departures-fremont.json";
 import { createRoutingClient } from "../src/routing/client.js";
 import { getStopDeparturesInputSchema } from "../src/routing/schemas.js";
 import { formatStopDepartures } from "../src/format.js";
@@ -76,6 +77,56 @@ describe("stop departures", () => {
     });
   });
 
+  it("keeps the Fremont board usable while excluding adjacent Market Street services", async () => {
+    const { client, fetcher } = setup(fremont);
+    const result = await client.getStopDepartures({
+      ...request(fremont),
+      limit: 20,
+      departureTime: "2026-11-01T00:00:00Z",
+    });
+    const matching = fremont.stopTimes
+      .filter((item) => item.place.stopId === fremont.place.stopId)
+      .filter(
+        (item) =>
+          Date.parse(
+            item.realTime
+              ? item.place.departure
+              : item.place.scheduledDeparture,
+          ) >= Date.parse(result.requestedTime),
+      );
+    expect(matching.length).toBeGreaterThan(0);
+    expect(
+      fremont.stopTimes.some(
+        (item) => item.place.stopId !== fremont.place.stopId,
+      ),
+    ).toBe(true);
+    expect(result.departures).toHaveLength(matching.length);
+    expect(
+      result.departures.every((item) => item.stopId === fremont.place.stopId),
+    ).toBe(true);
+    expect(result.stop.stopId).toBe(fremont.place.stopId);
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+  it("does not include sibling platforms when a child stop is selected", async () => {
+    const data = structuredClone(bart);
+    Object.assign(data.place, {
+      stopId: data.stopTimes[0]!.place.stopId,
+      parentId: bart.place.stopId,
+    });
+    const result = await setup(data).client.getStopDepartures(request(data));
+    expect(result.departures.length).toBeGreaterThan(0);
+    expect(
+      result.departures.every((item) => item.stopId === data.place.stopId),
+    ).toBe(true);
+  });
+  it("rejects a mismatched top-level stop even when events match", async () => {
+    const data = structuredClone(bart);
+    data.place.stopId = "other";
+    await expect(
+      setup(data).client.getStopDepartures(request()),
+    ).rejects.toMatchObject({ code: "INVALID_RESPONSE" });
+  });
+
   it("uses scheduled departure and platform when live estimates are unavailable", async () => {
     const data = structuredClone(muni);
     data.stopTimes[0]!.place.departure = "2026-11-01T02:00:00Z";
@@ -144,11 +195,10 @@ describe("stop departures", () => {
     expect(result.departures).toEqual([]);
     expect(result.warnings).toHaveLength(1);
   });
-  it.each(["identity", "region", "distance", "flag", "oversize"])(
+  it.each(["region", "distance", "flag", "oversize"])(
     "rejects %s provider response",
     async (kind) => {
       const data = structuredClone(bart);
-      if (kind === "identity") data.stopTimes[0]!.place.parentId = "other";
       if (kind === "region") data.stopTimes[0]!.place.lat = 51;
       if (kind === "distance") data.stopTimes[0]!.place.lat = 38;
       if (kind === "flag")

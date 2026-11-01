@@ -474,23 +474,22 @@ export function createRoutingClient({
           "The departures service returned a different stop.",
         );
       const sameStation = (event: z.infer<typeof departurePlace>) =>
-        event.stopId === station.stopId ||
-        event.parentId === station.stopId ||
-        station.parentId === event.stopId ||
-        Boolean(station.parentId && station.parentId === event.parentId);
+        event.stopId === station.stopId || event.parentId === station.stopId;
       if (
         parsed.data.stopTimes.some(
           (item) =>
             !inside(item.place.lat, item.place.lon) ||
-            !nearby(input.stop, item.place) ||
-            !sameStation(item.place),
+            !nearby(input.stop, item.place),
         )
       )
         throw new RoutingError(
           "INVALID_RESPONSE",
           "The departures service returned a different stop.",
         );
+      // MOTIS also returns nearby OSM-equivalent stops, sometimes with different
+      // names. Keep this board tied to the selected stop or its child platforms.
       const departures: StopDeparture[] = parsed.data.stopTimes
+        .filter((item) => sameStation(item.place))
         .map((item) => ({
           stopId: item.place.stopId,
           route: departureRoute(item),
