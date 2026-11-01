@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Departure board layout comparison</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="comparison">
+      <header class="comparison-header">
+        <p class="example-label">DESIGN COMPARISON · EXAMPLE DATA</p>
+        <h1>Departure-board layout options</h1>
+        <p>
+          Two layouts for the departure board. Choose a direction to compare how
+          each handles service names and timing.
+        </p>
+        <div class="toolbar">
+          <fieldset>
+            <legend>Layout</legend>
+            <button data-layout="a" aria-pressed="true">
+              A · Three-column board</button
+            ><button data-layout="b" aria-pressed="false">
+              B · Destination-first
+            </button>
+          </fieldset>
+          <fieldset>
+            <legend>Theme</legend>
+            <button data-theme="light" aria-pressed="true">Light</button
+            ><button data-theme="dark" aria-pressed="false">Dark</button>
+          </fieldset>
+          <label class="operator"
+            >Operator<select id="operator">
+              <option>Caltrain</option>
+              <option>BART</option>
+              <option>Muni</option>
+            </select></label
+          ><button id="narrow" aria-pressed="false">360px preview</button>
+        </div>
+        <p class="direction-note" id="direction-note"></p>
+      </header>
+      <div class="preview" id="preview">
+        <article class="widget">
+          <div class="brand">
+            <img
+              src="/assets/icon-256.png"
+              alt=""
+              width="30"
+              height="30"
+            /><span>SF Bay Area Transit MCP</span
+            ><span class="context" id="context"></span>
+          </div>
+          <h2 id="stop"></h2>
+          <p class="subtitle" id="subtitle"></p>
+          <section class="board" aria-label="Example departures">
+            <header class="board-title">
+              <h3>Departures</h3>
+              <div class="clock">
+                <strong>5:42 PM</strong><span>RETRIEVED · PACIFIC</span>
+              </div>
+            </header>
+            <div id="rows"></div>
+          </section>
+          <footer class="widget-footer">
+            <span
+              >Live estimates can change. Scheduled times follow the
+              timetable.</span
+            ><span>Pacific time</span>
+          </footer>
+        </article>
+      </div>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>

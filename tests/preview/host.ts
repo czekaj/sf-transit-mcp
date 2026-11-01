@@ -23,7 +23,7 @@ type BoardFixture = CallToolResult & {
   };
 };
 const boards = (await Promise.all(
-  ["bart", "muni", "trip-stop"].map(async (name) =>
+  ["bart", "muni", "trip-stop", "caltrain"].map(async (name) =>
     fetch(`/departures-${name}.json`).then((response) => response.json()),
   ),
 )) as BoardFixture[];
@@ -68,7 +68,13 @@ bridge.onrequestdisplaymode = async ({ mode }) => {
 bridge.oninitialized = () => {
   const view = new URLSearchParams(window.location.search).get("view");
   void showFixture(
-    view === "bart" ? boards[0] : view === "muni" ? boards[1] : fixture,
+    view === "bart"
+      ? boards[0]
+      : view === "muni"
+        ? boards[1]
+        : view === "caltrain"
+          ? boards[3]
+          : fixture,
   );
 };
 bridge.onsizechange = ({ height }) => {
@@ -143,6 +149,9 @@ document.querySelector("#bart")!.addEventListener("click", () => {
 });
 document.querySelector("#muni")!.addEventListener("click", () => {
   void showFixture(boards[1]);
+});
+document.querySelector("#caltrain")!.addEventListener("click", () => {
+  void showFixture(boards[3]);
 });
 document.querySelector("#empty")!.addEventListener("click", () => {
   const empty = structuredClone(currentFixture);

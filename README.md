@@ -138,6 +138,8 @@ Transitous lists data sources for Muni, BART, Caltrain, AC Transit, VTA, SamTran
 
 Ask for upcoming departures at a stop to open a departure board. In trip details, select **Next departures at this stop** at a boarding step. Each departure identifies a live estimate or scheduled time, plus the route, destination, agency, platform, cancellation, and boarding information when supplied.
 
+The board shows service, destination, and departure time in three columns. Live or scheduled status appears beneath the time. Service names stay complete, and a scheduled comparison appears only when its displayed date or time differs from the departure estimate.
+
 Select Refresh to request that board again. This does not change the selected trip. Route and destination filters narrow the results already loaded; they do not fetch more departures. There is no automatic polling or retry. **Retrieved** shows when the result was fetched, not when the agency last updated its predictions. Times use Pacific time.
 
 The screenshots below show the interactive view with **example data**, not current departures.
@@ -204,7 +206,7 @@ The MCP connection, Transitous requests, and display code are separate. Requests
 
 The [Claude submission materials](docs/claude-submission.md) contain listing copy, reviewer instructions, approved screenshot assets, and the remaining launch requirements. The listing is a draft. Provider use remains subject to [Transitous's published policy](https://transitous.org/api/); qualifying light use does not require separate prior approval.
 
-The widget preview also includes standalone BART and Muni departure boards and a board opened from trip details, all using fictional examples.
+The widget preview also includes standalone BART, Muni, and Caltrain departure boards and a board opened from trip details, all using fictional examples. The Caltrain example checks long service names and duplicate scheduled times.
 
 ### Project artwork
 

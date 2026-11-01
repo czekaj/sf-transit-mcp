@@ -1,0 +1,114 @@
+{
+  "_fixture": {
+    "synthetic": true,
+    "notice": "Invented Caltrain departure times at a public stop. Reproduces long service names and equivalent displayed scheduled times. No transit service is contacted."
+  },
+  "content": [
+    {
+      "type": "text",
+      "text": "Fictional Caltrain preview data; not current departure times."
+    }
+  ],
+  "structuredContent": {
+    "kind": "departures",
+    "stop": {
+      "stopId": "us-ca-fixture_caltrain-4th-king",
+      "label": "Caltrain 4th & King",
+      "latitude": 37.7764,
+      "longitude": -122.3943
+    },
+    "generatedAt": "2026-11-01T00:40:00Z",
+    "requestedTime": "2026-11-01T00:40:00Z",
+    "timeZone": "America/Los_Angeles",
+    "departures": [
+      {
+        "stopId": "us-ca-fixture_caltrain-4th-king",
+        "route": "Local Weekend",
+        "headsign": "Tamien",
+        "mode": "RAIL",
+        "agency": "Caltrain",
+        "departureTime": "2026-11-01T00:55:00Z",
+        "scheduledDepartureTime": "2026-10-31T17:55:00-07:00",
+        "realTime": true,
+        "cancelled": false,
+        "pickupAllowed": true
+      },
+      {
+        "stopId": "us-ca-fixture_caltrain-4th-king",
+        "route": "Local Weekend",
+        "headsign": "San Jose Diridon",
+        "mode": "RAIL",
+        "agency": "Caltrain",
+        "departureTime": "2026-11-01T01:25:00Z",
+        "scheduledDepartureTime": "2026-11-01T01:22:00Z",
+        "realTime": true,
+        "cancelled": false,
+        "pickupAllowed": true
+      },
+      {
+        "stopId": "us-ca-fixture_caltrain-4th-king",
+        "route": "Local Weekend",
+        "headsign": "Tamien",
+        "mode": "RAIL",
+        "agency": "Caltrain",
+        "departureTime": "2026-11-01T01:55:00Z",
+        "scheduledDepartureTime": "2026-11-01T01:55:20Z",
+        "realTime": true,
+        "cancelled": false,
+        "pickupAllowed": true
+      },
+      {
+        "stopId": "us-ca-fixture_caltrain-4th-king",
+        "route": "Local Weekend",
+        "headsign": "San Jose Diridon",
+        "mode": "RAIL",
+        "agency": "Caltrain",
+        "departureTime": "2026-11-01T02:25:00Z",
+        "scheduledDepartureTime": "2026-11-01T02:25:00Z",
+        "realTime": false,
+        "cancelled": false,
+        "pickupAllowed": true
+      },
+      {
+        "stopId": "us-ca-fixture_caltrain-4th-king",
+        "route": "Local Weekend",
+        "headsign": "Tamien",
+        "mode": "RAIL",
+        "agency": "Caltrain",
+        "departureTime": "2026-11-01T02:55:00Z",
+        "scheduledDepartureTime": "2026-11-01T02:55:00Z",
+        "realTime": false,
+        "cancelled": false,
+        "pickupAllowed": true
+      }
+    ],
+    "warnings": ["Example times for the local widget preview."],
+    "request": {
+      "stop": {
+        "stopId": "us-ca-fixture_caltrain-4th-king",
+        "label": "Caltrain 4th & King",
+        "latitude": 37.7764,
+        "longitude": -122.3943
+      },
+      "limit": 20
+    },
+    "attribution": [
+      {
+        "label": "Routing by Transitous",
+        "url": "https://transitous.org/"
+      },
+      {
+        "label": "Transitous data sources",
+        "url": "https://transitous.org/sources/"
+      },
+      {
+        "label": "© OpenStreetMap contributors",
+        "url": "https://www.openstreetmap.org/copyright"
+      },
+      {
+        "label": "Bay Area data provided by 511.org",
+        "url": "https://511.org/"
+      }
+    ]
+  }
+}

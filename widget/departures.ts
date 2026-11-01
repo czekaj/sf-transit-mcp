@@ -152,6 +152,25 @@ export function parseDepartureView(v: unknown): DepartureView {
     throw Error("Mismatched stop");
   return result;
 }
+const pacificMinute = new Intl.DateTimeFormat("en-US", {
+  timeZone: "America/Los_Angeles",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+const pacificDay = new Intl.DateTimeFormat("en-US", {
+  timeZone: "America/Los_Angeles",
+  month: "short",
+  day: "numeric",
+});
+const pacificDayKey = new Intl.DateTimeFormat("en-US", {
+  timeZone: "America/Los_Angeles",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
 const time = new Intl.DateTimeFormat("en-US", {
   timeZone: "America/Los_Angeles",
   hour: "numeric",
@@ -186,19 +205,22 @@ function matrix(value: string, cls: string, slots: number): HTMLElement {
   n.setAttribute("aria-label", value);
   const glyphs = el("span", "matrix-words");
   glyphs.setAttribute("aria-hidden", "true");
+  const words = value.toUpperCase().split(/\s+/);
+  if (words.some((word) => word.length > slots)) {
+    n.classList.add("matrix-fallback");
+    const plain = el("span", "matrix-mobile", value);
+    plain.setAttribute("aria-hidden", "true");
+    n.append(plain);
+    return n;
+  }
   const rows: string[] = [];
   let row = "";
-  for (const word of value.toUpperCase().split(/\s+/)) {
+  for (const word of words) {
     if (row && row.length + word.length + 1 > slots) {
       rows.push(row);
       row = "";
     }
-    let remaining = word;
-    while (remaining.length > slots) {
-      rows.push(remaining.slice(0, slots));
-      remaining = remaining.slice(slots);
-    }
-    row = row ? `${row} ${remaining}` : remaining;
+    row = row ? `${row} ${word}` : word;
   }
   if (row) rows.push(row);
   for (const value of rows) {
@@ -391,7 +413,7 @@ export function createDepartureBoard(
     title.append(retrieved);
     board.append(title);
     const head = el("div", "departures-head");
-    for (const label of ["Line", "Destination", "Status", "Departing"])
+    for (const label of ["Service", "Destination", "Departs"])
       head.append(el("span", "", label));
     board.append(head);
     const rows = view.departures.filter(
@@ -401,7 +423,7 @@ export function createDepartureBoard(
     );
     for (const d of rows) {
       const row = el("div", "departure-row");
-      const line = matrix(d.route, "matrix-line", 6);
+      const line = matrix(d.route, "matrix-line", 13);
       const bartColor = (
         {
           blue: "#71bdf4",
@@ -434,7 +456,9 @@ export function createDepartureBoard(
         dest.append(
           el("small", "countdown-secondary", `Platform ${d.platform}`),
         );
-      const status = matrix(
+      const status = el(
+        "div",
+        `matrix-status${d.realTime && !d.cancelled && d.pickupAllowed ? " is-live" : ""}${d.cancelled || !d.pickupAllowed ? " is-unavailable" : ""}`,
         d.cancelled
           ? d.pickupAllowed
             ? "Cancelled"
@@ -444,23 +468,45 @@ export function createDepartureBoard(
             : d.realTime
               ? "Live"
               : "Scheduled",
-        `matrix-status${d.realTime && !d.cancelled && d.pickupAllowed ? " is-live" : ""}${d.cancelled || !d.pickupAllowed ? " is-unavailable" : ""}`,
-        9,
       );
       const when = matrix(
         time.format(new Date(d.departureTime)),
         `matrix-departure${d.realTime && !d.cancelled && d.pickupAllowed ? " is-live" : ""}`,
         8,
       );
-      if (d.realTime && d.departureTime !== d.scheduledDepartureTime)
-        when.append(
+      when.append(status);
+      if (
+        d.realTime &&
+        pacificMinute.format(new Date(d.departureTime)) !==
+          pacificMinute.format(new Date(d.scheduledDepartureTime))
+      ) {
+        const reference = el(
+          "small",
+          "countdown-secondary scheduled-reference",
+        );
+        reference.append(el("span", "", "Scheduled"), " ");
+        const sameDay =
+          pacificDayKey.format(new Date(d.departureTime)) ===
+          pacificDayKey.format(new Date(d.scheduledDepartureTime));
+        if (!sameDay)
+          reference.append(
+            el(
+              "span",
+              "scheduled-date",
+              pacificDay.format(new Date(d.scheduledDepartureTime)),
+            ),
+            " ",
+          );
+        reference.append(
           el(
-            "small",
-            "countdown-secondary",
-            `Scheduled ${time.format(new Date(d.scheduledDepartureTime))}`,
+            "span",
+            "scheduled-time",
+            time.format(new Date(d.scheduledDepartureTime)),
           ),
         );
-      row.append(line, dest, status, when);
+        when.append(reference);
+      }
+      row.append(line, dest, when);
       board.append(row);
     }
     if (!rows.length)

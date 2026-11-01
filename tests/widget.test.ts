@@ -560,9 +560,8 @@ it("keeps matrix labels in fixed padded slots and preserves long destinations", 
   });
   const first = root.querySelector(".departure-row")!;
   for (const [selector, slots] of [
-    [".matrix-line", 6],
+    [".matrix-line", 13],
     [".matrix-destination", 22],
-    [".matrix-status", 9],
     [".matrix-departure", 8],
   ] as const) {
     const field = first.querySelector(selector)!;
@@ -576,5 +575,116 @@ it("keeps matrix labels in fixed padded slots and preserves long destinations", 
   expect(long.querySelectorAll(".matrix-text").length).toBeGreaterThan(1);
   expect(long.getAttribute("aria-label")).toBe(
     "A very long destination that stays completely readable",
+  );
+});
+
+it("fits Local Weekend, falls back for unbroken names, and groups plain status with time", () => {
+  const stop = { stopId: "caltrain", latitude: 37.77, longitude: -122.4 };
+  const departure = {
+    stopId: stop.stopId,
+    route: "Local Weekend",
+    mode: "RAIL",
+    headsign: "Tamien",
+    departureTime: "2026-10-29T17:55:00-07:00",
+    scheduledDepartureTime: "2026-10-29T17:55:00-07:00",
+    realTime: true,
+    cancelled: false,
+    pickupAllowed: true,
+  };
+  const widget = createTripWidget(root, bridge());
+  widget.receiveToolResult({
+    structuredContent: {
+      kind: "departures",
+      stop,
+      timeZone: "America/Los_Angeles",
+      generatedAt: departure.departureTime,
+      requestedTime: departure.departureTime,
+      request: { stop },
+      warnings: [],
+      attribution: [],
+      departures: [
+        departure,
+        {
+          ...departure,
+          route: "ExceptionallyLongUnbrokenServiceName",
+          headsign: "UnbrokenDestinationNameBeyondTwentyTwoCharacters",
+        },
+        { ...departure, cancelled: true },
+        { ...departure, pickupAllowed: false },
+      ],
+    },
+  });
+  const rows = root.querySelectorAll(".departure-row");
+  expect(rows[0]!.children).toHaveLength(3);
+  expect(rows[0]!.querySelectorAll(".matrix-line .matrix-text")).toHaveLength(
+    1,
+  );
+  expect(rows[0]!.querySelectorAll(".matrix-line .matrix-cell")).toHaveLength(
+    13,
+  );
+  expect(
+    rows[0]!
+      .querySelector(".matrix-line .matrix-text")
+      ?.textContent?.replaceAll("\u00a0", " "),
+  ).toBe("LOCAL WEEKEND");
+  expect(
+    rows[0]!.querySelector(".matrix-departure .matrix-status")?.textContent,
+  ).toBe("Live");
+  expect(rows[0]!.querySelector(".matrix-status .matrix-glyph")).toBeNull();
+  expect(rows[1]!.querySelectorAll(".matrix-fallback")).toHaveLength(2);
+  expect(
+    rows[1]!.querySelector(".matrix-line .matrix-mobile")?.textContent,
+  ).toBe("ExceptionallyLongUnbrokenServiceName");
+  for (const row of [rows[2]!, rows[3]!]) {
+    expect(row.querySelector(".matrix-status.is-unavailable")).not.toBeNull();
+    expect(row.querySelector(".matrix-departure.is-live")).toBeNull();
+  }
+});
+
+it("compares scheduled references by Pacific displayed day and minute", () => {
+  const stop = { stopId: "timing", latitude: 37.77, longitude: -122.4 };
+  const departure = {
+    stopId: stop.stopId,
+    route: "Local Weekend",
+    mode: "RAIL",
+    headsign: "Tamien",
+    departureTime: "2026-10-30T00:05:30-07:00",
+    scheduledDepartureTime: "2026-10-30T07:05:30Z",
+    realTime: true,
+    cancelled: false,
+    pickupAllowed: true,
+  };
+  const widget = createTripWidget(root, bridge());
+  widget.receiveToolResult({
+    structuredContent: {
+      kind: "departures",
+      stop,
+      timeZone: "America/Los_Angeles",
+      generatedAt: departure.departureTime,
+      requestedTime: departure.departureTime,
+      request: { stop },
+      warnings: [],
+      attribution: [],
+      departures: [
+        departure,
+        { ...departure, scheduledDepartureTime: "2026-10-30T00:05:00-07:00" },
+        { ...departure, scheduledDepartureTime: "2026-10-30T00:02:00-07:00" },
+        { ...departure, scheduledDepartureTime: "2026-10-29T00:05:00-07:00" },
+        { ...departure, scheduledDepartureTime: "2026-10-29T23:59:00-07:00" },
+      ],
+    },
+  });
+  const rows = root.querySelectorAll(".departure-row");
+  expect(rows[0]!.querySelector(".scheduled-reference")).toBeNull();
+  expect(rows[1]!.querySelector(".scheduled-reference")).toBeNull();
+  expect(rows[2]!.querySelector(".scheduled-time")?.textContent).toBe(
+    "12:02 AM",
+  );
+  expect(rows[3]!.querySelector(".scheduled-date")?.textContent).toContain(
+    "Oct 29",
+  );
+  expect(rows[4]!.querySelector(".scheduled-date")?.textContent).toBe("Oct 29");
+  expect(rows[4]!.querySelector(".scheduled-time")?.textContent).toBe(
+    "11:59 PM",
   );
 });
