@@ -47,7 +47,8 @@
     "build:worker:production": "npm run build:widget && WRANGLER_SEND_METRICS=false wrangler deploy --dry-run --env production",
     "types:worker": "WRANGLER_SEND_METRICS=false wrangler types --strict-vars=false",
     "preview:widget": "npm run build:widget && node scripts/preview-widget.mjs",
-    "check": "npm run format:check && npm run typecheck && npm test && npm run build"
+    "registry:check": "tsx scripts/validate-registry.ts",
+    "check": "npm run format:check && npm run registry:check && npm run typecheck && npm test && npm run build"
   },
   "dependencies": {
     "@modelcontextprotocol/client": "2.4.0",
@@ -57,6 +58,7 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
+    "@cfworker/json-schema": "4.1.1",
     "@resvg/resvg-js": "2.6.2",
     "@types/node": "22.20.5",
     "esbuild": "0.28.2",

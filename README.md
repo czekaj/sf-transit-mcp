@@ -206,6 +206,8 @@ The MCP connection, Transitous requests, and display code are separate. Requests
 
 The [Claude submission materials](docs/claude-submission.md) contain listing copy, reviewer instructions, approved screenshot assets, and the remaining launch requirements. The listing is a draft. Provider use remains subject to [Transitous's published policy](https://transitous.org/api/); qualifying light use does not require separate prior approval.
 
+The hosted service is [listed in the official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.czekaj%2Fsf-transit-mcp/versions/0.1.0) as `io.github.czekaj/sf-transit-mcp`. The [publication guide](docs/mcp-registry.md) records the verified submission, offline manifest validation, manual publishing workflow, and approvals required for later publications.
+
 The widget preview also includes standalone BART, Muni, and Caltrain departure boards and a board opened from trip details, all using fictional examples. The Caltrain example checks long service names and duplicate scheduled times.
 
 ### Project artwork

@@ -16,6 +16,7 @@
   "include": [
     "src/**/*.ts",
     "tests/**/*.ts",
+    "scripts/validate-registry.ts",
     "vitest.config.ts",
     "worker-configuration.d.ts"
   ]

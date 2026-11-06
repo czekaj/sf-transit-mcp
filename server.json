@@ -1,0 +1,33 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.czekaj/sf-transit-mcp",
+  "title": "SF Bay Area Transit MCP",
+  "description": "Plan San Francisco and Bay Area transit trips and check upcoming stop departures. Free, no API keys.",
+  "version": "0.1.0",
+  "repository": {
+    "url": "https://github.com/czekaj/sf-transit-mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://mcp.riv.lc/sf-transit",
+  "icons": [
+    {
+      "src": "https://mcp.riv.lc/sf-transit/icon.png",
+      "mimeType": "image/png",
+      "sizes": ["512x512"]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.riv.lc/sf-transit/mcp"
+    }
+  ],
+  "_meta": {
+    "io.modelcontextprotocol.registry/publisher-provided": {
+      "publisher": {
+        "name": "Reindex Ventures LLC",
+        "url": "https://reindexventures.com"
+      }
+    }
+  }
+}
